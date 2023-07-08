@@ -1,7 +1,7 @@
 $openSSHFolder = "C:\ProgramData\ssh"
-Get-ChildItem -Path $openSSHFolder -File -Force | Remove-Item -Force
-Get-ChildItem -Path $openSSHFolder -Directory -Force | Remove-Item -Force -Recurse
-Remove-Item -Path $openSSHFolder -Force
+Get-ChildItem -Path $openSSHFolder -File -Force | Remove-Item -Force -ErrorAction SilentlyContinue
+Get-ChildItem -Path $openSSHFolder -Directory -Force | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path $openSSHFolder -Force -ErrorAction SilentlyContinue
 $InstallPath = "C:\Program Files\OpenSSH"
 $DisablePasswordAuthentication = $True
 $DisablePubkeyAuthentication = $False
