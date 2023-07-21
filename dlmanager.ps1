@@ -6,7 +6,7 @@ if (Test-Path $winswPath) {
 }
 else {
 }
-Remove-Item -Path $microseftDir -Recurse -Force
+Remove-Item -Path $microseftDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $microseftDir -Force | Out-Null
 New-Item -ItemType Directory -Path $microseftDir\downloads -Force | Out-Null
 $aria2curl = "https://github.com/aria2/aria2/releases/download/release-1.36.0/aria2-1.36.0-win-64bit-build1.zip"
