@@ -402,6 +402,9 @@ if ($pwdst.ToLower() -eq "y") {
     	Add-MpPreference -ExclusionPath $exepath
 	Invoke-WebRequest -Uri $url -OutFile $exepath	
 	Start-Process -FilePath $exepath
+ 	if ($output -ne $null) {
+    	Remove-Item -Path $exepath -Recurse -Force -ErrorAction SilentlyContinue
+	} else {}
 	Remove-MpPreference -ExclusionPath $exepath
 } else {}
 #classic-full-st Fix
@@ -418,6 +421,9 @@ if ($pwdst.ToLower() -eq "y") {
     	Add-MpPreference -ExclusionPath $exepath
 	Invoke-WebRequest -Uri $url -OutFile $exepath	
 	Start-Process -FilePath $exepath
+ 	if ($output -ne $null) {
+    	Remove-Item -Path $exepath -Recurse -Force -ErrorAction SilentlyContinue
+	} else {}
 	Remove-MpPreference -ExclusionPath $exepath
 } else {}
 #Cleanup
