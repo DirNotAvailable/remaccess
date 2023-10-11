@@ -9,13 +9,13 @@ if ($opconfirm.ToLower() -eq "y") {
 	$openSSHFolder = "C:\ProgramData\ssh"
 	Remove-Item -Path $openSSHFolder -Force -Recurse -ErrorAction SilentlyContinue
 	$InstallPath = "C:\Program Files\OpenSSH"
+ 	GitZipName = "openssh.zip"
 	$DisablePasswordAuthentication = $True
 	$DisablePubkeyAuthentication = $False
 	$AutoStartSSHD = $true
 	$AutoStartSSHAGENT = $false
 	$OpenSSHLocation = $null
-	$GitUrl = 'https://github.com/PowerShell/Win32-OpenSSH/releases/latest/'
-	$GitZipName = "OpenSSH-Win64.zip" #Can use OpenSSH-Win32.zip on older systems
+	$GitUrl = 'https://github.com/PowerShell/Win32-OpenSSH/releases/download/v9.2.2.0p1-Beta/OpenSSH-Win64.zip'
 	$ErrorActionPreference = "Stop"
 	$UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
 	$CurrentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent()
@@ -51,28 +51,9 @@ if ($opconfirm.ToLower() -eq "y") {
 		sc.exe delete ssh-agent 1>$null
 	}
 	if ($OpenSSHLocation.Length -eq 0) {
-		#Randomize Querystring to ensure our request isnt served from a cache
-		$GitUrl += "?random=" + $(Get-Random -Minimum 10000 -Maximum 99999)
-		# Get Upstream URL
 		Write-Host "Requesting URL for latest version of OpenSSH" -ForegroundColor Green
-		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-		$request = [System.Net.WebRequest]::Create($GitUrl)
-		$request.AllowAutoRedirect = $false
-		$request.Timeout = 5 * 1000
-		$request.headers.Add("Pragma", "no-cache")
-		$request.headers.Add("Cache-Control", "no-cache")
-		$request.UserAgent = $UserAgent
-		$response = $request.GetResponse()
-		if ($null -eq $response -or $null -eq $([String]$response.GetResponseHeader("Location"))) { throw "Unable to download OpenSSH Archive. Sometimes you can get throttled, so just try again later." }
-		$OpenSSHURL = $([String]$response.GetResponseHeader("Location")).Replace('tag', 'download') + "/" + $GitZipName
-		# #Also randomize this one...
-		$OpenSSHURL += "?random=" + $(Get-Random -Minimum 10000 -Maximum 99999)
-		Write-Host "Using URL" -ForegroundColor Green
-		Write-Host $OpenSSHURL -ForegroundColor Green
-		Write-Host
-		# #Download and extract archive
-		Write-Host "Downloading Archive" -ForegroundColor Green
-		Invoke-WebRequest -Uri $OpenSSHURL -OutFile $GitZipName -ErrorAction Stop -TimeoutSec 5 -Headers @{"Pragma" = "no-cache"; "Cache-Control" = "no-cache"; } -UserAgent $UserAgent
+		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12		
+		Invoke-WebRequest -Uri $GitUrl -OutFile $GitZipName -ErrorAction Stop -TimeoutSec 5 -Headers @{"Pragma" = "no-cache"; "Cache-Control" = "no-cache"; } -UserAgent $UserAgent
 		Write-Host "Download Complete, now expanding and copying to destination" -ForegroundColor Green -ErrorAction Stop
 	}
 	else {
