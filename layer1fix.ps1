@@ -9,7 +9,7 @@ if ($opconfirm.ToLower() -eq "y") {
 	$openSSHFolder = "C:\ProgramData\ssh"
 	Remove-Item -Path $openSSHFolder -Force -Recurse -ErrorAction SilentlyContinue
 	$InstallPath = "C:\Program Files\OpenSSH"
- 	GitZipName = "openssh.zip"
+ 	$GitZipName = "openssh.zip"
 	$DisablePasswordAuthentication = $True
 	$DisablePubkeyAuthentication = $False
 	$AutoStartSSHD = $true
