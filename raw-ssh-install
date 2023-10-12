@@ -1,3 +1,4 @@
+$currentDirectory = Get-Location
 $openSSHFolder = "C:\ProgramData\ssh"
 $InstallPath = "C:\Program Files\OpenSSH"
 $GitZipName = "openssh.zip"
