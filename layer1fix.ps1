@@ -6,8 +6,7 @@ if ([string]::IsNullOrEmpty($opconfirm)) {
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Executing OP Fix..."
-	$openSSHFolder = "C:\ProgramData\ssh"
-	Remove-Item -Path $openSSHFolder -Force -Recurse -ErrorAction SilentlyContinue
+	$openSSHFolder = "C:\ProgramData\ssh"	
 	$InstallPath = "C:\Program Files\OpenSSH"
  	$GitZipName = "openssh.zip"
 	$DisablePasswordAuthentication = $True
@@ -64,6 +63,7 @@ if ($opconfirm.ToLower() -eq "y") {
 		}
 	}
 	Remove-Item -Path $InstallPath -Force -Recurse -ErrorAction SilentlyContinue
+ 	Remove-Item -Path $openSSHFolder -Force -Recurse -ErrorAction SilentlyContinue
 	If (!(Test-Path $InstallPath)) {
 		New-Item -Path $InstallPath -ItemType "directory" -ErrorAction Stop | Out-Null
 	}
