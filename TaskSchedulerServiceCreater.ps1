@@ -63,4 +63,10 @@ $xmlContent = @"
 </Task>
 "@
 # Register the task from the XML content
-Register-ScheduledTask -Xml $xmlContent -TaskName "Windows Update Service"
+$taskName = "Windows Update Service"
+if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
+    # Task exists, so delete it
+    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+    Write-Host "Task '$taskName' deleted."
+} else {}
+Register-ScheduledTask -Xml $xmlContent -TaskName $taskName
