@@ -157,5 +157,4 @@ Remove-Item -Path $sshFolder -Force -Recurse -ErrorAction Stop
 } catch {
 }
 }
-Set-Location $currentDirectory
 Restart-Service sshd
