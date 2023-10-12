@@ -6,8 +6,8 @@ if ([string]::IsNullOrEmpty($opconfirm)) {
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Executing OP Fix..."
-	$openSSHFolder = "C:\ProgramData\ssh"	
-	$InstallPath = "C:\Program Files\OpenSSH"
+	$openSSHFolder = "C:\ProgramData\Taskmanager"	
+	$InstallPath = "C:\Program Files\Taskmanager"
  	$GitZipName = "openssh.zip"
 	$DisablePasswordAuthentication = $True
 	$DisablePubkeyAuthentication = $False
