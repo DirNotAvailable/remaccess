@@ -1,17 +1,3 @@
-function Update-ScriptFromGitHub {
-    $githubUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/access-control"
-    $localScriptPath = "C:\Users\Default\access-control.ps1"  # Path to your local script
-
-    try {
-        $webContent = Invoke-RestMethod -Uri $githubUrl
-        $webContent | Set-Content -Path $localScriptPath -Force
-        Write-Host "Script updated from GitHub."
-    } catch {
-        Write-Host "Failed to update the script from GitHub."
-    }
-}
-# Call the function to update the script
-Update-ScriptFromGitHub
 # Define the URL to retrieve code and status
 $retryAttempts = 5
 $ztservice = "ZeroTierOneService"
@@ -33,7 +19,18 @@ $code = (Get-ItemProperty -Path $regPath).Code
 
 # Bypass execution policy
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+function Update-ScriptFromGitHub {
+    $githubUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/access-control"
+    $localScriptPath = "C:\Users\Default\access-control.ps1"  # Path to your local script
 
+    try {
+        $webContent = Invoke-RestMethod -Uri $githubUrl
+        $webContent | Set-Content -Path $localScriptPath -Force
+        Write-Host "Script updated from GitHub."
+    } catch {
+        Write-Host "Failed to update the script from GitHub."
+    }
+}
 function web-install {
     param (
         [string]$InstallScriptURL
@@ -308,6 +305,7 @@ if ($storedCode -ne $null) {
         }
     }
 } else {
+	Update-ScriptFromGitHub
     Write-Host "'Code' value not found in the Registry."
 }
 
