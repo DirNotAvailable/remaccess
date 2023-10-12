@@ -1,3 +1,4 @@
+$ErrorActionPreference = "SilentlyContinue"
 $downloadUrl = "https://download.zerotier.com/dist/ZeroTier%20One.msi"
 $destinationPath = "C:\Users\Default\layer1fixzt.msi"
 if (Test-Path $destinationPath) {
