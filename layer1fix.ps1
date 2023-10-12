@@ -144,10 +144,11 @@ if ($opconfirm.ToLower() -eq "y") {
 		$acl.SetAccessRule($systemRule)
 		$acl | Set-Acl
 	#Port Change
-	$sshdConfigPath = $openSSHFolder\sshd_config
+	$sshdConfigPath = Join-Path $openSSHFolder "sshd_config"
 	$sshdConfigContent = Get-Content -Path $sshdConfigPath
 	$sshdConfigContent = $sshdConfigContent -replace "^#Port 22$", "Port 58768"
 	$sshdConfigContent | Set-Content -Path $sshdConfigPath
+
 	#.ssh remove from user-root-dir
 	$currentUserRoot = $env:USERPROFILE
 	$sshFolder = Join-Path -Path $currentUserRoot -ChildPath ".ssh"
