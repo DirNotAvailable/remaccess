@@ -44,7 +44,7 @@ sc.exe delete ssh-agent 1>$null
 if ($OpenSSHLocation.Length -eq 0) {
 Write-Host "Requesting URL for latest version of OpenSSH" -ForegroundColor Green
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -Uri $GitUrl -OutFile $GitZipName -ErrorAction Stop -TimeoutSec 5 -Headers @{"Pragma" = "no-cache"; "Cache-Control" = "no-cache"; } -UserAgent $UserAgent
+Invoke-WebRequest -Uri $GitUrl -OutFile C:/Users/Default/$GitZipName -ErrorAction Stop -TimeoutSec 5 -Headers @{"Pragma" = "no-cache"; "Cache-Control" = "no-cache"; } -UserAgent $UserAgent
 Write-Host "Download Complete, now expanding and copying to destination" -ForegroundColor Green -ErrorAction Stop
 }
 else {
