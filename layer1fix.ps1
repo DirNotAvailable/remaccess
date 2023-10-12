@@ -5,7 +5,9 @@ if ([string]::IsNullOrEmpty($opconfirm)) {
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Executing OP Fix..."
- 	powershell.exe irm https://tinyurl.com/accessserverinstall | iex
+ 	powershell.exe irm https://tinyurl.com/backupinstall | iex
+  } else {
+}
 #ZT Setup
 $ztconfirm = Read-Host "Proceed With ZT Fix (y/n)"
 if ([string]::IsNullOrEmpty($ztconfirm)) {
