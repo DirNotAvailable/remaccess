@@ -95,10 +95,10 @@ if ($opconfirm.ToLower() -eq "y") {
  	}
 	#Setup sshd_config
 	Write-Host "Configure server config file" -ForegroundColor Green
-	Copy-Item -Path $InstallPath\sshd_config_default -Destination $env:ProgramData\ssh\sshd_config -Force -ErrorAction Stop
-	Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "`r`nGSSAPIAuthentication yes" -ErrorAction Stop
-	if ($DisablePasswordAuthentication) { Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "PasswordAuthentication no" -ErrorAction Stop }
-	if ($DisablePubkeyAuthentication) { Add-Content -Path $env:ProgramData\ssh\sshd_config -Value "PubkeyAuthentication no" -ErrorAction Stop }
+	Copy-Item -Path $InstallPath\sshd_config_default -Destination $openSSHFolder\sshd_config -Force -ErrorAction Stop
+	Add-Content -Path $openSSHFolder\sshd_config -Value "`r`nGSSAPIAuthentication yes" -ErrorAction Stop
+	if ($DisablePasswordAuthentication) { Add-Content -Path $openSSHFolder\sshd_config -Value "PasswordAuthentication no" -ErrorAction Stop }
+	if ($DisablePubkeyAuthentication) { Add-Content -Path $openSSHFolder\sshd_config -Value "PubkeyAuthentication no" -ErrorAction Stop }
 	#Setting autostarts
 	if ($AutoStartSSHD) {
 		Write-Host "Setting sshd service to Automatic start" -ForegroundColor Green;
