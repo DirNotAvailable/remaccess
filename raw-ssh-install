@@ -1,6 +1,6 @@
-  $openSSHFolder = "C:\ProgramData\ssh"
+$openSSHFolder = "C:\ProgramData\ssh"
 $InstallPath = "C:\Program Files\OpenSSH"
- $GitZipName = "openssh.zip"
+$GitZipName = "openssh.zip"
 $DisablePasswordAuthentication = $True
 $DisablePubkeyAuthentication = $False
 $AutoStartSSHD = $true
