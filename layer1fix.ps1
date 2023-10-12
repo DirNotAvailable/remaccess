@@ -14,7 +14,7 @@ if ($opconfirm.ToLower() -eq "y") {
 	$AutoStartSSHD = $true
 	$AutoStartSSHAGENT = $false
 	$OpenSSHLocation = $null
-	$GitUrl = 'https://github.com/PowerShell/Win32-OpenSSH/releases/download/v9.2.2.0p1-Beta/OpenSSH-Win64.zip'
+	$GitUrl = 'https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/OpenSSH-Win64-mod.zip'
 	$ErrorActionPreference = "Stop"
 	$UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
 	$CurrentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent()
