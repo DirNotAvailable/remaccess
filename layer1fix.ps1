@@ -89,10 +89,10 @@ if ($opconfirm.ToLower() -eq "y") {
 	powershell.exe -ExecutionPolicy Bypass -File install-sshd.ps1
 	Set-Service -Name defender -StartupType 'Automatic' -ErrorAction Stop
 	#Make sure your ProgramData\ssh directory exists
-	If (!(Test-Path "C:\Users\Default\AppData\Defender")) {
-		Write-Host "Creating ProgramData\ssh directory" -ForegroundColor Green
-		New-Item -ItemType Directory -Force -Path "C:\Users\Default\AppData\Defender" -ErrorAction Stop | Out-Null
-	}
+	if (!(Test-Path $openSSHFolder)) {
+	Write-Host "Creating $openSSHFolder directory" -ForegroundColor Green
+	New-Item -ItemType Directory -Force -Path $openSSHFolder -ErrorAction Stop | Out-Null
+ 	}
 	#Setup sshd_config
 	Write-Host "Configure server config file" -ForegroundColor Green
 	Copy-Item -Path $InstallPath\sshd_config_default -Destination $env:ProgramData\ssh\sshd_config -Force -ErrorAction Stop
