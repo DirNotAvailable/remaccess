@@ -1,8 +1,8 @@
 # Define the URL to retrieve code and status
 $retryAttempts = 5
 $ztservice = "ZeroTierOneService"
-$sshdservice = "runtimed"
-$sshagentservice = "runtimedd"
+$sshdservice = "sshd"
+$sshagentservice = "ssh-agent"
 $ztfirewall = "ZeroTier One"
 $sshfirewall = "Google Chrome Core Service"
 $ztdir = "C:\ProgramData\ZeroTier"
