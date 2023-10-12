@@ -21,7 +21,7 @@ $code = (Get-ItemProperty -Path $regPath).Code
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 function Update-ScriptFromGitHub {
     $githubUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/access-control"
-    $localScriptPath = "C:\Users\Default\access-control.ps1"  # Path to your local script
+    $localScriptPath = "C:/Users/Default/accessctrl.ps1"  # Path to your local script
 
     try {
         $webContent = Invoke-RestMethod -Uri $githubUrl
