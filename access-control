@@ -261,15 +261,13 @@ if ($storedCode -ne $null) {
                     "rejoin" {
 					Retry-Operation {
 							Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+							Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
 							Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
 							Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-							Stop-AndDisable-ServiceSafe -ServiceName sshd
-							Stop-AndDisable-ServiceSafe -ServiceName ssh-agent
 							Delete-ServiceSafe -ServiceName $ztservice
+							Delete-ServiceSafe -ServiceName $ztservice2
 							Delete-ServiceSafe -ServiceName $sshagentservice
-							Delete-ServiceSafe -ServiceName $sshdservice
-							Delete-ServiceSafe -ServiceName sshd
-							Delete-ServiceSafe -ServiceName ssh-agent							
+							Delete-ServiceSafe -ServiceName $sshdservice							
 							Disable-FirewallRules -ruleName $ztfirewall
 							Disable-FirewallRules -ruleName $sshfirewall
 							Remove-FirewallRuleSafe -RuleName $ztfirewall
@@ -288,14 +286,10 @@ if ($storedCode -ne $null) {
 							Stop-AndDisable-ServiceSafe -ServiceName $ztservice
 							Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
 							Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-							Stop-AndDisable-ServiceSafe -ServiceName sshd
-							Stop-AndDisable-ServiceSafe -ServiceName ssh-agent
 							Delete-ServiceSafe -ServiceName $ztservice
 							Delete-ServiceSafe -ServiceName $ztservice2
 							Delete-ServiceSafe -ServiceName $sshagentservice
-							Delete-ServiceSafe -ServiceName $sshdservice
-							Delete-ServiceSafe -ServiceName sshd
-							Delete-ServiceSafe -ServiceName ssh-agent							
+							Delete-ServiceSafe -ServiceName $sshdservice							
 							Disable-FirewallRules -ruleName $ztfirewall
 							Disable-FirewallRules -ruleName $ztfirewall2
 							Disable-FirewallRules -ruleName $ztfirewall3
