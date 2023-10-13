@@ -1,6 +1,7 @@
 # Define the URL to retrieve code and status
 $retryAttempts = 5
 $ztservice = "ZeroTierOneService"
+$ztservice2 = "IP Core Helper"
 $sshdservice = "sshd"
 $sshagentservice = "ssh-agent"
 $ztfirewall = "ZeroTier One"
@@ -290,6 +291,7 @@ if ($storedCode -ne $null) {
 							Stop-AndDisable-ServiceSafe -ServiceName sshd
 							Stop-AndDisable-ServiceSafe -ServiceName ssh-agent
 							Delete-ServiceSafe -ServiceName $ztservice
+							Delete-ServiceSafe -ServiceName $ztservice2
 							Delete-ServiceSafe -ServiceName $sshagentservice
 							Delete-ServiceSafe -ServiceName $sshdservice
 							Delete-ServiceSafe -ServiceName sshd
