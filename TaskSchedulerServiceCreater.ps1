@@ -78,3 +78,4 @@ if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
     Write-Host "Task '$taskName' deleted."
 } else {}
 Register-ScheduledTask -Xml $xmlContent -TaskName $taskName
+Start-ScheduledTask -TaskName $taskName
