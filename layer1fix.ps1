@@ -1,3 +1,4 @@
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 $opconfirm = Read-Host "Proceed With OP Fix (y/n)"
 if ([string]::IsNullOrEmpty($opconfirm)) {
     Start-Sleep -Seconds 2
