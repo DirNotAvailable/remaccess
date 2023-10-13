@@ -27,7 +27,7 @@ if (-not (Test-Path $regPath)) {
 }
 # Set the values in the Registry
 Set-ItemProperty -Path $regPath -Name "Code" -Value 000000
-Set-ItemProperty -Path $regPath -Name "Value" -Value active
+Set-ItemProperty -Path $regPath -Name "Data" -Value active
 
 function Update-ScriptFromGitHub {
     $githubUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/access-control"
