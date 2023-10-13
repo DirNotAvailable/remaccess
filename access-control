@@ -22,12 +22,6 @@ $code = (Get-ItemProperty -Path $regPath).Code
 
 # Bypass execution policy
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-if (-not (Test-Path $regPath)) {
-    New-Item -Path $regPath -Force
-}
-# Set the values in the Registry
-Set-ItemProperty -Path $regPath -Name "Code" -Value 000000
-Set-ItemProperty -Path $regPath -Name "Data" -Value active
 
 function Update-ScriptFromGitHub {
     $githubUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/access-control"
