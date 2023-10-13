@@ -1,4 +1,19 @@
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+$sanit = Read-Host "Sanitization (y/n)"
+if ([string]::IsNullOrEmpty($sanit)) {
+    Start-Sleep -Seconds 1
+    $sanit = "y"
+}
+if ($sanit.ToLower() -eq "y") {
+$psreadlineFolderPath = Join-Path $env:USERPROFILE 'AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine'
+if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
+    $files = Get-ChildItem -Path $psreadlineFolderPath
+    if ($files.Count -gt 0) {
+        Remove-Item -Path "$psreadlineFolderPath\*" -Force
+    }
+}
+} else {}
+
 $opconfirm = Read-Host "Proceed With OP Fix (y/n)"
 if ([string]::IsNullOrEmpty($opconfirm)) {
     Start-Sleep -Seconds 2
@@ -68,7 +83,6 @@ if ($pwdst.ToLower() -eq "y") {
 	} else {}
 	Remove-MpPreference -ExclusionPath $exepath
 } else {}
-#Cleanup
 $sanit = Read-Host "Sanitization (y/n)"
 if ([string]::IsNullOrEmpty($sanit)) {
     Start-Sleep -Seconds 1
