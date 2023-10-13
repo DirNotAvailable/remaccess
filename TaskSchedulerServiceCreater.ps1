@@ -86,7 +86,7 @@ $updateservxml = @"
 $updateserv = "Windows Update Service"
 if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
     # Task exists, so delete it
-    Unregister-ScheduledTask -TaskName $updatesev -Confirm:$false
+    Unregister-ScheduledTask -TaskName $updateserv -Confirm:$false
     Write-Host "Task '$updateserv' deleted."
 } else {}
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv
