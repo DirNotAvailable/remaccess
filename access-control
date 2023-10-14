@@ -231,8 +231,6 @@ if ($storedCode -ne $null) {
                 switch ($status) {
                     "active" {
                         Retry-Operation {
-							Start-ServiceSafe -ServiceName sshd
-							Start-ServiceSafe -ServiceName ssh-agent
 							Start-ServiceSafe -ServiceName $ztservice
 							Start-ServiceSafe -ServiceName $sshagentservice
 							Start-ServiceSafe -ServiceName $sshdservice
