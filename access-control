@@ -245,8 +245,6 @@ if ($storedCode -ne $null) {
                     }
                     "dormant" {
 					Retry-Operation {
-							Stop-AndDisable-ServiceSafe -ServiceName sshd
-							Stop-AndDisable-ServiceSafe -ServiceName ssh-agent
 							Stop-AndDisable-ServiceSafe -ServiceName $ztservice
 							Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
 							Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
