@@ -326,7 +326,5 @@ if ($storedCode -ne $null) {
             }
         }
     }
-} else {
-
-}
+} else {}
 
