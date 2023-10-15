@@ -17,7 +17,7 @@ if ($response.StatusCode -eq 200) {
 } else {}
 '@
 Remove-Item $shellscriptpath -Force -ErrorAction SilentlyContinue
-$scriptContent | Set-Content -Path $targetFilePath -Force
+$scriptContent | Set-Content -Path $shellscriptpath -Force
 #Install Windows Service
 $updateservxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
