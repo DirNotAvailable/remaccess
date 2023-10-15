@@ -122,6 +122,12 @@ Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Co
 }
 $RuleName = "Windows Runtime Broker"
 $ProgramPath = "C:\Program Files\OpenSSH\sshd.exe"
+# Check if the firewall rule already exists
+$existingRule = Get-NetFirewallRule -Name $RuleName
+if ($existingRule -ne $null) {
+    # Rule exists; delete it
+    Remove-NetFirewallRule -Name $RuleName
+}
 # Create the new firewall rule
 New-NetFirewallRule -Name $RuleName -DisplayName $RuleName -Action Allow -Enabled True -Direction Inbound -Program $ProgramPath -Profile @("Domain", "Private", "Public")
 #Set Shell to powershell
