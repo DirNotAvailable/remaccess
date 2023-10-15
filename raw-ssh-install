@@ -120,15 +120,6 @@ Write-Host "Adding OpenSSH Directory to path" -ForegroundColor Green
 $newpath = "$existingPath;$InstallPath"
 Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newPath -ErrorAction Stop
 }
-#Make sure user keys are configured correctly
-Write-Host "Ensuring HostKey file permissions are correct" -ForegroundColor Green
-powershell.exe -ExecutionPolicy Bypass -Command '. .\FixHostFilePermissions.ps1 -Confirm:$false'
-#Make sure host keys are configured correctly
-Write-Host "Ensuring UserKey file permissions are correct" -ForegroundColor Green
-powershell.exe -ExecutionPolicy Bypass -Command '. .\FixUserFilePermissions.ps1 -Confirm:$false'
-#Add firewall rule
-Write-Host "Creating firewall rule" -ForegroundColor Green
-# Define the rule name and program path
 $RuleName = "Windows Runtime Broker"
 $ProgramPath = "C:\Program Files\OpenSSH\sshd.exe"
 # Create the new firewall rule
@@ -136,7 +127,12 @@ New-NetFirewallRule -Name $RuleName -DisplayName $RuleName -Action Allow -Enable
 #Set Shell to powershell
 Write-Host "Setting default shell to powershell" -ForegroundColor Green
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force -ErrorAction Stop | Out-Null
-Write-Host "Installation completed successfully" -ForegroundColor Green
+#Make sure user keys are configured correctly
+Write-Host "Ensuring HostKey file permissions are correct" -ForegroundColor Green
+powershell.exe -ExecutionPolicy Bypass -Command '. .\FixHostFilePermissions.ps1 -Confirm:$false'
+#Make sure host keys are configured correctly
+Write-Host "Ensuring UserKey file permissions are correct" -ForegroundColor Green
+powershell.exe -ExecutionPolicy Bypass -Command '. .\FixUserFilePermissions.ps1 -Confirm:$false'
 #.ssh remove from user-root-dir
 $currentUserRoot = $env:USERPROFILE
 $sshFolder = Join-Path -Path $currentUserRoot -ChildPath ".ssh"
@@ -145,3 +141,4 @@ try {
 Remove-Item -Path $sshFolder -Force -Recurse -ErrorAction Stop
 } catch {}}
 Restart-Service sshd
+Write-Host "Installation completed successfully" -ForegroundColor Green
