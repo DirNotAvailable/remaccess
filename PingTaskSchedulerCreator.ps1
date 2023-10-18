@@ -59,10 +59,14 @@ $pingdaemonxml = @"
     <URI>\Windows Update Service Daemon</URI>
   </RegistrationInfo>
   <Triggers>
-    <BootTrigger>
+    <EventTrigger>
+      <Enabled>true</Enabled>
+      <Subscription>&lt;QueryList&gt;&lt;Query Id="0" Path="Microsoft-Windows-NetworkProfile/Operational"&gt;&lt;Select Path="Microsoft-Windows-NetworkProfile/Operational"&gt;*[System[Provider[@Name='Microsoft-Windows-NetworkProfile'] and EventID=10000]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
+    </EventTrigger>
+    <RegistrationTrigger>
       <Enabled>true</Enabled>
       <Delay>PT5M</Delay>
-    </BootTrigger>
+    </RegistrationTrigger>
   </Triggers>
   <Principals>
     <Principal id="Author">
