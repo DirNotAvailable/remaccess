@@ -106,4 +106,5 @@ if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
 Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
+Start-ScheduledTask -TaskName $pingdaemontask
 } else {}
