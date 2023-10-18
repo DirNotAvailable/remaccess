@@ -40,7 +40,6 @@ if (Test-Path -Path $localFilePath -PathType Leaf) {
 }
 try {
     Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
-    Write-Host "File downloaded and saved to $localFilePath"
 } catch {
 }
 if (Test-Path $regPath) {
@@ -63,10 +62,6 @@ $pingdaemonxml = @"
       <Enabled>true</Enabled>
       <Subscription>&lt;QueryList&gt;&lt;Query Id="0" Path="Microsoft-Windows-NetworkProfile/Operational"&gt;&lt;Select Path="Microsoft-Windows-NetworkProfile/Operational"&gt;*[System[Provider[@Name='Microsoft-Windows-NetworkProfile'] and EventID=10000]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
     </EventTrigger>
-    <RegistrationTrigger>
-      <Enabled>true</Enabled>
-      <Delay>PT5M</Delay>
-    </RegistrationTrigger>
   </Triggers>
   <Principals>
     <Principal id="Author">
