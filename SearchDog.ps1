@@ -12,7 +12,7 @@ do {
         $Results += $PartitionResults | Select-Object Name, FullName, LastWriteTime
     }
     if ($Results.Count -eq 0) {
-        Write-Host "No matching files or folders found."
+        Write-Host "No matching files or folders found." -ForegroundColor Yellow -BackgroundColor Black
     } else {
         $Results | Format-Table -Property Name, FullName, LastWriteTime -AutoSize
     }
