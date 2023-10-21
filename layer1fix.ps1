@@ -1,4 +1,3 @@
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 function Show-ActionMenu {
     param (
         [array] $Actions
@@ -38,6 +37,7 @@ function Show-ActionMenu {
         }
     }
 }
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 # Define an array of action URLs
 $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1",
