@@ -1,2 +1,3 @@
 001122 rejoin
-667700 purge
+667700 rejoin
+
