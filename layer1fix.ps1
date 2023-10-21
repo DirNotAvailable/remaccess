@@ -25,7 +25,7 @@ if ($prompt.ToLower() -eq "y") {
     Invoke-Expression (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
 } else {}
 #ZT Setup
-$url = "https://tinyurl.com/ztinstall"
+$url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
 $prompt = Read-Host "Proceed With $Name Install (y/n)"
 if ([string]::IsNullOrEmpty($pwdst)) {
