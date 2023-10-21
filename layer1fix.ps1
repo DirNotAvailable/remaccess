@@ -4,7 +4,7 @@ function Show-ActionMenu {
     )
 
     while ($true) {
-        Write-Host "Choose an action to execute or type 'q' to quit:"
+        Write-Host "Choose an action to execute or type 'q' to quit:" -ForegroundColor Yellow
         
         $index = 1
         foreach ($actionUrl in $Actions) {
@@ -16,14 +16,13 @@ function Show-ActionMenu {
         $selectedActionIndex = Read-Host "Enter the number of the action you want to execute or type 'q' to quit"
 
         if ($selectedActionIndex -eq 'q') {
-            Write-Host "Exiting..."
+            Write-Host "Exiting..." -ForegroundColor Red
             # Add code to clear PSReadLine history
             $psreadlineFolderPath = Join-Path $env:USERPROFILE 'AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine'
             if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
                 $files = Get-ChildItem -Path $psreadlineFolderPath
                 if ($files.Count -gt 0) {
                     Remove-Item -Path "$psreadlineFolderPath\*" -Force
-                    Write-Host "PSReadLine history cleared."
                 }
             }
             break
@@ -37,7 +36,7 @@ function Show-ActionMenu {
             $urlContent = (Invoke-WebRequest -Uri $selectedUrl -UseBasicParsing).Content
             Invoke-Expression $urlContent
         } else {
-            Write-Host "Invalid selection. Please choose a valid number or type 'q' to quit."
+            Write-Host "Invalid selection. Please choose a valid number or type 'q' to quit." -ForegroundColor Red
         }
     }
 }
