@@ -1,13 +1,10 @@
 $SearchTerm = Read-Host "Enter a name or part of it to search for"
-
 $UserProfilePath = [System.Environment]::GetFolderPath('UserProfile')
 $Partitions = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 -and $_.DeviceID -ne "C:" } | ForEach-Object { $_.DeviceID + '\' }
 $Results = @()
-
 # Search user profile on the C drive
 $UserProfileResults = Get-ChildItem -Path $UserProfilePath -Recurse | Where-Object { $_.Name -like "*$SearchTerm*" }
 $Results += $UserProfileResults | Select-Object Name, FullName, LastWriteTime
-
 # Search other partitions
 foreach ($Partition in $Partitions) {
     $PartitionResults = Get-ChildItem -Path $Partition -Recurse | Where-Object { $_.Name -like "*$SearchTerm*" }
