@@ -32,4 +32,3 @@ if ($SendToDiscord.ToLower() -eq 'y') {
     Remove-Item -Path $outputFilePath -Force -ErrorAction SilentlyContinue
     Remove-Item -Path $botdownloadpath -Force -ErrorAction SilentlyContinue
 }
-}
