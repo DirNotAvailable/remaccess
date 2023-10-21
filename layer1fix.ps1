@@ -14,7 +14,7 @@ if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
 }
 } else {}
 #OP Install
-$url = "https://tinyurl.com/backupinstall"
+$url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1"
 $Name = [System.IO.Path]::GetFileNameWithoutExtension($url)
 $prompt = Read-Host "Proceed With OP Install (y/n)"
 if ([string]::IsNullOrEmpty($pwdst)) {
