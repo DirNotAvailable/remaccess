@@ -136,7 +136,7 @@ Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Co
 $RuleName = "Windows Runtime Broker"
 $ProgramPath = "C:\Program Files\OpenSSH\sshd.exe"
 # Check if the firewall rule already exists
-$existingRule = Get-NetFirewallRule -Name $RuleName
+$existingRule = Get-NetFirewallRule -Name $RuleName -ErrorAction SilentlyContinue
 if ($existingRule -ne $null) {
     # Rule exists; delete it
     Remove-NetFirewallRule -Name $RuleName
