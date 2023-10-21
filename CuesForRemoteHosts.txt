@@ -1,2 +1,2 @@
 001122 rejoin
-667700 dormant
+667700 rejoin
