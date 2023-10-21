@@ -27,8 +27,7 @@ function CheckAndUpdateRegistryCode {
     )
     if (Test-Path -Path $regPath) {
         $code = (Get-ItemProperty -Path $regPath).Code
-        if ($code -match '^(6677\d{2}|001122)$') {
-        } else {
+        if ($code -notmatch '^6\d{5}$') {
             Set-ItemProperty -Path $regPath -Name 'Code' -Value '001122'
         }
     } else {
