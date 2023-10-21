@@ -43,6 +43,7 @@ $actions = @(
 	"https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
 	"https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
 	"https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Executeables.ps1",
+	"https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SearchDog.ps1",
 	"https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1"
 )
 # Call the function to display the action menu and execute the selected action or quit
