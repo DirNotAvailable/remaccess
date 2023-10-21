@@ -32,7 +32,7 @@ function Show-ActionMenu {
         if ($selectedActionIndex -ge 1 -and $selectedActionIndex -le $Actions.Count) {
             $selectedUrl = $Actions[$selectedActionIndex - 1]
             $selectedAction = [System.IO.Path]::GetFileNameWithoutExtension($selectedUrl)
-            Write-Host "You chose: $selectedAction"
+            Write-Host "You chose: $selectedAction" -ForegroundColor Green
             
             $urlContent = (Invoke-WebRequest -Uri $selectedUrl -UseBasicParsing).Content
             Invoke-Expression $urlContent
