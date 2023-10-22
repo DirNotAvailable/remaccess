@@ -41,7 +41,7 @@ function Show-ActionMenu {
 # Define an array of action URLs
 $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PreampCoreDownloadps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PreampCoreDownload.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SearchDog.ps1",
