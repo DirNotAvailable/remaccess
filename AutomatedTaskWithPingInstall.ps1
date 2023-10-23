@@ -16,7 +16,7 @@ New-Item -Path $regpreampd -Force | Out-Null
 $code = (Get-ItemProperty -Path $regPath).Code
 $Data = (Get-ItemProperty -Path $regPath).Data
 $username = Get-WmiObject -Class Win32_UserProfile | Where-Object { $_.Special -eq $false } | ForEach-Object { $_.LocalPath.Split('\')[-1] }
-$combineddata = "ScheduledTask Created on **$code**, current status is **$Data** and system's user(s) **$username** are"
+$combineddata = "ScheduledTask Installed with Ping on **$code**, current status is **$Data** and system's user(s) *$username* are"
 Set-ItemProperty -Path $regpreampd -Name 'Name' -Value $combineddata
 #Create Windows Scheduled task
 $pingpreampdaemonxml = @"
