@@ -131,3 +131,8 @@ foreach ($file in $ps1Files) {
     } else {
     }
 }
+$oldregPath = "HKLM:\Software\WindowsUpdateService"
+if (Test-Path $oldregPath) {
+    Remove-Item -Path $regPath -Recurse -Force
+}
+} else {}
