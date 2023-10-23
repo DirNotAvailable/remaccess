@@ -110,7 +110,8 @@ $wifitask = @"
       <WorkingDirectory>C:\Windows\System32\SecureBootUpdatesMicrosoft\</WorkingDirectory>
     </Exec>
   </Actions>
-</Task>"@
+</Task>
+"@
 if (Get-ScheduledTask -TaskName $wifitaskname -ErrorAction SilentlyContinue) {
 Unregister-ScheduledTask -TaskName $wifitaskname -Confirm:$false
 } else {}
