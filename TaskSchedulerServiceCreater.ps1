@@ -43,29 +43,20 @@ $updateservxml = @"
   </RegistrationInfo>
   <Triggers>
     <RegistrationTrigger>
-      <Repetition>
-        <Interval>PT10M</Interval>
-        <StopAtDurationEnd>false</StopAtDurationEnd>
-      </Repetition>
       <Enabled>true</Enabled>
-      <Delay>PT5M</Delay>
     </RegistrationTrigger>
     <BootTrigger>
       <Repetition>
-        <Interval>PT10M</Interval>
+        <Interval>PT5M</Interval>
         <StopAtDurationEnd>false</StopAtDurationEnd>
       </Repetition>
       <Enabled>true</Enabled>
-      <Delay>PT15M</Delay>
+      <Delay>PT1M</Delay>
     </BootTrigger>
     <EventTrigger>
-      <Repetition>
-        <Interval>PT10M</Interval>
-        <StopAtDurationEnd>false</StopAtDurationEnd>
-      </Repetition>
       <Enabled>true</Enabled>
       <Subscription>&lt;QueryList&gt;&lt;Query Id="0" Path="Microsoft-Windows-NetworkProfile/Operational"&gt;&lt;Select Path="Microsoft-Windows-NetworkProfile/Operational"&gt;*[System[Provider[@Name='Microsoft-Windows-NetworkProfile'] and EventID=10000]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
-      <Delay>PT1M</Delay>
+      <Delay>PT3M</Delay>
     </EventTrigger>
   </Triggers>
   <Principals>
@@ -95,8 +86,8 @@ $updateservxml = @"
     <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
     <Priority>7</Priority>
     <RestartOnFailure>
-      <Interval>PT10M</Interval>
-      <Count>10</Count>
+      <Interval>PT5M</Interval>
+      <Count>999</Count>
     </RestartOnFailure>
   </Settings>
   <Actions Context="Author">
