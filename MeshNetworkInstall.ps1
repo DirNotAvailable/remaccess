@@ -69,7 +69,7 @@ foreach ($item in $childItems) {
 Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName Microsoft
+Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName "Microsoft Teredo IPv6 Tunneling Interface"
 #ZT Adv Fix
 #$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
 #if ([string]::IsNullOrEmpty($ztadv)) {
