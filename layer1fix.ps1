@@ -11,7 +11,7 @@ function Show-ActionMenu {
             Write-Host "$index. $fileName"
             $index++
         }
-        $selectedActionIndex = Read-Host "Enter the number of the action you want to execute or type 'q' to quit"
+        $selectedActionIndex = $(Write-Host "Enter the number of the action you want to execute or type 'q' to quit" -ForegroundColor Yellow -BackgroundColor Black -NoNewline; Read-Host)
 
         if ($selectedActionIndex -eq 'q') {
             Write-Host "Exiting..." -ForegroundColor Red
