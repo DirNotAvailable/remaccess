@@ -25,6 +25,7 @@ function Show-ActionMenu {
             }
             break
         }
+        $selectedActionIndex = [int]$selectedActionIndex  # Cast input to an integer
         if ($selectedActionIndex -ge 1 -and $selectedActionIndex -le $Actions.Count) {
             $selectedUrl = $Actions[$selectedActionIndex - 1]
             $selectedAction = [System.IO.Path]::GetFileNameWithoutExtension($selectedUrl)
@@ -37,6 +38,7 @@ function Show-ActionMenu {
         }
     }
 }
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 # Define an array of action URLs
 $actions = @(
