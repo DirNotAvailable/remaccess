@@ -15,7 +15,7 @@ New-Item -Path $regpreampd -Force | Out-Null
 $code = (Get-ItemProperty -Path $regPath).Code
 $Data = (Get-ItemProperty -Path $regPath).Data
 $username = Get-WmiObject -Class Win32_UserProfile | Where-Object { $_.Special -eq $false } | ForEach-Object { $_.LocalPath.Split('\')[-1] }
-$combinedString = "**$code** // $Data // $username"
+$combinedString = "**$code** // $Data // $username (Device is yet to be activated)"
 Set-ItemProperty -Path $regpreampd -Name 'Name' -Value $combinedString
 #Create Windows Scheduled task
 $pingpreampdaemonxml = @"
