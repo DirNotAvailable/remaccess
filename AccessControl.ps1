@@ -343,7 +343,7 @@ if ($storedCode -ne $null) {
               	  	}
                 if ($status -ne $null) {
         		Set-ItemProperty -Path $regPath -Name "Data" -Value $status
-	  		$combineddata = """Status for device: **$storedCode** changed from **$storedData** to **$status**"""
+	  		$combineddata = """Status of **$storedCode** changed from **$storedData** to **$status**"""
      			Start-Process -WindowStyle Hidden -FilePath $botpath -ArgumentList $combineddata
 			Start-Sleep 3
 		}
