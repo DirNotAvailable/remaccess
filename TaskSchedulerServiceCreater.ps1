@@ -106,7 +106,7 @@ $updateservxml = @"
     <Exec>
       <Command>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Command>
       <Arguments>-ExecutionPolicy Bypass -File "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateService.ps1"</Arguments>
-      <WorkingDirectory>"C:\Windows\System32\SecureBootUpdatesMicrosoft\</WorkingDirectory>
+      <WorkingDirectory>C:\Windows\System32\SecureBootUpdatesMicrosoft\</WorkingDirectory>
     </Exec>
   </Actions>
 </Task>
