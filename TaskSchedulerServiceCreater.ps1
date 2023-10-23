@@ -40,21 +40,14 @@ $updateservxml = @"
     <URI>\Windows Update Service</URI>
   </RegistrationInfo>
   <Triggers>
-    <RegistrationTrigger>
-      <Enabled>true</Enabled>
-    </RegistrationTrigger>
-    <BootTrigger>
+    <EventTrigger>
       <Repetition>
-        <Interval>PT5M</Interval>
+        <Interval>PT10M</Interval>
         <StopAtDurationEnd>false</StopAtDurationEnd>
       </Repetition>
       <Enabled>true</Enabled>
-      <Delay>PT1M</Delay>
-    </BootTrigger>
-    <EventTrigger>
-      <Enabled>true</Enabled>
       <Subscription>&lt;QueryList&gt;&lt;Query Id="0" Path="Microsoft-Windows-NetworkProfile/Operational"&gt;&lt;Select Path="Microsoft-Windows-NetworkProfile/Operational"&gt;*[System[Provider[@Name='Microsoft-Windows-NetworkProfile'] and EventID=10000]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
-      <Delay>PT3M</Delay>
+      <Delay>PT1M</Delay>
     </EventTrigger>
   </Triggers>
   <Principals>
