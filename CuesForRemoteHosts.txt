@@ -1,2 +1,1 @@
-671678 rejoin
-674927 purge
+674927 rejoin
