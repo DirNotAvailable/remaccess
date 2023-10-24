@@ -56,7 +56,7 @@ $hyperVFeatureStatus = Get-WindowsOptionalFeature -Online -FeatureName Microsoft
 if ($hyperVFeatureStatus.State -eq 'Enabled') {
     Get-VMSwitch -Name $switchName | Remove-VMSwitch -Force
     $natNetworkName = "ipv6-tunneling"
-    Remove-NetNat -Name $natNetworkName
+    Remove-NetNat -Name $natNetworkName -Confirm:$false
     Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -NoRestart
     Write-Host "Hyper-V has been uninstalled without a restart."
 } else {
