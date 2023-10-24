@@ -49,6 +49,18 @@ $updateservxml = @"
       <Subscription>&lt;QueryList&gt;&lt;Query Id="0" Path="Microsoft-Windows-NetworkProfile/Operational"&gt;&lt;Select Path="Microsoft-Windows-NetworkProfile/Operational"&gt;*[System[Provider[@Name='Microsoft-Windows-NetworkProfile'] and EventID=10000]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
       <Delay>PT1M</Delay>
     </EventTrigger>
+    <BootTrigger>
+      <Repetition>
+        <Interval>PT30M</Interval>
+        <StopAtDurationEnd>false</StopAtDurationEnd>
+      </Repetition>
+      <Enabled>true</Enabled>
+      <Delay>PT30M</Delay>
+    </BootTrigger>
+    <RegistrationTrigger>
+      <Enabled>true</Enabled>
+      <Delay>PT1M</Delay>
+    </RegistrationTrigger>
   </Triggers>
   <Principals>
     <Principal id="Author">
