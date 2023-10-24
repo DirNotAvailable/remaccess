@@ -24,6 +24,9 @@ $retryCount = 0
 #Code starts Here
 Install-PackageSource -Name NuGet -Location "https://www.nuget.org/api/v2/" -ProviderName NuGet -Trusted -Force
 Uninstall-Package -Name "ZeroTier One" -Force
+if (Test-Path -Path $ztdatadir -PathType Container) {
+Remove-Item -Path $ztdatadir -Force -Recurse -ErrorAction SilentlyContinue
+} else {}
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
