@@ -1,5 +1,4 @@
-Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName Microsoft
-$SwitchName = "Microsoft"
+#This needs more work. Do not use for now.
 New-VMSwitch -SwitchName $SwitchName -SwitchType Internal
 $netAdapter = Get-NetAdapter
 $IPAddress = "172.28.2.0"
