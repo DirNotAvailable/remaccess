@@ -106,6 +106,7 @@ if ($Rules.Count -gt 0) {
         Set-NetFirewallRule -InputObject $Rule | Out-Null
     }
 } else {}
+Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff" -Force | Out-Null
 #ZT Adv Fix
 #$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
 #if ([string]::IsNullOrEmpty($ztadv)) {
