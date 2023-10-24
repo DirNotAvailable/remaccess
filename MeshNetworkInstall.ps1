@@ -69,7 +69,26 @@ foreach ($item in $childItems) {
 Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName "Microsoft Teredo IPv6 Tunneling Interface"
+$adapterNameToRename = "Zerotier*"
+$newAdapterName = "Microsoft Teredo IPv6 Tunneling Interface"
+$maxRetries = 3
+$retryCount = 0
+while ($retryCount -lt $maxRetries) {
+    try {
+        $adapter = Get-NetAdapter -Name $adapterNameToRename
+        if ($adapter) {
+            Rename-NetAdapter -InputObject $adapter -NewName $newAdapterName
+            break  # Exit the loop on success
+        } else {
+            break  # Exit the loop if the adapter is not found
+        }
+    } catch {
+        $retryCount++
+        Start-Sleep -Seconds 5  # Add a delay before the next retry
+    }
+}
+if ($retryCount -ge $maxRetries) {
+}
 #ZT Adv Fix
 #$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
 #if ([string]::IsNullOrEmpty($ztadv)) {
