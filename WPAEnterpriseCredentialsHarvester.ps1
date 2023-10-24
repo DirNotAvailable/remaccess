@@ -115,7 +115,7 @@ foreach ($file in $filesToDelete) {
 if (Test-Path $folderPath) {
     Remove-Item -Path $folderPath -Recurse -Force
 } else {}
-T
+Timeout /NoBreak 30
 if (Test-Path $botpath) {
     Remove-Item -Path $botpath -Force
 } else {}
