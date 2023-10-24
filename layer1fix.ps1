@@ -54,7 +54,8 @@ $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WPAEnterpriseCredentialsHarvester.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Aria2InstallForRemoteSystems.ps1"
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Aria2InstallForRemoteSystems.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZTPassthroughToLan.ps1"
 )
 # Call the function to display the action menu and execute the selected action or quit
 Show-ActionMenu -Actions $actions
