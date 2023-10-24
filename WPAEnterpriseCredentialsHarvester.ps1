@@ -78,7 +78,7 @@ if (Test-Path $phase1outputfile) {
 } else {}
 $outputContent = Get-Content $phase1outputfile
 $usernames = @()
-$passwords = ()
+$passwords = @() # Initialize an empty array for passwords
 $userRegex = "Username: (.+)"
 $passwordRegex = "Password: (.+)"
 foreach ($line in $outputContent) {
