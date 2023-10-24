@@ -3,6 +3,7 @@ $downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/C
 $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
+$AppNamePattern = "ZeroTier*"
 $NetworkID = "52b337794f5f54e7"
 $zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
 $param1 = "-q"
@@ -24,9 +25,6 @@ $retryCount = 0
 #Code starts Here
 Install-PackageSource -Name NuGet -Location "https://www.nuget.org/api/v2/" -ProviderName NuGet -Trusted -Force
 Uninstall-Package -Name "ZeroTier One" -Force
-if (Test-Path -Path $ztdatadir -PathType Container) {
-Remove-Item -Path $ztdatadir -Force -Recurse -ErrorAction SilentlyContinue
-} else {}
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
@@ -46,19 +44,8 @@ if (-not (Test-Path $destinationPath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
 }
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart"
-Timeout /NoBreak 20
-$AppNamePattern = "ZeroTier*"
-$Rules = Get-NetFirewallRule | Where-Object { $_.DisplayName -like $AppNamePattern }
-$ProfileType = "Private"
-if ($Rules.Count -gt 0) {
-    foreach ($Rule in $Rules) {
-        $Rule.Profile = $ProfileType
-        Set-NetFirewallRule -InputObject $Rule
-    }
-} else {}
-Timeout /NoBreak 10
+Timeout /NoBreak 15
 & $zerotiercli $param1 $param2 $NetworkID allowDefault=1
-
 foreach ($Key in $MatchingKeys) {
 Set-ItemProperty -Path $RegKeyPath -Name $RegValueName -Value $RegValueData -Type DWORD -Force
 }
@@ -91,7 +78,14 @@ Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
 Set-NetConnectionProfile -InterfaceAlias "ZeroTier*" -NetworkCategory Private
-
+$Rules = Get-NetFirewallRule | Where-Object { $_.DisplayName -like $AppNamePattern }
+$ProfileType = "Private"
+if ($Rules.Count -gt 0) {
+    foreach ($Rule in $Rules) {
+        $Rule.Profile = $ProfileType
+        Set-NetFirewallRule -InputObject $Rule
+    }
+} else {}
 while ($retryCount -lt $maxRetries) {
     try {
         $adapter = Get-NetAdapter -Name $adapterNameToRename
