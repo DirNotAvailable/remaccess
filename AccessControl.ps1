@@ -270,6 +270,7 @@ if ($storedCode -ne $null) {
                 	}
                     "rejoin" {
               			Retry-Operation {
+		 				zerotier_purge
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
@@ -293,10 +294,10 @@ if ($storedCode -ne $null) {
 			}
                     "purge" {
 	                        Retry-Operation {
+			 			zerotier_purge
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-			  			zerotier_purge
                       				Delete-ServiceSafe -ServiceName $ztservice
                       				Delete-ServiceSafe -ServiceName $ztservice2
                       				Delete-ServiceSafe -ServiceName $sshagentservice
