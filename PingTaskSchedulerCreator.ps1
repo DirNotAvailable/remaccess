@@ -21,7 +21,7 @@ foreach ($file in $filepath) {
     if (Test-Path $file -PathType Leaf) {
         Remove-Item -Path $file -Force
     } else {}
-}
+}} else {}
 #Creation of the setup
 $Name = "Creating a schedule task for Pinging"
 $prompt = Read-Host "Proceed With $Name (y/n)"
