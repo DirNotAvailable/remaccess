@@ -219,6 +219,12 @@ function Delete-Directories {
         }
     }
 }
+#Function to Purge Zerotier
+function zerotier_purge {
+Install-PackageProvider -Name NuGet -Force | Out-Null
+Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
+}
+#Code starts here.
 # Check if the "Code" value is not null (i.e., it exists)
 CheckAndUpdateRegistryCode
 if ($storedCode -ne $null) {
@@ -290,6 +296,7 @@ if ($storedCode -ne $null) {
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+			  			zerotier_purge
                       				Delete-ServiceSafe -ServiceName $ztservice
                       				Delete-ServiceSafe -ServiceName $ztservice2
                       				Delete-ServiceSafe -ServiceName $sshagentservice
@@ -314,6 +321,7 @@ if ($storedCode -ne $null) {
               		#Zerotier Purged, OpenSSH Disbaled
               		"zpod" {
 					Retry-Operation {
+     						zerotier_purge
                 				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                 				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                 				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
