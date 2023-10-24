@@ -32,7 +32,7 @@ if (-not (Test-Path $destinationPath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
 }
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart"
-Timeout /NoBreak 15
+Timeout /NoBreak 20
 Stop-Process -Name zerotier_desktop_ui -F -ErrorAction SilentlyContinue | Out-Null
 Timeout /NoBreak 15
 $NetworkID = "52b337794f5f54e7"
