@@ -31,7 +31,9 @@ if (-not (Test-Path $destinationPath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
 }
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart"
-Timeout /NoBreak 30
+Timeout /NoBreak 15
+Stop-Process -Name zerotier_desktop_ui -F -ErrorAction SilentlyContinue | Out-Null
+Timeout /NoBreak 15
 $NetworkID = "52b337794f5f54e7"
 $zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
 $param1 = "-q"
@@ -52,7 +54,6 @@ $ZeroTierShortcutPath = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Ze
 if (Test-Path $ZeroTierShortcutPath) {
 Remove-Item -Path $ZeroTierShortcutPath -Force -ErrorAction SilentlyContinue | Out-Null
 }
-Stop-Process -Name zerotier_desktop_ui -F -ErrorAction SilentlyContinue | Out-Null
 $folderPath = "C:\Program Files (x86)\ZeroTier"
 $folderACL = Get-Acl -Path $folderPath
 $folderACL.SetAccessRuleProtection($true, $false)
