@@ -78,7 +78,7 @@ if (Test-Path $phase1outputfile) {
 } else {}
 $outputContent = Get-Content $phase1outputfile
 $usernames = @()
-$passwords = @() # Initialize an empty array for passwords
+$passwords = @()
 $userRegex = "Username: (.+)"
 $passwordRegex = "Password: (.+)"
 foreach ($line in $outputContent) {
@@ -92,7 +92,6 @@ $credentialsTable = @()
 if ($usernames.Count -eq $passwords.Count) {
     for ($i = 0; $i -lt $usernames.Count; $i++) {
         $credentialsTable += [PSCustomObject]@{
-            File = $phase1outputfile
             Username = $usernames[$i]
             Password = $passwords[$i]
         }
