@@ -36,8 +36,8 @@ if ([string]::IsNullOrEmpty($pwdst)) {
     $pwdst = "n"
 }
 if ($prompt.ToLower() -eq "y") {
-if (-not (Test-Path (Split-Path $destinationPath))) {
-    New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
+if (-not (Test-Path (Split-Path $localFilePath))) {
+    New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
 }
 if (Test-Path -Path $localFilePath -PathType Leaf) {
     Remove-Item -Path $localFilePath -Force
