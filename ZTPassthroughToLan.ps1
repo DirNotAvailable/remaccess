@@ -1,6 +1,10 @@
 #This needs more work. Do not use for now.
 $switchName = "Microsoft Teredo Tunneling Adapter"
 $combinedOutput = "vEthernet ($switchName)"
+$ztnetwork = "172.28.0.0/16"
+$ztsubnet = "16"
+$ztipbaseforswitch = "172.28.0."
+$ztiprangeforswitch = $ztipbaseforswitch + (Get-Random -Minimum 1 -Maximum 254)
 function Test-PendingReboot {
     if (Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending" -EA Ignore) { return $true }
     if (Get-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -EA Ignore) { return $true }
@@ -40,8 +44,8 @@ if (-not $restartRequired -and $hyperVFeatureStatus.State -ne 'Enabled') {
     New-VMSwitch -SwitchName $switchName -SwitchType Internal
     $adapter = Get-NetAdapter -Name $combinedOutput
     $ifIndex = $adapter.ifIndex
-    New-NetIPAddress -IPAddress 172.28.0.1 -PrefixLength 16 -InterfaceIndex $ifIndex | Out-Null
-    New-NetNat -Name ipv6-tunneling -InternalIPInterfaceAddressPrefix 172.28.0.0/16 | Out-Null
+    New-NetIPAddress -IPAddress $ztiprangeforswitch -PrefixLength $ztsubnet -InterfaceIndex $ifIndex -Confirm:$false | Out-Null
+    New-NetNat -Name ipv6-tunneling -InternalIPInterfaceAddressPrefix $ztnetwork -Confirm:$false | Out-Null
 }
 } else {}
 #CleanUP
