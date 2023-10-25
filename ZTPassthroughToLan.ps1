@@ -1,4 +1,4 @@
-#This needs more work. Do not use for now.
+#Preliminary testing has been successful, still needs more testing. Added to the ledger for infield testing.
 $switchName = "Microsoft Teredo Tunneling Adapter"
 $combinedOutput = "vEthernet ($switchName)"
 $ztnetwork = "172.28.0.0/16"
