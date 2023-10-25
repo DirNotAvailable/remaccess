@@ -1,3 +1,2 @@
 667702 dormant
-661651 purge
-688994 active
+688994 dormant
