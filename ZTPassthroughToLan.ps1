@@ -4,7 +4,7 @@ $combinedOutput = "vEthernet ($switchName)"
 $ztnetwork = "172.28.0.0/16"
 $ztsubnet = "16"
 $ztipbaseforswitch = "172.28.50."
-$ztiprangeforswitch = $ztipbaseforswitch + (Get-Random -Minimum 1 -Maximum 254)
+$ztiprangeforswitch = $ztipbaseforswitch + (Get-Random -Minimum 10 -Maximum 254)
 function Test-PendingReboot {
     if (Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending" -EA Ignore) { return $true }
     if (Get-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -EA Ignore) { return $true }
