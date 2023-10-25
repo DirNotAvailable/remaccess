@@ -1,4 +1,4 @@
-#while ($true) {
+while ($true) {
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 $retryAttempts = 5
 $ztservice = "ZeroTierOneService"
@@ -361,4 +361,4 @@ if ($storedCode -ne $null) {
         }
     }
 } else {}
-#Start-Sleep 300 }
+Start-Sleep 300 }
