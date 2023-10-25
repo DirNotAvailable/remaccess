@@ -1,2 +1,2 @@
 667702 dormant
-667703 rejoin
+667703 purge
