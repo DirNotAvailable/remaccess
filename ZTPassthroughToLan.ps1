@@ -3,7 +3,7 @@ $switchName = "Microsoft Teredo Tunneling Adapter"
 $combinedOutput = "vEthernet ($switchName)"
 $ztnetwork = "172.28.0.0/16"
 $ztsubnet = "16"
-$ztipbaseforswitch = "172.28.0."
+$ztipbaseforswitch = "172.28.50."
 $ztiprangeforswitch = $ztipbaseforswitch + (Get-Random -Minimum 1 -Maximum 254)
 function Test-PendingReboot {
     if (Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending" -EA Ignore) { return $true }
