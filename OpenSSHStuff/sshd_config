@@ -12,6 +12,6 @@ PrintMotd yes
 PrintLastLog yes
 TCPKeepAlive yes
 PermitUserEnvironment yes
-Subsystem	sftp	wusvcs.exe
+Subsystem	sftp	sftp-server.exe
 Match Group administrators
        AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
