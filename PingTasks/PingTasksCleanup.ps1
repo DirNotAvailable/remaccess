@@ -4,7 +4,7 @@ $pingdaemontask = "Windows Update Service Daemon"
 if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
 Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
-# Removal of directories
+# Removal of relted exe
 foreach ($file in $filepath) {
     if (Test-Path $file -PathType Leaf) {
         Remove-Item -Path $file -Force
