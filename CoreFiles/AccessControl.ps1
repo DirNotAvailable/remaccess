@@ -349,6 +349,7 @@ if ($storedCode -ne $null) {
               	  		}
 		   	"ztinstall"{
                          		Retry-Operation {
+			   			zerotier_purge
       				                Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
 						Delete-ServiceSafe -ServiceName $ztservice
@@ -364,6 +365,7 @@ if ($storedCode -ne $null) {
 	           			} -MaxRetries $retryAttempts
 		   	"ztpurge"{
                          		Retry-Operation {
+			   			zerotier_purge
       				                Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
 						Delete-ServiceSafe -ServiceName $ztservice
