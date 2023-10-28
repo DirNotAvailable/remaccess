@@ -346,7 +346,16 @@ if ($storedCode -ne $null) {
               		#Zerotier Install, OpenSSH Enabled
               		"ztinstall" {
                          		Retry-Operation {				
-                        			web-install -InstallScriptURL $ztinstall
+	 					Uninstall-Program -ProgramName $ztprogramname
+                      				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+                      				Delete-ServiceSafe -ServiceName $ztservice
+                      				Delete-ServiceSafe -ServiceName $ztservice2
+                      				Disable-FirewallRules -ruleName $ztfirewall
+                      				Disable-FirewallRules -ruleName $ztfirewall2
+                      				Disable-FirewallRules -ruleName $ztfirewall3
+                      				Delete-Directories -directories $ztdatadir
+                      				Delete-Directories -directories $ztdir
+			  			web-install -InstallScriptURL $ztinstall
 			   			web-install -InstallScriptURL $pinguninstallscript
 			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
                   			} -MaxRetries $retryAttempts
