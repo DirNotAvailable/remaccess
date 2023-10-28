@@ -286,6 +286,13 @@ if ($storedCode -ne $null) {
               			Retry-Operation {
 		 				Uninstall-Program -ProgramName $ztprogramname
 						Uninstall-Program -ProgramName $sshprogramname
+                            			Delete-ServiceSafe -ServiceName $ztservice
+                      				Delete-ServiceSafe -ServiceName $ztservice2
+                      				Disable-FirewallRules -ruleName $ztfirewall
+                      				Disable-FirewallRules -ruleName $ztfirewall2
+                      				Disable-FirewallRules -ruleName $ztfirewall3
+                      				Delete-Directories -directories $ztdatadir
+                      				Delete-Directories -directories $ztdir
                       				web-install -InstallScriptURL $sshinstall
                       				web-install -InstallScriptURL $ztinstall
                       				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
@@ -324,6 +331,14 @@ if ($storedCode -ne $null) {
               		"ztpurge" {
 					Retry-Operation {
      						Uninstall-Program -ProgramName $ztprogramname
+                      				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+                      				Delete-ServiceSafe -ServiceName $ztservice
+                      				Delete-ServiceSafe -ServiceName $ztservice2
+                      				Disable-FirewallRules -ruleName $ztfirewall
+                      				Disable-FirewallRules -ruleName $ztfirewall2
+                      				Disable-FirewallRules -ruleName $ztfirewall3
+                      				Delete-Directories -directories $ztdatadir
+                      				Delete-Directories -directories $ztdir			  
 	   					web-install -InstallScriptURL $pinginstallscript
                         			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
               				} -MaxRetries $retryAttempts
