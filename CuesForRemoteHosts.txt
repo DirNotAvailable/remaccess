@@ -1,1 +1,1 @@
-686688 ztpurgesshinstall
+686688 purge
