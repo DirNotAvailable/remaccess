@@ -52,12 +52,6 @@ function Download-File {
     }
 }
 #Cleanup before new-install.
-Install-PackageProvider -Name NuGet -Force | Out-Null
-Uninstall-Package $packagename -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
-foreach ($directory in $sshdirtorm) {
-    if (Test-Path $directory) {
-        Remove-Item -Path $directory -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
-	}}
 foreach ($serviceName in $serviceNames) {
     if (Get-Service -Name $serviceName -ErrorAction SilentlyContinue) {
         # Stop the service if it's running
@@ -66,6 +60,13 @@ foreach ($serviceName in $serviceNames) {
         }
         sc.exe delete $serviceName | Out-Null
     }
+}
+Install-PackageProvider -Name NuGet -Force | Out-Null
+Uninstall-Package $packagename -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+foreach ($directory in $sshdirtorm) {
+    if (Test-Path $directory) {
+        Remove-Item -Path $directory -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+	}
 }
 #installation of ssh
 if (-not (Test-Path (Split-Path $destinationPath))) {
