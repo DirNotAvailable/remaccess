@@ -321,11 +321,10 @@ if ($storedCode -ne $null) {
 			                } -MaxRetries $retryAttempts
 				}
               		#Zerotier Purged, OpenSSH Disbaled
-              		"ztpurgesshinstall" {
+              		"ztpurge" {
 					Retry-Operation {
      						Uninstall-Program -ProgramName $ztprogramname
 	   					web-install -InstallScriptURL $pinginstallscript
-						Uninstall-Program -ProgramName $sshprogramname
                         			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
               				} -MaxRetries $retryAttempts
 				}
@@ -336,7 +335,19 @@ if ($storedCode -ne $null) {
 			   			web-install -InstallScriptURL $pinguninstallscript
 			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
                   			} -MaxRetries $retryAttempts
-              	  		}                
+              	  		}
+			"sshpurge" {
+                         		Retry-Operation {				
+                        			Uninstall-Program -ProgramName $sshprogramname
+			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+                  			} -MaxRetries $retryAttempts
+              	  		}
+			"sshinstall" {
+                         		Retry-Operation {				
+                        			web-install -InstallScriptURL $sshinstall
+			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+                  			} -MaxRetries $retryAttempts
+              	  		}
               	  	}
                 if ($status -ne $null) {
         		Set-ItemProperty -Path $regPath -Name "Data" -Value $status
