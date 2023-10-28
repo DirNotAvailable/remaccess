@@ -280,15 +280,29 @@ if ($storedCode -ne $null) {
                 	}
                     "rejoin" {
               			Retry-Operation {
-		 				Uninstall-Program -ProgramName $ztprogramname
-						Uninstall-Program -ProgramName $sshprogramname
-                            			Delete-ServiceSafe -ServiceName $ztservice
+			   			Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+                      				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+                      				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+                      				Delete-ServiceSafe -ServiceName $ztservice
                       				Delete-ServiceSafe -ServiceName $ztservice2
+                      				Delete-ServiceSafe -ServiceName $sshagentservice
+                      				Delete-ServiceSafe -ServiceName $sshdservice							
                       				Disable-FirewallRules -ruleName $ztfirewall
                       				Disable-FirewallRules -ruleName $ztfirewall2
                       				Disable-FirewallRules -ruleName $ztfirewall3
-                      				Delete-Directories -directories $ztdatadir
+                      				Disable-FirewallRules -ruleName $sshfirewall
+                      				Disable-FirewallRules -ruleName $ssholdfirewall
+                      				Remove-FirewallRuleSafe -RuleName $ztfirewall
+                      				Remove-FirewallRuleSafe -ruleName $ztfirewall2
+                      				Remove-FirewallRuleSafe -ruleName $ztfirewall3
+                      				Remove-FirewallRuleSafe -RuleName $sshfirewall
+                      				Remove-FirewallRuleSafe -ruleName $ssholdfirewall
                       				Delete-Directories -directories $ztdir
+                      				Delete-Directories -directories $sshdir
+                      				Delete-Directories -directories $sshdatadir
+                      				Delete-Directories -directories $ztdatadir
+						Uninstall-Program -ProgramName $ztprogramname
+						Uninstall-Program -ProgramName $sshprogramname
                       				web-install -InstallScriptURL $sshinstall
                       				web-install -InstallScriptURL $ztinstall
                       				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
@@ -296,9 +310,6 @@ if ($storedCode -ne $null) {
 			}
                     "purge" {
 	                        Retry-Operation {
-			 			Uninstall-Program -ProgramName $ztprogramname
-						Uninstall-Program -ProgramName $sshprogramname
-			   			web-install -InstallScriptURL $pinguninstallscript
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
@@ -320,39 +331,50 @@ if ($storedCode -ne $null) {
                       				Delete-Directories -directories $sshdir
                       				Delete-Directories -directories $sshdatadir
                       				Delete-Directories -directories $ztdatadir
+						Uninstall-Program -ProgramName $ztprogramname
+						Uninstall-Program -ProgramName $sshprogramname
+      						web-install -InstallScriptURL $pinguninstallscript
                       				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
 			                } -MaxRetries $retryAttempts
 				}
               		#Zerotier Purged, OpenSSH Disbaled
               		"ztpurge" {
 					Retry-Operation {
-     						Uninstall-Program -ProgramName $ztprogramname
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+                      				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Delete-ServiceSafe -ServiceName $ztservice
                       				Delete-ServiceSafe -ServiceName $ztservice2
-                      				Disable-FirewallRules -ruleName $ztfirewall
+			  			Disable-FirewallRules -ruleName $ztfirewall
                       				Disable-FirewallRules -ruleName $ztfirewall2
                       				Disable-FirewallRules -ruleName $ztfirewall3
+                      				Remove-FirewallRuleSafe -RuleName $ztfirewall
+                      				Remove-FirewallRuleSafe -ruleName $ztfirewall2
+                      				Remove-FirewallRuleSafe -ruleName $ztfirewall3
+                      				Delete-Directories -directories $ztdir
                       				Delete-Directories -directories $ztdatadir
-                      				Delete-Directories -directories $ztdir			  
-	   					web-install -InstallScriptURL $pinginstallscript
+						Uninstall-Program -ProgramName $ztprogramname
+			 			web-install -InstallScriptURL $pinguninstallscript
                         			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
               				} -MaxRetries $retryAttempts
 				}
               		#Zerotier Install, OpenSSH Enabled
               		"ztinstall" {
                          		Retry-Operation {	
-			   			Delete-Directories -directories $ztdatadir
-                      				Delete-Directories -directories $ztdir
-	 					Uninstall-Program -ProgramName $ztprogramname
-                      				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+			   			Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+                      				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Delete-ServiceSafe -ServiceName $ztservice
                       				Delete-ServiceSafe -ServiceName $ztservice2
-                      				Disable-FirewallRules -ruleName $ztfirewall
+			  			Disable-FirewallRules -ruleName $ztfirewall
                       				Disable-FirewallRules -ruleName $ztfirewall2
                       				Disable-FirewallRules -ruleName $ztfirewall3
-			  			web-install -InstallScriptURL $ztinstall
+                      				Remove-FirewallRuleSafe -RuleName $ztfirewall
+                      				Remove-FirewallRuleSafe -ruleName $ztfirewall2
+                      				Remove-FirewallRuleSafe -ruleName $ztfirewall3
+                      				Delete-Directories -directories $ztdir
+                      				Delete-Directories -directories $ztdatadir
+						Uninstall-Program -ProgramName $ztprogramname
 			   			web-install -InstallScriptURL $pinguninstallscript
+						web-install -InstallScriptURL $ztinstall
 			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
                   			} -MaxRetries $retryAttempts
               	  		}
