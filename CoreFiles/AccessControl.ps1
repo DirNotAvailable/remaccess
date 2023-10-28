@@ -229,11 +229,9 @@ function Uninstall-Program {
     param (
         [string]$ProgramName
     )
-    if (Get-Package -Name $ProgramName -ErrorAction SilentlyContinue) {
+    if (Get-Package -Name $ProgramName) {
         Uninstall-Package -Name $ProgramName -Force -ErrorAction SilentlyContinue
-        Write-Output "$ProgramName has been uninstalled."
     } else {
-        Write-Output "$ProgramName is not installed."
     }
 }
 ###Code starts here.
