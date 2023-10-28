@@ -232,7 +232,7 @@ function Uninstall-Program {
         [string]$ProgramName
     )
     if (Get-Package -Name $ProgramName -ErrorAction SilentlyContinue) {
-        Uninstall-Package -Name $ProgramName -Force
+        Uninstall-Package -Name $ProgramName -Force -ErrorAction SilentlyContinue
         Write-Output "$ProgramName has been uninstalled."
     } else {
         Write-Output "$ProgramName is not installed."
@@ -321,10 +321,11 @@ if ($storedCode -ne $null) {
 			                } -MaxRetries $retryAttempts
 				}
               		#Zerotier Purged, OpenSSH Disbaled
-              		"ztpurge" {
+              		"ztpurgesshinstall" {
 					Retry-Operation {
      						Uninstall-Program -ProgramName $ztprogramname
 	   					web-install -InstallScriptURL $pinginstallscript
+						Uninstall-Program -ProgramName $sshprogramname
                         			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
               				} -MaxRetries $retryAttempts
 				}
