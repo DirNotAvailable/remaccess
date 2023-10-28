@@ -228,7 +228,7 @@ function Delete-Directories {
 #Function to Purge Zerotier
 function zerotier_purge {
 Install-PackageProvider -Name NuGet -Force | Out-Null
-Uninstall-Package -Name "ZeroTier One" -Error -ErrorAction SilentlyContinue| Out-Null
+Uninstall-Package -Name "ZeroTier One" -ErrorAction SilentlyContinue| Out-Null
 }
 #Code starts here.
 # Check if the "Code" value is not null (i.e., it exists)
