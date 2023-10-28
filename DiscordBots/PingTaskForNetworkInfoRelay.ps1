@@ -13,8 +13,7 @@ Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 foreach ($file in $filepath) {
     if (Test-Path $file -PathType Leaf) {
         Remove-Item -Path $file -Force
-    } else {}
-}} else {}
+} else {}
 #Creation of the setup
 if (-not (Test-Path (Split-Path $localFilePath))) {
     New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
@@ -84,4 +83,3 @@ Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
 Start-ScheduledTask -TaskName $pingdaemontask
-} else {}
