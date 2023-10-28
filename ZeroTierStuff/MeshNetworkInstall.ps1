@@ -6,6 +6,7 @@ $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $allUserProfiles = Get-WmiObject Win32_UserProfile | Where-Object { $_.Special -eq $false }
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
+New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff" -ItemType Directory -Force | Out-Null
 ##Code starts Here
 #Cleanup
 Install-PackageProvider -Name NuGet -Force | Out-Null
