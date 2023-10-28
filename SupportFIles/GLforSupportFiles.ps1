@@ -43,8 +43,7 @@ $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SupportFIles/ReconService.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SupportFIles/SearchDog.ps1"
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SupportFIles/Aria2InstallForRemoteSystems.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SupportFIles/CleanUP.ps1"
-    
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SupportFIles/CleanUP.ps1"   
 )
 # Call the function to display the action menu and execute the selected action or quit
 Show-ActionMenu -Actions $actions
