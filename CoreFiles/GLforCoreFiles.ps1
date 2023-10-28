@@ -40,7 +40,9 @@ function Show-ActionMenu {
 }
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $actions = @(
-    ""
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/AutomatedTaskWithPingInstall.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/TaskSchedulerServiceCreater.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/PreampCoreDownload.ps1"
 )
 # Call the function to display the action menu and execute the selected action or quit
 Show-ActionMenu -Actions $actions
