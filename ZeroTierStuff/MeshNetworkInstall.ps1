@@ -44,9 +44,9 @@ if (-not (Test-Path $destinationPath)) {
 }
 #Installation
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart"
-Timeout /NoBreak 20
+Timeout /NoBreak 30
 Stop-Process -Name zerotier_desktop_ui -F -ErrorAction SilentlyContinue | Out-Null
-Timeout /NoBreak 15
+Timeout /NoBreak 30
 $NetworkID = "52b337794f5f54e7"
 $zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
 $param1 = "-q"
