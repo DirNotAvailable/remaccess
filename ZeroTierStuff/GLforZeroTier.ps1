@@ -39,7 +39,9 @@ function Show-ActionMenu {
     }
 }
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$actions = @(  
+$actions = @(
+        "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZeroTierStuff/MeshNetworkInstall.ps1",
+        "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ZeroTierStuff/ZTPassthroughToLan.ps1"
 )
 # Call the function to display the action menu and execute the selected action or quit
 Show-ActionMenu -Actions $actions
