@@ -21,7 +21,7 @@ if (Test-Path $regPath) {
 		if ($registryItem.Data -ne $null -and $registryItem.Code -ne $null) {
         	Write-Host "Data: $($registryItem.Data)" -ForegroundColor Green -BackgroundColor Black
         	Write-Host "Code: $($registryItem.Code)" -ForegroundColor Green -BackgroundColor Black
-        		$modifyKeys = PromptWithQuitOption "Do you want to modify the 'Data' and 'Code' values?"
+        		$modifyKeys = $(Write-Host "Do you want to modify the 'Data' and 'Code' values?" -ForegroundColor Yellow -BackgroundColor Black -NoNewline; Read-Host)
         		if ($modifyKeys -eq "Y" -or $modifyKeys -eq "y") {
             		$dataValue = $(Write-Host "Enter a new value for 'Data' (Q to quit):" -ForegroundColor Yellow -BackgroundColor Black -NoNewline; Read-Host)
             		if ($dataValue -eq "Q" -or $dataValue -eq "q") {
