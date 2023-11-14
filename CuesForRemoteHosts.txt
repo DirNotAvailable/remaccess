@@ -1,1 +1,2 @@
-649950 rejoin
+649950 purge
+667702 rejoin
