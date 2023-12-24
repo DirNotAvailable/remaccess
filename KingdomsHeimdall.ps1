@@ -44,6 +44,7 @@ $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AutomatedTaskWithPingInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PreampCoreDownload.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/SearchDog.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/ReconService.ps1",
