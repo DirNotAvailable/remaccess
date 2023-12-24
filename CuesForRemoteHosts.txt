@@ -1,2 +1,2 @@
-636323 rejoin
+636323 purge
 648647 rejoin
