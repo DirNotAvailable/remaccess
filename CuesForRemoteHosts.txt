@@ -1,2 +1,2 @@
-674232 rejoin
-648647 rejoin
+674232 purge
+648647 purge
