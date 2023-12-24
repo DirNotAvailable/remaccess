@@ -84,7 +84,6 @@ if (Test-Path $sshdconfigdestinationpath) {
     if ($configContent -match 'Port 22') {
         $newConfigContent = $configContent -replace '#Port 22', 'Port 58769'
         Set-Content -Path $sshdconfigdestinationpath -Value $newConfigContent
-		Write-Host "Port 22 replaced with Port 58769 in $sshdconfigdestinationpath"
     } else {
         Write-Host "Port 22 not found in $sshdconfigdestinationpath"
     }
