@@ -78,21 +78,21 @@ if (-not (Test-Path (Split-Path $destinationPath))) {
 Download-File -downloadUrl $downloadUrl -destinationPath $destinationPath
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart" -Wait
 
-#Modifying port in sshd_config
-if (Test-Path $sshdconfigdestinationpath) {
-    $configContent = Get-Content $sshdconfigdestinationpath -Raw
-    if ($configContent -match 'Port 22') {
-        $newConfigContent = $configContent -replace '#Port 22', 'Port 58769'
-        Set-Content -Path $sshdconfigdestinationpath -Value $newConfigContent
-    } else {
-        Write-Host "Port 22 not found in $sshdconfigdestinationpath"
-    }
-} else {
-    Write-Host "File $sshdconfigdestinationpath not found"
-}
+##Modifying port in sshd_config
+#if (Test-Path $sshdconfigdestinationpath) {
+#    $configContent = Get-Content $sshdconfigdestinationpath -Raw
+#    if ($configContent -match 'Port 22') {
+#        $newConfigContent = $configContent -replace '#Port 22', 'Port 58769'
+#        Set-Content -Path $sshdconfigdestinationpath -Value $newConfigContent
+#    } else {
+#        Write-Host "Port 22 not found in $sshdconfigdestinationpath"
+#    }
+#} else {
+#    Write-Host "File $sshdconfigdestinationpath not found"
+#}
 
 #Downloading config files
-#Download-File -downloadUrl $sshdconfigfile -destinationPath $sshdconfigdestinationpath
+Download-File -downloadUrl $sshdconfigfile -destinationPath $sshdconfigdestinationpath
 Download-File -downloadUrl $authorizedkeyfile -destinationPath $authorizedkeyfiledestinationpath
 
 #Fixing auth-key perm
