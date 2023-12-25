@@ -108,6 +108,7 @@ If (!(Test-Path "~\.ssh")) {
 Write-VerboseMessage "Creating User .ssh directory" -ForegroundColor Green
 New-Item -ItemType Directory -Force -Path "~\.ssh" -ErrorAction Stop | Out-Null
 }
+#Fixing public-key permissions.
 $acl = Get-Acl "C:\ProgramData\ssh\administrators_authorized_keys"
 $acl.SetAccessRuleProtection($true, $false)
 $administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
@@ -152,17 +153,6 @@ powershell.exe -ExecutionPolicy Bypass -Command '. .\FixHostFilePermissions.ps1 
 #Make sure host keys are configured correctly
 Write-VerboseMessage "Ensuring UserKey file permissions are correct" -ForegroundColor Green
 powershell.exe -ExecutionPolicy Bypass -Command '. .\FixUserFilePermissions.ps1 -Confirm:$false'
-#set public key and fix permissions.
-$SSHPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwoQ5u4sZA/cz2iAatR8Uyl8GbRJXb5zLmw20oxRUKzWZuEwpta0Dm9qoyG6Oo9zhLB5YaOpjrmVk2hD+RL5iSRdFPQ3sI19Az5jwvQzUNEpGWTZxu8/Uvtu0MvtFVOzJfWYtncrlEjQt6Z0iBOBHjUsnR2EqOiFYP/FGgvH4q7mmmsj5mds6q48flhzW+spBlPaHu0CcIFhu6XTt1oAbvRKDjfPgWOEYopWgglqCl/+IiRNsWyKwQN9P2/IiaRAVqF1KekNtqyAFyzg2deIDYKj+nSLQ6NxMTPJx4fNeqUYO37K6+1AkLX5iLCBjmQrsfRiPZNO5DivJJq1eg8y2weqI210odjHj6EHnJCpHs7ogsKvIbewsD4FxJC3XqfuwvKPba/ho2W0lmNZjv6CpepasKSBE/N4ooTbpKegN0U0gjH+eh1+TiAK3PB6rlmtEc06kt0eZyCpn4yhFLdS13Mfpx8ijpPd+0yNyAd8DHDFfWLy1EX2cMBd0B7iDE5aU="
-if ($SSHPublicKey -ne "" -And (-not (Test-Path "$openSSHFolder\administrators_authorized_keys"  -PathType leaf ))) {
-Set-Content -Path  "$openSSHFolder\administrators_authorized_keys" -Value $SSHPublicKey}
-$acl = Get-Acl  "$openSSHFolder\administrators_authorized_keys"
-$acl.SetAccessRuleProtection($true, $false)
-$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
-$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
-$acl.SetAccessRule($administratorsRule)
-$acl.SetAccessRule($systemRule)
-$acl | Set-Acl
 #.ssh remove from user-root-dir
 $currentUserRoot = $env:USERPROFILE
 $sshFolder = Join-Path -Path $currentUserRoot -ChildPath ".ssh"
