@@ -1,4 +1,4 @@
-#Requires a lot of work, for now, this is no useable
+##Requires a lot of work, for now, this is no useable
 $currentDirectory = Get-Location
 $openSSHFolder =  "$env:ProgramData\ssh"
 $OldPath = "C:\Program Files\OpenSSH"
