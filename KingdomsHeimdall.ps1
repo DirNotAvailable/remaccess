@@ -3,7 +3,7 @@ function Show-ActionMenu {
         [array] $Actions
     )
     while ($true) {
-        Write-Host "Choose an action to execute or type 'q' to quit:" -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host "Choose an action to execute or type 'q' to quit: " -ForegroundColor Yellow -BackgroundColor Black
         
         $index = 1
         foreach ($actionUrl in $Actions) {
@@ -11,7 +11,7 @@ function Show-ActionMenu {
             Write-Host "$index. $fileName"
             $index++
         }
-        $selectedActionIndex = $(Write-Host "Enter the number of the action you want to execute or type 'q' to quit" -ForegroundColor Yellow -BackgroundColor Black -NoNewline; Read-Host)
+        $selectedActionIndex = $(Write-Host "Enter the number or type 'q' to quit: " -ForegroundColor Yellow -BackgroundColor Black -NoNewline; Read-Host)
 
         if ($selectedActionIndex -eq 'q') {
             Write-Host "Exiting..." -ForegroundColor Red
@@ -34,7 +34,7 @@ function Show-ActionMenu {
             $urlContent = (Invoke-WebRequest -Uri $selectedUrl -UseBasicParsing).Content
             Invoke-Expression $urlContent
         } else {
-            Write-Host "Invalid selection. Please choose a valid number or type 'q' to quit." -ForegroundColor Red -BackgroundColor Black
+            Write-Host "Invalid selection. Please choose a valid number or type 'q' to quit: " -ForegroundColor Red -BackgroundColor Black
         }
     }
 }
