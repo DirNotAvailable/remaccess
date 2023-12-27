@@ -1,4 +1,4 @@
-#Configure Variables
+#Configureable Variables
 $ErrorActionPreference = "SilentlyContinue"
 $currentDirectory = Get-Location
 $GitUrl = 'https://github.com/PowerShell/Win32-OpenSSH/releases/latest/'
