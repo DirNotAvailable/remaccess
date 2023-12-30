@@ -220,11 +220,26 @@ function Delete-Directories {
         }
     }
 }
+
 #Function to Purge Zerotier
 function zerotier_purge {
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
 }
+
+##Under review function to remove the programs installed via program manager of windows.
+function Remove-Package {
+    param (
+        [string]$PackageName
+    )
+
+    # Install NuGet provider if not already installed
+    Install-PackageProvider -Name NuGet -Force | Out-Null
+
+    # Uninstall the specified package
+    Uninstall-Package $PackageName -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+}
+
 #Code starts here.
 # Check if the "Code" value is not null (i.e., it exists)
 CheckAndUpdateRegistryCode
@@ -295,7 +310,9 @@ if ($storedCode -ne $null) {
 			}
                     "purge" {
 	                        Retry-Operation {
-			 			zerotier_purge
+			 			#zerotier_purge
+						Remove-Package "ZeroTier One"
+						Remove-Package OpenSSH
                       				Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
                       				Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
