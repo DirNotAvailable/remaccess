@@ -40,6 +40,13 @@ if ([string]::IsNullOrEmpty($option)) {
     $option = "n"
 }
 if ($option.ToLower() -eq "y") { 
+    if (Get-ScheduledTask -TaskName $rclonetask -ErrorAction SilentlyContinue) {
+        Stop-ScheduledTask -TaskName $rclonetask
+        Unregister-ScheduledTask -TaskName $rclonetask -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    }
+    else {
+        Write-Host "Scheduled task '$rclonetask' does not exist."
+    }
     if (Test-Path $rootpath) {
         Get-Process -Name "Rclone" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
     }
@@ -58,12 +65,7 @@ if ($option.ToLower() -eq "y") {
     else {
         Write-Host "Rclone directory does not exist."
     }
-    if (Get-ScheduledTask -TaskName $rclonetask -ErrorAction SilentlyContinue) {
-        Unregister-ScheduledTask -TaskName $rclonetask -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
-    }
-    else {
-        Write-Host "Scheduled task '$rclonetask' does not exist."
-    }
+    
 } else {}
 
 ##Directory creation and download section.
@@ -76,7 +78,7 @@ if ([string]::IsNullOrEmpty($option)) {
 if ($option.ToLower() -eq "y") {  
     if (-not (Test-Path -Path $rcloneexepath -PathType Leaf)) {
         if (-not (Test-Path -Path $rootpath -PathType Container)) {
-            New-Item -ItemType Directory -Path $rootpath -Force
+            New-Item -ItemType Directory -Path $rootpath -Force | Out-Null
         }
         Invoke-WebRequest -Uri $rclonedlurl -OutFile $rclonezip
         Expand-Archive -Path $rclonezip -DestinationPath $rootpath -Force
