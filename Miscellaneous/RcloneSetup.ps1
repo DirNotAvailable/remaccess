@@ -40,7 +40,7 @@ if ([string]::IsNullOrEmpty($option)) {
     $option = "n"
 }
 if ($option.ToLower() -eq "y") { 
-    if (Test-Path "$rootpath\Rclone") {
+    if (Test-Path $rootpath) {
         Get-Process -Name "Rclone" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
     }
     else {
@@ -52,8 +52,8 @@ if ($option.ToLower() -eq "y") {
     else {
         Write-Host "No instances of Rclone.exe are currently running."
     }
-    if (Test-Path "$rootpath\Rclone") {
-        Remove-Item -Path "$rootpath\Rclone" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    if (Test-Path $rootpath) {
+        Remove-Item -Path $rootpath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
     }
     else {
         Write-Host "Rclone directory does not exist."
