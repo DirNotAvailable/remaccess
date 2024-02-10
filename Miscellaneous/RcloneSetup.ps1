@@ -149,7 +149,7 @@ $pathforcloud = "$($trimmedSerial)-$($systemnametrimmed)"
 function SyncWithRclone {
     $syncDirectories = Get-Content $ledgerpath
     foreach ($directory in $syncDirectories) {
-        & $rcloneexe --config $rcloneconfig sync "$directory" "${clouddrive}:$pathforcloud"
+        & $rcloneexe --config $rcloneconfig sync "$directory" "${clouddrive}:$pathforcloud --max-size 10M"
     }
 }
 while ($true) {
