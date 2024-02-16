@@ -17,7 +17,7 @@ if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
 Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 } else {}
 # Removal of directories
-foreach ($file in $filepath) {
+foreach ($file in $filePaths) {
     if (Test-Path $file -PathType Leaf) {
         Remove-Item -Path $file -Force
     } else {}

