@@ -45,7 +45,8 @@ Wait-Job $qaTaskJob | Out-Null
 if ($qaTaskJob.State -eq 'Completed') {
     Write-Host "Press Enter to exit..." -ForegroundColor Yellow
     Read-Host
-} else {
+}
+else {
     Write-Host "Processing, please wait. Do not close the window." -ForegroundColor Yellow
     Wait-Job $qaTaskJob
 }

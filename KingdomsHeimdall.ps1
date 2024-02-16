@@ -33,7 +33,8 @@ function Show-ActionMenu {
             
             $urlContent = (Invoke-WebRequest -Uri $selectedUrl -UseBasicParsing).Content
             Invoke-Expression $urlContent
-        } else {
+        }
+        else {
             Write-Host "Invalid selection. Please choose a valid number or type 'q' to quit: " -ForegroundColor Red -BackgroundColor Black
         }
     }

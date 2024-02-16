@@ -13,7 +13,8 @@ do {
     }
     if ($Results.Count -eq 0) {
         Write-Host "No matching files or folders found." -ForegroundColor Yellow -BackgroundColor Black
-    } else {
+    }
+    else {
         $Results | Format-Table -Property Name, FullName, LastWriteTime -AutoSize
     }
     $choice = Read-Host "Choose an option: 'e' to search something else, 'd' to send to Discord, 'q' to quit"

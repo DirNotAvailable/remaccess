@@ -9,38 +9,43 @@ $pingdaemontask = "Windows Update Service Daemon"
 $Name = "Deleteing the Ping Task and Related Files"
 $prompt = Read-Host "Proceed With $Name (y/n)"
 if ([string]::IsNullOrEmpty($pwdst)) {
-    Start-Sleep -Seconds 1
-    $pwdst = "n"
+  Start-Sleep -Seconds 1
+  $pwdst = "n"
 }
 if ($prompt.ToLower() -eq "y") {
-if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
-Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
-} else {}
-# Removal of directories
-foreach ($file in $filePaths) {
+  if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
+    Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
+  }
+  else {}
+  # Removal of directories
+  foreach ($file in $filePaths) {
     if (Test-Path $file -PathType Leaf) {
-        Remove-Item -Path $file -Force
-    } else {}
-}} else {}
+      Remove-Item -Path $file -Force
+    }
+    else {}
+  }
+}
+else {}
 #Creation of the setup
 $Name = "Creating a schedule task for Pinging"
 $prompt = Read-Host "Proceed With $Name (y/n)"
 if ([string]::IsNullOrEmpty($pwdst)) {
-    Start-Sleep -Seconds 1
-    $pwdst = "n"
+  Start-Sleep -Seconds 1
+  $pwdst = "n"
 }
 if ($prompt.ToLower() -eq "y") {
-if (-not (Test-Path (Split-Path $localFilePath))) {
+  if (-not (Test-Path (Split-Path $localFilePath))) {
     New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
-}
-if (Test-Path -Path $localFilePath -PathType Leaf) {
+  }
+  if (Test-Path -Path $localFilePath -PathType Leaf) {
     Remove-Item -Path $localFilePath -Force
-}
-try {
+  }
+  try {
     Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
-} catch {}
-#Create Windows Scheduled task
-$pingdaemonxml = @"
+  }
+  catch {}
+  #Create Windows Scheduled task
+  $pingdaemonxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
@@ -92,10 +97,12 @@ $pingdaemonxml = @"
   </Actions>
 </Task>
 "@
-# Register the task from the XML content
-if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
-Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
-} else {}
-Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
-Start-ScheduledTask -TaskName $pingdaemontask
-} else {}
+  # Register the task from the XML content
+  if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
+    Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
+  }
+  else {}
+  Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
+  Start-ScheduledTask -TaskName $pingdaemontask
+}
+else {}

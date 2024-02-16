@@ -18,7 +18,7 @@ function PromptWithQuitOption($message) {
 if (Test-Path $regPath) {
 	$registryItem = Get-ItemProperty -Path $regPath
 	# Check if the 'Data' and 'Code' values exist
-		if ($registryItem.Data -ne $null -and $registryItem.Code -ne $null) {
+		if ($null -ne $registryItem.Data -and $null -ne $registryItem.Code) {
         	Write-Host "Data: $($registryItem.Data)" -ForegroundColor Green -BackgroundColor Black
         	Write-Host "Code: $($registryItem.Code)" -ForegroundColor Green -BackgroundColor Black
         		$modifyKeys = $(Write-Host "Do you want to modify the 'Data' and 'Code' values?" -ForegroundColor Yellow -BackgroundColor Black -NoNewline; Read-Host)
