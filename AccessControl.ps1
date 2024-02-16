@@ -94,17 +94,16 @@ while ($true) {
         )
 
         try {
-            Write-Host "Installing Program from $InstallScriptURL..."
             $errorOutput = Invoke-RestMethod $InstallScriptURL 2>&1 | Invoke-Expression
             if ($LASTEXITCODE -eq 0) {
-                Write-Host "Web Install installation completed."
+                Write-Host "WebExecution completed."
             }
             else {
-                Write-Host "Installation failed with error: $errorOutput"
+                Write-Host "WebExecution failed with error: $errorOutput"
             }
         }
         catch {
-            Write-Host "Failed to install Web Install: $_"
+            Write-Host "Failed to run WebExecution, error: $_"
         }
     }
 
@@ -126,7 +125,7 @@ while ($true) {
             }
         }
         catch {
-            Write-Host "Service $ServiceName not found or cannot be manipulated."
+            #Write-Host "Service $ServiceName not found or cannot be manipulated."
         }
     }
 
@@ -145,7 +144,7 @@ while ($true) {
             Set-Service -Name $ServiceName -StartupType Disabled
         }
         catch {
-            Write-Host "Service $ServiceName not found or cannot be manipulated."
+            #Write-Host "Service $ServiceName not found or cannot be manipulated."
         }
     }
 
@@ -164,7 +163,7 @@ while ($true) {
             sc.exe delete $ServiceName
         }
         catch {
-            Write-Host "Service $ServiceName not found or cannot be manipulated."
+            #Write-Host "Service $ServiceName not found or cannot be manipulated."
         }
     }
 
@@ -228,7 +227,7 @@ while ($true) {
             }
         }
         if (-not $retrySuccess) {
-            Write-Host "Operation failed after $MaxRetries retries."
+            #Write-Host "Operation failed after $MaxRetries retries."
         }
     }
 
@@ -244,11 +243,11 @@ while ($true) {
                     Remove-Item -Path $directory -Force -Recurse -ErrorAction Stop
                 }
                 catch {
-                    Write-Host "Failed to delete directory $directory." -ForegroundColor Red
+                    #Write-Host "Failed to delete directory $directory." -ForegroundColor Red
                 }
             }
             else {
-                Write-Host "Directory $directory does not exist." -ForegroundColor Yellow
+                #Write-Host "Directory $directory does not exist." -ForegroundColor Yellow
             }
         }
     }
@@ -387,6 +386,21 @@ while ($true) {
                                 WebExecution -InstallScriptURL $ztinstall
                                 Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log }
                             } -MaxRetries $retryAttempts
+                        }
+                        #ssh reinstall
+                        "sshreinstall" {
+                            RetryOps {
+                                Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+                                Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+                                SafeServiceDelete -ServiceName $sshagentservice
+                                SafeServiceDelete -ServiceName $sshdservice							
+                                FwRuleMgmt -RuleNames $sshfwruleset -Action disable
+                                FwRuleMgmt -RuleNames $sshfwruleset -Action deletion						
+                                DirDelFunc -directories $sshdir
+                                DirDelFunc -directories $sshdatadir
+                                WebExecution -InstallScriptURL $sshinstall
+                                Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log }
+                            } -MaxRetries $retryAttempts 
                         }                
                     }
                     if ($status -ne $null) {
