@@ -1,2 +1,4 @@
 688994 rejoin
 648647 rejoin
+666666 dormant
+666667 active
