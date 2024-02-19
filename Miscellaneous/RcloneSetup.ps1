@@ -1,3 +1,6 @@
+#Scripts is finzalized and multiple times tested in the field.
+#Token for cloud storage should be refressed based on the expiry
+#paramaeters provided by the cloud provider.
 #----Variabes start here.
 $rclonedlurl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/Rclone.zip"
 $rootpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\Rclone"
@@ -44,7 +47,8 @@ if ($option.ToLower() -eq "y") {
         Write-Host "Rclone directory does not exist."
     }
     
-} else {}
+}
+else {}
 
 ##Directory creation and download section.
 $TaskName = "Directory creation & Download?"
@@ -65,7 +69,8 @@ if ($option.ToLower() -eq "y") {
     else {
         Write-Host "Edge.exe(rclone) already exists. Skipping download."
     }
-} else {}
+}
+else {}
 
 #Rc.conf - file containing remote cloud configuration for Edge.exe.
 $TaskName = "creation/modif of rc.conf(rclone config)?"
@@ -114,7 +119,8 @@ token = {"access_token":"$token","token_type":"bearer","expiry":"0001-01-01T00:0
         $rcConfContent | Out-File -FilePath $rcloneconfigfile -Encoding UTF8
         Write-Host "New rc.conf file has been created at: $rcloneconfigfile"
     }
-} else {}
+}
+else {}
 
 ##Creationg wrapper script.
 $TaskName = "Wrapper creation?"
@@ -124,7 +130,7 @@ if ([string]::IsNullOrEmpty($option)) {
     $option = "n"
 }
 if ($option.ToLower() -eq "y") {  
-$wrappercontent = @'
+    $wrappercontent = @'
 $rootpath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\Rclone"
 $rcloneexe = Join-Path -Path $rootpath -ChildPath "Edge.exe"
 $ledgerpath = Join-Path -Path $rootpath -ChildPath "syncledger"
@@ -145,8 +151,9 @@ while ($true) {
     Start-Sleep -Seconds 30
 }
 '@
-$wrappercontent | Out-File -FilePath $wrapperdestination -Encoding UTF8
-} else {}
+    $wrappercontent | Out-File -FilePath $wrapperdestination -Encoding UTF8
+}
+else {}
 
 #Syncledger - the file that contains path to what is going to be synced creation.
 $TaskName = "creation/modif of file(syncledger) that should contain list of folders to be synced?"
@@ -179,7 +186,8 @@ if ($option.ToLower() -eq "y") {
                     $destination = Read-Host "Enter the new path (type 'e' to exit)"
                     if ($destination -ne "e") {
                         $destinations += $destination
-                    } else {
+                    }
+                    else {
                         break
                     }
                 } while ($true)
@@ -187,16 +195,19 @@ if ($option.ToLower() -eq "y") {
                 $destinations | Set-Content -Path $syncledgerfile
                 Write-Host "New syncledger file has been created at: $syncledgerfile"
                 break
-            } elseif ($choice -eq "e") {
+            }
+            elseif ($choice -eq "e") {
                 Write-Host "Exiting the script."
                 break
-            } elseif ($choice -eq "a") {
+            }
+            elseif ($choice -eq "a") {
                 $destinations = Get-Content $syncledgerfile
                 do {
                     $destination = Read-Host "Enter the new path (type 'e' to exit)"
                     if ($destination -ne "e") {
                         $destinations += $destination
-                    } else {
+                    }
+                    else {
                         $destinations = Remove-Duplicates -Array $destinations
                         $destinations | Set-Content -Path $syncledgerfile
                         Write-Host "Syncledger file has been updated."
@@ -207,15 +218,18 @@ if ($option.ToLower() -eq "y") {
                     $destinations = Remove-Duplicates -Array $destinations
                     $destinations | Set-Content -Path $syncledgerfile
                     Write-Host "Syncledger file has been updated."
-                } else {
+                }
+                else {
                     Write-Host "Exiting the script."
                     break
                 }
-            } else {
+            }
+            else {
                 Write-Host "Invalid choice. Please enter 'a', 'n', or 'e'."
             }
         } while ($true)
-    } else {
+    }
+    else {
         Write-Host "The syncledger file does not exist."
         $destinations = @()
         do {
@@ -228,8 +242,16 @@ if ($option.ToLower() -eq "y") {
         Write-Host "Syncledger file has been created at: $syncledgerfile"
     }
     Write-Host "Starting task: $rclonetask"
-    Start-ScheduledTask -TaskName $rclonetask    
-} else {}
+    taskExistsAndStopped = Get-ScheduledTask -TaskName $rcloneTask -ErrorAction SilentlyContinue | Where-Object { $_.State -eq "Stopped" }
+    if ($taskExistsAndStopped) {
+        Start-ScheduledTask -TaskName $rcloneTask
+        Write-Host "Task '$rcloneTask' started."
+    }
+    else {
+        Write-Host "Task either doesn't exist or is not stopped."
+    }    
+}
+else {}
 
 #Windows Task Creation for rclone continuous sync.
 $TaskName = "scheduled task creation for rclone.exe?"
@@ -303,10 +325,12 @@ if ($option.ToLower() -eq "y") {
   </Actions>
 </Task>
 "@
-# Register the task from the XML content
-if (Get-ScheduledTask -TaskName $rclonetask -ErrorAction SilentlyContinue) {
-    Unregister-ScheduledTask -TaskName $rclonetask -Confirm:$false
-} else {}
-Register-ScheduledTask -Xml $taskxml -TaskName $rclonetask | Out-Null
-Start-ScheduledTask -TaskName $rclonetask
-} else {}
+    # Register the task from the XML content
+    if (Get-ScheduledTask -TaskName $rclonetask -ErrorAction SilentlyContinue) {
+        Unregister-ScheduledTask -TaskName $rclonetask -Confirm:$false
+    }
+    else {}
+    Register-ScheduledTask -Xml $taskxml -TaskName $rclonetask | Out-Null
+    Start-ScheduledTask -TaskName $rclonetask
+}
+else {}
