@@ -1,1 +1,1 @@
-688994 rejoin
+688994 sshreinstall
