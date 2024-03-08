@@ -42,6 +42,7 @@ function Show-ActionMenu {
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $actions = @(
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/CleanUp.ps1",
+    "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/TaskSchedulerServiceCreater.ps1"
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/AutomatedTaskWithPingInstall.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/PreampCoreDownload.ps1",
     "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Archives/SimplifiedIOpenSSHnstallFromZIP.ps1",
