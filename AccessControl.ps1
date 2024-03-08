@@ -285,8 +285,6 @@ function RemovePings {
     }
 }
 
-
-
 #Code starts here.
 # Check if the "Code" value is not null (i.e., it exists)
 CheckAndUpdateRegistryCode
